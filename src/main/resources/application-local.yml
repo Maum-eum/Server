@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: SpringServer
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/springdb
+    username: root
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  jwt:
+    secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
+
+logging:
+  level:
+    org.springframework.data.redis: DEBUG
