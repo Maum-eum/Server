@@ -1,11 +1,11 @@
-package com.example.securitywithredis.controller;
+package com.example.springserver.controller;
 
-import com.example.securitywithredis.apiPayload.ApiResponse;
-import com.example.securitywithredis.converter.UserConverter;
-import com.example.securitywithredis.domain.entity.UserEntity;
-import com.example.securitywithredis.dto.UserRequestDTO;
-import com.example.securitywithredis.dto.UserResponseDTO;
-import com.example.securitywithredis.service.JoinService;
+import com.example.springserver.apiPayload.ApiResponse;
+import com.example.springserver.converter.UserConverter;
+import com.example.springserver.domain.entity.UserEntity;
+import com.example.springserver.dto.UserRequestDTO;
+import com.example.springserver.dto.UserResponseDTO;
+import com.example.springserver.service.JoinService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

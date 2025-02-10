@@ -1,4 +1,4 @@
-package com.example.securitywithredis.apiPayload.code;
+package com.example.springserver.apiPayload.code;
 
 public interface BaseCode {
 

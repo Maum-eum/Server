@@ -1,4 +1,4 @@
-package com.example.securitywithredis.domain.common;
+package com.example.springserver.domain.common;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

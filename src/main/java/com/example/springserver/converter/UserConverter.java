@@ -1,9 +1,9 @@
-package com.example.securitywithredis.converter;
+package com.example.springserver.converter;
 
-import com.example.securitywithredis.domain.entity.UserEntity;
-import com.example.securitywithredis.domain.entity.enums.Gender;
-import com.example.securitywithredis.dto.UserRequestDTO;
-import com.example.securitywithredis.dto.UserResponseDTO;
+import com.example.springserver.domain.entity.UserEntity;
+import com.example.springserver.domain.entity.enums.Gender;
+import com.example.springserver.dto.UserRequestDTO;
+import com.example.springserver.dto.UserResponseDTO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;

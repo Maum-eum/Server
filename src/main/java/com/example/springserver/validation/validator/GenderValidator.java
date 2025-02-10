@@ -1,7 +1,7 @@
-package com.example.securitywithredis.validation.validator;
+package com.example.springserver.validation.validator;
 
-import com.example.securitywithredis.domain.entity.enums.Gender;
-import com.example.securitywithredis.validation.annotation.GenderValid;
+import com.example.springserver.domain.entity.enums.Gender;
+import com.example.springserver.validation.annotation.GenderValid;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
-package com.example.securitywithredis.apiPayload.exception;
+package com.example.springserver.apiPayload.exception;
 
-import com.example.securitywithredis.apiPayload.code.BaseCode;
-import com.example.securitywithredis.apiPayload.code.ResponseDTO;
+import com.example.springserver.apiPayload.code.BaseCode;
+import com.example.springserver.apiPayload.code.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
