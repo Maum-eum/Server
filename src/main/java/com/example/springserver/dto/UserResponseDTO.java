@@ -1,4 +1,4 @@
-package com.example.securitywithredis.dto;
+package com.example.springserver.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

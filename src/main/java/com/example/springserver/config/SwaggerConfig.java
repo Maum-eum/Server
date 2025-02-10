@@ -1,4 +1,4 @@
-package com.example.securitywithredis.config;
+package com.example.springserver.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

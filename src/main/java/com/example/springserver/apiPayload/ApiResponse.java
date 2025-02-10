@@ -1,7 +1,7 @@
-package com.example.securitywithredis.apiPayload;
+package com.example.springserver.apiPayload;
 
-import com.example.securitywithredis.apiPayload.code.BaseCode;
-import com.example.securitywithredis.apiPayload.code.status.SuccessStatus;
+import com.example.springserver.apiPayload.code.BaseCode;
+import com.example.springserver.apiPayload.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

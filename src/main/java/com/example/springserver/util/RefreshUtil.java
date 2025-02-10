@@ -1,4 +1,4 @@
-package com.example.securitywithredis.util;
+package com.example.springserver.util;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

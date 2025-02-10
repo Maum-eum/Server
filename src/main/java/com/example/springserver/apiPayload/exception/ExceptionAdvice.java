@@ -1,8 +1,8 @@
-package com.example.securitywithredis.apiPayload.exception;
+package com.example.springserver.apiPayload.exception;
 
-import com.example.securitywithredis.apiPayload.ApiResponse;
-import com.example.securitywithredis.apiPayload.code.ResponseDTO;
-import com.example.securitywithredis.apiPayload.code.status.ErrorStatus;
+import com.example.springserver.apiPayload.ApiResponse;
+import com.example.springserver.apiPayload.code.ResponseDTO;
+import com.example.springserver.apiPayload.code.status.ErrorStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

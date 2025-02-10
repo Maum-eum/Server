@@ -1,9 +1,9 @@
-package com.example.securitywithredis.service;
+package com.example.springserver.service;
 
-import com.example.securitywithredis.apiPayload.code.status.ErrorStatus;
-import com.example.securitywithredis.apiPayload.exception.GeneralException;
-import com.example.securitywithredis.util.RefreshUtil;
-import com.example.securitywithredis.jwt.JWTUtil;
+import com.example.springserver.apiPayload.code.status.ErrorStatus;
+import com.example.springserver.apiPayload.exception.GeneralException;
+import com.example.springserver.util.RefreshUtil;
+import com.example.springserver.jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

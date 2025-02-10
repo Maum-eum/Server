@@ -1,7 +1,7 @@
-package com.example.securitywithredis.apiPayload.code.status;
+package com.example.springserver.apiPayload.code.status;
 
-import com.example.securitywithredis.apiPayload.code.BaseCode;
-import com.example.securitywithredis.apiPayload.code.ResponseDTO;
+import com.example.springserver.apiPayload.code.BaseCode;
+import com.example.springserver.apiPayload.code.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

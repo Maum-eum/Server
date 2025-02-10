@@ -1,4 +1,4 @@
-package com.example.securitywithredis.controller;
+package com.example.springserver.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

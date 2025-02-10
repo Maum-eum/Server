@@ -1,6 +1,6 @@
-package com.example.securitywithredis.repository;
+package com.example.springserver.repository;
 
-import com.example.securitywithredis.domain.entity.UserEntity;
+import com.example.springserver.domain.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

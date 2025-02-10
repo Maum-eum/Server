@@ -1,6 +1,6 @@
-package com.example.securitywithredis.dto;
+package com.example.springserver.dto;
 
-import com.example.securitywithredis.validation.annotation.GenderValid;
+import com.example.springserver.validation.annotation.GenderValid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
