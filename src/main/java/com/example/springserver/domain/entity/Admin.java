@@ -1,5 +1,6 @@
 package com.example.springserver.domain.entity;
 
+import com.example.springserver.domain.entity.Center;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
