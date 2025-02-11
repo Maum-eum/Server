@@ -30,6 +30,9 @@ public enum ErrorStatus implements BaseCode {
     REFRESH_TOKEN_NOT_EXIST(HttpStatus.BAD_REQUEST, "TOKEN4005", "리프레시 토큰이 존재하지 않습니다."),
     REFRESH_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, "TOKEN4006", "리프레시 토큰이 null입니다."),
 
+    // 센터 관련 에러
+    CENTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CENTER4001", "센터가 존재하지 않습니다."),
+
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다."),
 
