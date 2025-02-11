@@ -18,8 +18,8 @@ public class RequirementCondition {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "caregiver_id", nullable = false)
+    private Caregiver caregiver;
 
     @NotNull
     @Column(name = "flexible_schedule", nullable = false)

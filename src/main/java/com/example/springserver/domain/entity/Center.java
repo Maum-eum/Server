@@ -1,53 +1,46 @@
 package com.example.springserver.domain.entity;
 
+import com.example.springserver.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.List;
 
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "center_")
-public class Center {
+@NoArgsConstructor
+public class Center extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "center_id", nullable = false)
     private Long id;
 
-    @Size(max = 255)
-    @Column(name = "li")
-    private String li;
+    @Column(name = "leader_id")
+    private Long leaderId;
+
+    @OneToMany(mappedBy = "center")
+    private List<Admin> admins;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "leader_id", nullable = false)
-    private Member leader;
+    @ColumnDefault("0")
+    private Boolean hasCar;
 
-    @NotNull
-    @ColumnDefault("1")
-    @Column(name = "car", nullable = false)
-    private Boolean car = false;
-
-    @Size(max = 255)
-    @Column(name = "rate")
     private String rate;
 
-    @Lob
-    @Column(name = "intro")
     private String intro;
 
-    @Column(name = "start_time")
-    private Instant startTime;
+    private LocalDateTime startTime;
 
-    @Column(name = "end_time")
-    private Instant endTime;
+    private LocalDateTime endTime;
 
-    @Size(max = 255)
-    @Column(name = "Field")
-    private String field;
+    private String address;
 
 }
