@@ -2,7 +2,7 @@ package com.example.springserver.controller.elder;
 
 import com.example.springserver.apiPayload.ApiResponse;
 import com.example.springserver.converter.elder.ElderConverter;
-import com.example.springserver.domain.entity.elder.Elder;
+import com.example.springserver.domain.entity.elder.ElderEntity;
 import com.example.springserver.dto.elder.ElderRequestDto.CreateReqDto;
 import com.example.springserver.dto.elder.ElderResponseDto.CreatDto;
 import com.example.springserver.service.elder.ElderService;
@@ -20,7 +20,7 @@ public class ElderController {
     @PostMapping("/enroll")
     public ApiResponse<CreatDto> createElder(@PathVariable Long center_id, @RequestBody CreateReqDto createReqDto) {
 
-        Elder createdElder = elderService.createElder(center_id, createReqDto);
-        return ApiResponse.onSuccess(ElderConverter.toCreateDto(createdElder));
+        ElderEntity createdElderEntity = elderService.createElder(center_id, createReqDto);
+        return ApiResponse.onSuccess(ElderConverter.toCreateDto(createdElderEntity));
     }
 }
