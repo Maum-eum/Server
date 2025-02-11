@@ -1,9 +1,8 @@
 package com.example.springserver.repository.elder;
 
-import com.example.springserver.domain.entity.elder.ElderEntity;
+import com.example.springserver.domain.entity.elder.Elder;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-public interface ElderRepository extends JpaRepository<ElderEntity, Long> {
+public interface ElderRepository extends JpaRepository<Elder, Long> {
 
 }

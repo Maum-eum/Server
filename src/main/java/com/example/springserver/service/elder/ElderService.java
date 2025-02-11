@@ -1,10 +1,9 @@
 package com.example.springserver.service.elder;
 
-import ch.qos.logback.core.spi.ErrorCodes;
 import com.example.springserver.apiPayload.code.status.ErrorStatus;
 import com.example.springserver.apiPayload.exception.elder.ElderException;
 import com.example.springserver.converter.elder.ElderConverter;
-import com.example.springserver.domain.entity.elder.ElderEntity;
+import com.example.springserver.domain.entity.elder.Elder;
 import com.example.springserver.dto.elder.ElderRequestDto.CreateReqDto;
 import com.example.springserver.repository.elder.ElderRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class ElderService {
     private final ElderRepository elderRepository;
 
     @Transactional
-    public ElderEntity createElder(Long centerId, CreateReqDto createDto) {
+    public Elder createElder(Long centerId, CreateReqDto createDto) {
 
         isValidateCenter(centerId);
         return elderRepository.save(ElderConverter.toElder(createDto));

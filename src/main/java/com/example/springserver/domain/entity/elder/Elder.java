@@ -1,18 +1,23 @@
-package com.example.springserver.domain.entity;
+package com.example.springserver.domain.entity.elder;
 
+import com.example.springserver.domain.common.BaseEntity;
+import com.example.springserver.domain.entity.Center;
+import com.example.springserver.domain.entity.elder.enums.ElderRate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "elder")
-public class Elder {
+public class Elder extends BaseEntity {
     @Id
     @Column(name = "elder_id", nullable = false)
     private Long id;
@@ -37,7 +42,8 @@ public class Elder {
 
     @Lob
     @Column(name = "rate")
-    private String rate;
+    @Enumerated(EnumType.STRING)
+    private ElderRate rate; // 장기 요양 등급
 
     @Size(max = 255)
     @Column(name = "img")
