@@ -21,7 +21,7 @@ public class JobRequirementCondition {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
-    private ElderEntity elderEntity;
+    private Elder elder;
 
     @NotNull
     @ColumnDefault("방문요양")
