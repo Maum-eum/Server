@@ -1,6 +1,6 @@
 package com.example.springserver.converter.elder;
 
-import com.example.springserver.domain.entity.elder.Elder;
+import com.example.springserver.domain.entity.elder.ElderEntity;
 import com.example.springserver.dto.elder.ElderRequestDto.CreateReqDto;
 import com.example.springserver.dto.elder.ElderResponseDto.CreatDto;
 
@@ -13,9 +13,9 @@ public class ElderConverter {
         return dateTime.format(formatter);
     }
 
-    public static Elder toElder(CreateReqDto request) {
+    public static ElderEntity toElder(CreateReqDto request) {
 
-        return Elder.builder()
+        return ElderEntity.builder()
                 .name(request.getName())
                 .birth(request.getBirth())
                 .gender(request.getGender())
@@ -24,11 +24,11 @@ public class ElderConverter {
                 .build();
     }
 
-    public static CreatDto toCreateDto(Elder elder) {
+    public static CreatDto toCreateDto(ElderEntity elderEntity) {
         return CreatDto.builder()
-                .elderId(elder.getId())
-                .name(elder.getName())
-                .createAt(formatDateTime(elder.getCreatedAt()))
+                .elderId(elderEntity.getId())
+                .name(elderEntity.getName())
+                .createAt(formatDateTime(elderEntity.getCreatedAt()))
                 .build();
     }
 }

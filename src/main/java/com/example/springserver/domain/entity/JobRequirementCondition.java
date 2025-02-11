@@ -1,6 +1,6 @@
 package com.example.springserver.domain.entity;
 
-import com.example.springserver.domain.entity.elder.Elder;
+import com.example.springserver.domain.entity.elder.ElderEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class JobRequirementCondition {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
-    private Elder elder;
+    private ElderEntity elderEntity;
 
     @NotNull
     @ColumnDefault("방문요양")

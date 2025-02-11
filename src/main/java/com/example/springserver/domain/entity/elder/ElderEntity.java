@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "elder")
-public class Elder extends BaseEntity {
+public class ElderEntity extends BaseEntity {
     @Id
     @Column(name = "elder_id", nullable = false)
     private Long id;
