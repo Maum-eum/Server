@@ -17,11 +17,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "elder")
-public class ElderEntity extends BaseEntity {
+public class Elder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "elder_id", nullable = false)
-    private Long id;
+    @Column(nullable = false)
+    private Long elderId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,26 +30,26 @@ public class ElderEntity extends BaseEntity {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @NotNull
-    @Column(name = "gender", nullable = false)
+    @Column(nullable = false)
     private Integer gender;
 
     @NotNull
-    @Column(name = "birth", nullable = false)
+    @Column(nullable = false)
     private LocalDate birth;
 
     @Lob
-    @Column(name = "rate")
+    @Column
     @Enumerated(EnumType.STRING)
     private ElderRate rate; // 장기 요양 등급
 
     @Size(max = 255)
-    @Column(name = "img")
-    private String img;
+    @Column
+    private String imgUrl;
 
-    @Column(name = "weight")
+    @Column
     private Integer weight;
 }
