@@ -29,7 +29,6 @@ public class Certificate {
     private String certType;
 
     @Size(max = 255)
-    @ColumnDefault("1-123456")
     @Column(name = "cert_num")
     private String certNum;
 

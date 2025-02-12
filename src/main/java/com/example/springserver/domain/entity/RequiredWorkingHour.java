@@ -23,7 +23,6 @@ public class RequiredWorkingHour {
     private JobRequirementCondition requirementCondition;
 
     @NotNull
-    @ColumnDefault("MON")
     @Lob
     @Column(name = "day_of_week", nullable = false)
     private String dayOfWeek;

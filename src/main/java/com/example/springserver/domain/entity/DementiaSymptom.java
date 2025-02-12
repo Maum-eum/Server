@@ -22,7 +22,6 @@ public class DementiaSymptom {
     private Elder elder;
 
     @NotNull
-    @ColumnDefault("1")
     @Column(name = "nomal", nullable = false)
     private Boolean nomal = false;
 

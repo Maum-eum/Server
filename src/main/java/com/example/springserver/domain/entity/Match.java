@@ -15,12 +15,9 @@ public class Match {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ColumnDefault("1")
     @Column(name = "worker_yes")
     private Boolean workerYes;
 
-    @ColumnDefault("응답 대기")
-    @Lob
     @Column(name = "status")
     private String status;
 
