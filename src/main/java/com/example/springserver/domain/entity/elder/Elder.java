@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class Elder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name = "elder_id", nullable = false)
     private Long elderId;
 
     @NotNull
@@ -30,7 +30,7 @@ public class Elder extends BaseEntity {
 
     @Size(max = 255)
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @NotNull
