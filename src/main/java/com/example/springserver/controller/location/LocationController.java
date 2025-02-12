@@ -45,5 +45,10 @@ public class LocationController {
         return ApiResponse.onSuccess(LocationConverter.toLocationListDto(locationList));
     }
 
+    @GetMapping("/address")
+    public ApiResponse<ResponseAddress> getAddress(@RequestParam Long locationId) {
+        return ApiResponse.onSuccess(LocationConverter.toResponseAddress(locationService.getLocation(locationId)));
+    }
+
 
 }

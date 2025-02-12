@@ -68,6 +68,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/auth/login", "/", "/auth/join", "/reissue").permitAll()
+                        .requestMatchers( "/sidoList").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                         .anyRequest().authenticated());
