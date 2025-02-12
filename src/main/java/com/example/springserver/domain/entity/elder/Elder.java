@@ -34,22 +34,22 @@ public class Elder extends BaseEntity {
     private String name;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "gender", nullable = false)
     private Integer gender;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "birth", nullable = false)
     private LocalDate birth;
 
     @Lob
-    @Column
+    @Column(name = "rate")
     @Enumerated(EnumType.STRING)
     private ElderRate rate; // 장기 요양 등급
 
     @Size(max = 255)
-    @Column
+    @Column(name = "img")
     private String imgUrl;
 
-    @Column
+    @Column(name = "weight")
     private Integer weight;
 }
