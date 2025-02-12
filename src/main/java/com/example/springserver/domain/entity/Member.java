@@ -29,12 +29,10 @@ public class Member {
     private String connect;
 
     @NotNull
-    @ColumnDefault("0")
     @Column(name = "car", nullable = false)
     private Boolean car = false;
 
     @NotNull
-    @ColumnDefault("0")
     @Column(name = "education", nullable = false)
     private Boolean education = false;
 
@@ -58,7 +56,6 @@ public class Member {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    @ColumnDefault("1")
     @Column(name = "employment_status")
     private Boolean employmentStatus;
 

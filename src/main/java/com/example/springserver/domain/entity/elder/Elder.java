@@ -17,11 +17,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "elder")
-public class ElderEntity extends BaseEntity {
+public class Elder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "elder_id", nullable = false)
-    private Long id;
+    private Long elder_id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
