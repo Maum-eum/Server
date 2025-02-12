@@ -1,9 +1,6 @@
-package com.example.springserver.domain.entity;
+package com.example.springserver.domain.entity.location;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -14,7 +11,9 @@ import org.hibernate.annotations.ColumnDefault;
 @Setter
 @Entity
 public class Location {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long location_id;
 
