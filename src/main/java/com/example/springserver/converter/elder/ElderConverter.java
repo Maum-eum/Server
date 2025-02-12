@@ -29,7 +29,7 @@ public class ElderConverter {
 
     public static CreateDto toCreateDto(Elder elder) {
         return CreateDto.builder()
-                .elderId(elder.getId())
+                .elderId(elder.getElderId())
                 .name(elder.getName())
                 .createAt(formatDateTime(elder.getCreatedAt()))
                 .build();
@@ -38,12 +38,12 @@ public class ElderConverter {
     // ElderEntity를 ResponseDto로 변환
     public static ResponseDto toResponseDto(Elder elder) {
         return ResponseDto.builder()
-                .elderId(elder.getId())
+                .elderId(elder.getElderId())
                 .name(elder.getName())
                 .gender(elder.getGender())
                 .rate(elder.getRate())
                 .birth(elder.getBirth())
-                .img(elder.getImg())
+                .img(elder.getImgUrl())
                 .weight(elder.getWeight())
                 .build();
     }
