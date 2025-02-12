@@ -17,19 +17,19 @@ public class Sigungu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long sigungu_id;
+    @Column(name = "sigungu_id",nullable = false)
+    private Long sigunguId;
 
     @NotNull
-    @Column(nullable = false)
-    private Long sido_id;
+    @Column(name = "sido_id",nullable = false)
+    private Long sidoId;
 
     @Size(max = 20)
     @NotNull
-    @Column(nullable = false)
-    private String sigungu_name;
+    @Column(name = "sigungu_name",nullable = false)
+    private String sigunguName;
 
-    @OneToMany(mappedBy = "sido", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "locationId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Location> locationList = new ArrayList<>();
 
 }

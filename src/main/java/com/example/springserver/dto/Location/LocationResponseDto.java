@@ -27,10 +27,10 @@ public class LocationResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ResponseLocationDto{
-        private Long location_id;
-        private String dong_name;
-        private String sido_name;
-        private String sigungu_name;
+        private Long locationId;
+        private String dongName;
+        private String sidoName;
+        private String sigunguName;
         private String address;
     }
 
