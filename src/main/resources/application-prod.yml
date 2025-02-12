@@ -14,6 +14,8 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+    defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연
+
   data:
     redis:
       host: ${SPRING_REDIS_HOST}

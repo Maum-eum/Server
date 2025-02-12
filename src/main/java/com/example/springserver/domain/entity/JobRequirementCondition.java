@@ -24,8 +24,6 @@ public class JobRequirementCondition {
     private Elder elder;
 
     @NotNull
-    @ColumnDefault("방문요양")
-    @Lob
     @Column(name = "care_type", nullable = false)
     private String careType;
 

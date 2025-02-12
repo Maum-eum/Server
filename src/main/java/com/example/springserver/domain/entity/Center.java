@@ -29,7 +29,6 @@ public class Center {
     private Member leader;
 
     @NotNull
-    @ColumnDefault("1")
     @Column(name = "car", nullable = false)
     private Boolean car = false;
 
