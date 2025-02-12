@@ -68,4 +68,10 @@ public class LocationConverter {
     }
 
 
+    // String -> ResponseAddress
+    public static ResponseAddress toResponseAddress(String address) {
+        return ResponseAddress.builder()
+                .address(address)
+                .build();
+    }
 }
