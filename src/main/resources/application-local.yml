@@ -6,13 +6,19 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springdb
     username: root
-    password: 1234
+    password: 12
 
   jpa:
     hibernate:
       ddl-auto: create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연
+
+  sql:
+    init:
+      mode: always
 
   data:
     redis:
