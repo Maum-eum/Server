@@ -1,8 +1,7 @@
 package com.example.springserver.converter.elder;
 
-import com.example.springserver.domain.entity.elder.ElderEntity;
+import com.example.springserver.domain.entity.elder.Elder;
 import com.example.springserver.dto.elder.ElderRequestDto.CreateReqDto;
-import com.example.springserver.dto.elder.ElderResponseDto;
 import com.example.springserver.dto.elder.ElderResponseDto.CreateDto;
 import com.example.springserver.dto.elder.ElderResponseDto.ResponseDto;
 
@@ -17,9 +16,9 @@ public class ElderConverter {
         return dateTime.format(formatter);
     }
 
-    public static ElderEntity toElder(CreateReqDto request) {
+    public static Elder toElder(CreateReqDto request) {
 
-        return ElderEntity.builder()
+        return Elder.builder()
                 .name(request.getName())
                 .birth(request.getBirth())
                 .gender(request.getGender())
@@ -28,16 +27,16 @@ public class ElderConverter {
                 .build();
     }
 
-    public static CreateDto toCreateDto(ElderEntity elderEntity) {
+    public static CreateDto toCreateDto(Elder elder) {
         return CreateDto.builder()
-                .elderId(elderEntity.getId())
-                .name(elderEntity.getName())
-                .createAt(formatDateTime(elderEntity.getCreatedAt()))
+                .elderId(elder.getId())
+                .name(elder.getName())
+                .createAt(formatDateTime(elder.getCreatedAt()))
                 .build();
     }
 
     // ElderEntity를 ResponseDto로 변환
-    public static ResponseDto toResponseDto(ElderEntity elder) {
+    public static ResponseDto toResponseDto(Elder elder) {
         return ResponseDto.builder()
                 .elderId(elder.getId())
                 .name(elder.getName())
@@ -49,7 +48,7 @@ public class ElderConverter {
                 .build();
     }
 
-    public static List<ResponseDto> toListDto(List<ElderEntity> elderList) {
+    public static List<ResponseDto> toListDto(List<Elder> elderList) {
         return elderList.stream()
                 .map(ElderConverter::toResponseDto)  // ElderEntity를 ResponseDto로 변환
                 .collect(Collectors.toList());
