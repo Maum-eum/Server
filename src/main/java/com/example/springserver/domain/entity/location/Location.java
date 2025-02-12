@@ -35,4 +35,8 @@ public class Location {
     @NotNull
     @Column(nullable = false)
     private String sigungu_name;
+
+    public String getAddress(){
+        return sido_name+" "+sigungu_name+" "+dong_name;
+    }
 }
