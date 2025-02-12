@@ -1,4 +1,4 @@
-package com.example.springserver.domain.center.dto.request.recruit;
+package com.example.springserver.domain.center.dto.request;
 
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.enums.CareType;
