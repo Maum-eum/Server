@@ -14,6 +14,12 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+    defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연
+
+  sql:
+    init:
+      mode: always
+
   data:
     redis:
       host: localhost
@@ -21,6 +27,9 @@ spring:
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
+
+springdoc:
+  show-login-endpoint: true
 
 logging:
   level:

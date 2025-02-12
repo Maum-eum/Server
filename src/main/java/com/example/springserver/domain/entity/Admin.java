@@ -7,8 +7,9 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Entity
 @Getter
+@Setter
+@Entity
 @Builder
 @DynamicUpdate
 @DynamicInsert

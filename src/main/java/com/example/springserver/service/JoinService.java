@@ -11,7 +11,7 @@ import com.example.springserver.dto.AdminDTO.AdminRequestDTO;
 import com.example.springserver.dto.CaregiverDTO.CaregiverRequestDTO;
 import com.example.springserver.repository.AdminRepository;
 import com.example.springserver.repository.CaregiverRepository;
-import com.example.springserver.repository.CenterRepository;
+import com.example.springserver.repository.center.CenterRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
