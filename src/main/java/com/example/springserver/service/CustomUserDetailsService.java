@@ -1,10 +1,10 @@
 package com.example.springserver.service;
 
-import com.example.springserver.apiPayload.code.status.ErrorStatus;
-import com.example.springserver.apiPayload.exception.GeneralException;
-import com.example.springserver.domain.entity.UserEntity;
-import com.example.springserver.dto.CustomUserDetails;
-import com.example.springserver.repository.UserRepository;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
+import com.example.springserver.global.common.entity.UserEntity;
+import com.example.springserver.global.security.util.CustomUserDetails;
+import com.example.springserver.global.common.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         UserEntity userData = userRepository.findByUsername(username)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
         if(userData != null){
             //UserDetails에 담아서 return하면 AutneticationManager가 검증 함

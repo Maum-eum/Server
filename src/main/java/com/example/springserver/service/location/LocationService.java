@@ -1,8 +1,8 @@
 package com.example.springserver.service.location;
 
-import com.example.springserver.apiPayload.code.status.ErrorStatus;
-import com.example.springserver.apiPayload.exception.GeneralException;
-import com.example.springserver.domain.entity.location.Location;
+import com.example.springserver.domain.location.entity.Location;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.repository.location.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,16 +20,16 @@ public class LocationService {
 
     public List<Location> getLocationList(Long sigunguId) {
         if(sigunguId == 0)
-            throw new GeneralException(ErrorStatus.BAD_REQUEST);
+            throw new GlobalException(ErrorCode.BAD_REQUEST);
         return locationRepository.findAllBySigunguId(sigunguId);
     }
 
     public String getLocation(Long locationId){
         if(locationId == 0)
-            throw new GeneralException(ErrorStatus.BAD_REQUEST);
+            throw new GlobalException(ErrorCode.BAD_REQUEST);
         Optional<Location> byId = locationRepository.findById(locationId);
         if(byId.isEmpty())
-            throw new GeneralException(ErrorStatus.LOCATION_NOT_FOUND);
+            throw new GlobalException(ErrorCode.LOCATION_NOT_FOUND);
         return byId.get().getAddress();
     }
 }

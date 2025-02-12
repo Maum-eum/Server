@@ -1,16 +1,15 @@
 package com.example.springserver.service;
-
-import com.example.springserver.apiPayload.code.status.ErrorStatus;
-import com.example.springserver.apiPayload.exception.GeneralException;
-import com.example.springserver.converter.AdminConverter;
-import com.example.springserver.converter.CaregiverConverter;
-import com.example.springserver.domain.entity.Admin;
-import com.example.springserver.domain.entity.Caregiver;
-import com.example.springserver.domain.entity.Center;
-import com.example.springserver.dto.AdminDTO.AdminRequestDTO;
-import com.example.springserver.dto.CaregiverDTO.CaregiverRequestDTO;
-import com.example.springserver.repository.AdminRepository;
-import com.example.springserver.repository.CaregiverRepository;
+import com.example.springserver.domain.center.converter.AdminConverter;
+import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
+import com.example.springserver.domain.center.entity.Admin;
+import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.center.entity.Center;
+import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
+import com.example.springserver.domain.center.repository.AdminRepository;
+import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.repository.center.CenterRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class JoinService {
         Boolean isExist = caregiverRepository.existsByUsername(request.getUsername());
 
         if(isExist){
-            throw new GeneralException(ErrorStatus.MEMBER_IS_EXIST);
+            throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
         }
 
         // Caregiver 객체 converter를 통해 생성
@@ -49,11 +48,11 @@ public class JoinService {
         Boolean isExist = adminRepository.existsByUsername(request.getUsername());
 
         if(isExist){
-            throw new GeneralException(ErrorStatus.MEMBER_IS_EXIST);
+            throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
         }
 
         Center centerData = centerRepository.findByCenterName(request.getCenterName())
-                .orElseThrow(() -> new GeneralException(ErrorStatus.CENTER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.CENTER_NOT_FOUND));
 
         // Admin 객체 converter를 통해 생성
         Admin newAdmin = AdminConverter.toAdmin(request, bCryptPasswordEncoder, centerData);
