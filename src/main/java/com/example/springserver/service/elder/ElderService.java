@@ -3,7 +3,7 @@ package com.example.springserver.service.elder;
 import com.example.springserver.apiPayload.code.status.ErrorStatus;
 import com.example.springserver.apiPayload.exception.elder.ElderException;
 import com.example.springserver.converter.elder.ElderConverter;
-import com.example.springserver.domain.entity.elder.ElderEntity;
+import com.example.springserver.domain.entity.elder.Elder;
 import com.example.springserver.dto.elder.ElderRequestDto.CreateReqDto;
 import com.example.springserver.repository.center.CenterRepository;
 import com.example.springserver.repository.elder.ElderRepository;
@@ -22,17 +22,17 @@ public class ElderService {
     private final CenterRepository centerRepository;
 
     @Transactional
-    public ElderEntity createElder(Long centerId, CreateReqDto createDto) {
+    public Elder createElder(Long centerId, CreateReqDto createDto) {
         isValidCenter(centerId);
         return elderRepository.save(ElderConverter.toElder(createDto));
     }
 
-    public List<ElderEntity> getElderList(Long centerId) {
+    public List<Elder> getElderList(Long centerId) {
         isValidCenter(centerId);
         return elderRepository.findByCenterId(centerId);
     }
 
-    public ElderEntity getElderDetail(Long centerId, Long elderId) {
+    public Elder getElderDetail(Long centerId, Long elderId) {
         isValidCenter(centerId);
         isValidElder(centerId);
         return elderRepository.findByCenterIdAndElderId(centerId, elderId);
@@ -40,7 +40,7 @@ public class ElderService {
 
     @Transactional
     public void deleteElder(Long centerId, Long elderId) {
-        ElderEntity elder = isValidElder(elderId);
+        Elder elder = isValidElder(elderId);
 
         // 센터에 속하지 않는 어르신 삭제 방지
         if (!elder.getCenter().getId().equals(centerId))
@@ -54,7 +54,7 @@ public class ElderService {
                 .orElseThrow(() -> new ElderException(ErrorStatus.CENTER_NOT_FOUND));
     }
 
-    public ElderEntity isValidElder(Long elderId) { // 어르신 유효성 체크
+    public Elder isValidElder(Long elderId) { // 어르신 유효성 체크
         return elderRepository.findById(elderId)
                 .orElseThrow(() -> new ElderException(ErrorStatus.ELDER_NOT_FOUND));
     }
