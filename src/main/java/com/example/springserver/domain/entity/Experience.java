@@ -29,7 +29,6 @@ public class Experience {
     private String title;
 
     @NotNull
-    @Lob
     @Column(name = "description", nullable = false)
     private String description;
 

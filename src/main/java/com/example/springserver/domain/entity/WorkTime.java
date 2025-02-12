@@ -16,13 +16,10 @@ public class WorkTime {
     private Long id;
 
     @NotNull
-    @ColumnDefault("MON")
-    @Lob
     @Column(name = "day_of_week", nullable = false)
     private String dayOfWeek;
 
-    @NotNull
-    @ColumnDefault("MORN")
+
     @Lob
     @Column(name = "time_slot", nullable = false)
     private String timeSlot;
