@@ -19,6 +19,7 @@ import java.time.LocalDate;
 @Table(name = "elder")
 public class ElderEntity extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "elder_id", nullable = false)
     private Long id;
 
@@ -51,9 +52,4 @@ public class ElderEntity extends BaseEntity {
 
     @Column(name = "weight")
     private Integer weight;
-
-    @Size(max = 255)
-    @Column(name = "Field")
-    private String field;
-
 }
