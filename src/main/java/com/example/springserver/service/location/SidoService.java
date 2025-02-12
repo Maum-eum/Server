@@ -1,6 +1,6 @@
 package com.example.springserver.service.location;
 
-import com.example.springserver.domain.entity.location.Sido;
+import com.example.springserver.domain.location.entity.Sido;
 import com.example.springserver.repository.location.SidoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
