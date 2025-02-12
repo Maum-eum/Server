@@ -33,6 +33,10 @@ public enum ErrorStatus implements BaseCode {
     // 센터 관련 에러
     CENTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CENTER4001", "센터가 존재하지 않습니다."),
 
+    // 어르신 관련 에러
+    ELDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ELDER4001", "어르신 정보가 존재하지 않습니다."),
+    ELDER_NOT_BELONG_TO_CENTER(HttpStatus.BAD_REQUEST, "ELDER4001", "센터에 어르신이 존재하지 않습니다."),
+
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다."),
 
