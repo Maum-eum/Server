@@ -22,7 +22,6 @@ public class ElderController {
     // 센터 내 어르신 등록
     @PostMapping("/enroll")
     public ApiResponse<CreateDto> createElder(@PathVariable Long center_id, @RequestBody CreateReqDto createReqDto) {
-
         Elder createdElder = elderService.createElder(center_id, createReqDto);
         return ApiResponse.onSuccess(ElderConverter.toCreateDto(createdElder));
     }
