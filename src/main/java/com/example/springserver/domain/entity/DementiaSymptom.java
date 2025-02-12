@@ -1,5 +1,6 @@
 package com.example.springserver.domain.entity;
 
+import com.example.springserver.domain.entity.elder.Elder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -21,7 +22,6 @@ public class DementiaSymptom {
     private Elder elder;
 
     @NotNull
-    @ColumnDefault("1")
     @Column(name = "nomal", nullable = false)
     private Boolean nomal = false;
 

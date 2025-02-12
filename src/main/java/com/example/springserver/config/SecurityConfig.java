@@ -67,7 +67,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/admin/signup", "/", "/caregiver/signup", "/reissue").permitAll()
+                        .requestMatchers("/auth/login", "/admin/signup", "/", "/caregiver/signup", "/reissue").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());

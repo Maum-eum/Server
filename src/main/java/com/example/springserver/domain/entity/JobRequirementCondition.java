@@ -1,5 +1,6 @@
 package com.example.springserver.domain.entity;
 
+import com.example.springserver.domain.entity.elder.Elder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -23,8 +24,6 @@ public class JobRequirementCondition {
     private Elder elder;
 
     @NotNull
-    @ColumnDefault("방문요양")
-    @Lob
     @Column(name = "care_type", nullable = false)
     private String careType;
 

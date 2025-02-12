@@ -30,6 +30,16 @@ public enum ErrorStatus implements BaseCode {
     REFRESH_TOKEN_NOT_EXIST(HttpStatus.BAD_REQUEST, "TOKEN4005", "리프레시 토큰이 존재하지 않습니다."),
     REFRESH_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, "TOKEN4006", "리프레시 토큰이 null입니다."),
 
+    // 센터 관련 에러
+    CENTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CENTER4001", "센터가 존재하지 않습니다."),
+
+    // 어르신 관련 에러
+    ELDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ELDER4001", "어르신 정보가 존재하지 않습니다."),
+    ELDER_NOT_BELONG_TO_CENTER(HttpStatus.BAD_REQUEST, "ELDER4001", "센터에 어르신이 존재하지 않습니다."),
+
+    // 지역 관련 에러
+    BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),
+    LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"LOCATION4001","지역이 존재하지 않습니다."),
 
     // 예시,,,
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "ARTICLE4001", "게시글이 없습니다."),
@@ -38,10 +48,7 @@ public enum ErrorStatus implements BaseCode {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "이거는 테스트"),
 
     // 페이징 에러
-    PAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PAGE001", "페이지가 0 이하입니다."),
-
-    // 센터 관련 에러
-    CENTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CENTER001", "해당하는 센터가 없습니다.");
+    PAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PAGE001", "페이지가 0 이하입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

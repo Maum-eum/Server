@@ -1,20 +1,17 @@
 package com.example.springserver.domain.entity;
 
 import com.example.springserver.domain.common.BaseEntity;
+import com.example.springserver.domain.entity.elder.Elder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
 @Getter
+@Entity
 @Setter
 @DynamicUpdate
 @DynamicInsert
