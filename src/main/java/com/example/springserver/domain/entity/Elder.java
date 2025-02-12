@@ -49,5 +49,4 @@ public class Elder {
     @Size(max = 255)
     @Column(name = "Field")
     private String field;
-
 }

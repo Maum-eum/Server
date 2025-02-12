@@ -38,7 +38,10 @@ public enum ErrorStatus implements BaseCode {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "이거는 테스트"),
 
     // 페이징 에러
-    PAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PAGE001", "페이지가 0 이하입니다.");
+    PAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PAGE001", "페이지가 0 이하입니다."),
+
+    // 센터 관련 에러
+    CENTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CENTER001", "해당하는 센터가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
