@@ -34,5 +34,11 @@ public class LocationResponseDto {
         private String address;
     }
 
-
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ResponseAddress{
+        private String address;
+    }
 }
