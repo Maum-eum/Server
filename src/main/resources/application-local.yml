@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springdb
     username: root
-    password: 12
+    password: 1234
 
   jpa:
     hibernate:
@@ -27,6 +27,9 @@ spring:
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
+
+springdoc:
+  show-login-endpoint: true
 
 logging:
   level:

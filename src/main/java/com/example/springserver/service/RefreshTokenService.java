@@ -1,9 +1,10 @@
 package com.example.springserver.service;
 
-import com.example.springserver.apiPayload.code.status.ErrorStatus;
-import com.example.springserver.apiPayload.exception.GeneralException;
-import com.example.springserver.util.RefreshUtil;
-import com.example.springserver.jwt.JWTUtil;
+
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
+import com.example.springserver.global.security.util.RefreshUtil;
+import com.example.springserver.global.security.jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class RefreshTokenService {
                 }
             }
         }else{
-            throw new GeneralException(ErrorStatus.REFRESH_TOKEN_IS_NULL); // Refresh 토큰이 없으면 예외 처리
+            throw new GlobalException(ErrorCode.REFRESH_TOKEN_IS_NULL); // Refresh 토큰이 없으면 예외 처리
         }
         return refresh;
     }
@@ -42,7 +43,7 @@ public class RefreshTokenService {
             jwtUtil.isExpired(refresh); // Expired check
             String category = jwtUtil.getCategory(refresh);
             if (!category.equals("refresh")) {
-                throw new GeneralException(ErrorStatus.INVALID_REFRESH_TOKEN); // Refresh 토큰이 아닌 경우
+                throw new GlobalException(ErrorCode.INVALID_REFRESH_TOKEN); // Refresh 토큰이 아닌 경우
             }
 
             String username = jwtUtil.getUsername(refresh);
@@ -50,10 +51,10 @@ public class RefreshTokenService {
             // Redis에서 존재 여부 확인
             String storedRefreshToken = refreshUtil.getRefreshToken(username);
             if (storedRefreshToken == null || !storedRefreshToken.equals(refresh)) {
-                throw new GeneralException(ErrorStatus.REFRESH_TOKEN_NOT_EXIST); // Redis에서 없거나 일치하지 않으면
+                throw new GlobalException(ErrorCode.REFRESH_TOKEN_NOT_EXIST); // Redis에서 없거나 일치하지 않으면
             }
         } catch (ExpiredJwtException e) {
-            throw new GeneralException(ErrorStatus.REFRESH_TOKEN_EXPIRED); // Expired Token 예외 처리
+            throw new GlobalException(ErrorCode.REFRESH_TOKEN_EXPIRED); // Expired Token 예외 처리
         }
     }
 
