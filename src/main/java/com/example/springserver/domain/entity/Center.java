@@ -1,53 +1,52 @@
 package com.example.springserver.domain.entity;
 
-import com.example.springserver.domain.entity.Member;
+import com.example.springserver.domain.common.BaseEntity;
+import com.example.springserver.domain.entity.elder.Elder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.time.Instant;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import java.util.List;
 
 @Getter
-@Setter
 @Entity
-@Table(name = "center_")
-public class Center {
+@Setter
+@DynamicUpdate
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class Center extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "center_id", nullable = false)
     private Long id;
 
-    @Size(max = 255)
-    @Column(name = "li")
-    private String li;
+    @Column(name = "leader_id")
+    private Long leaderId;
+
+    @OneToMany(mappedBy = "center")
+    private List<Admin> admins;
+
+    @OneToMany(mappedBy = "center")
+    private List<Elder> elders;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "leader_id", nullable = false)
-    private Member leader;
+    private String centerName;
 
     @NotNull
-    @Column(name = "car", nullable = false)
-    private Boolean car = false;
+    @ColumnDefault("1")
+    private Boolean car;
 
-    @Size(max = 255)
-    @Column(name = "rate")
     private String rate;
 
-    @Lob
-    @Column(name = "intro")
     private String intro;
 
-    @Column(name = "start_time")
-    private Instant startTime;
+    private String startTime;
 
-    @Column(name = "end_time")
-    private Instant endTime;
+    private String endTime;
 
-    @Size(max = 255)
-    @Column(name = "Field")
-    private String field;
+    private String address;
 
 }

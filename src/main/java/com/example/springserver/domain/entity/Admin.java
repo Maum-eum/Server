@@ -1,37 +1,39 @@
 package com.example.springserver.domain.entity;
 
-import com.example.springserver.domain.entity.Center;
+import com.example.springserver.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "admin")
-public class Admin {
+@Builder
+@DynamicUpdate
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class Admin extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_id", nullable = false)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false, length = 40)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, length = 40)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "center_id", nullable = false)
     private Center center;
 
-    @Size(max = 255)
     @NotNull
-    @Column(name = "connect", nullable = false)
     private String connect;
-
-    @Size(max = 255)
-    @Column(name = "Field")
-    private String field;
-
-    @Size(max = 255)
-    @Column(name = "Field2")
-    private String field2;
-
 }
