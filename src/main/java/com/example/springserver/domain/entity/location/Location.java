@@ -14,29 +14,29 @@ public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long location_id;
+    @Column(name = "location_id",nullable = false)
+    private Long locationId;
 
     @NotNull
-    @Column(nullable = false)
-    private Long sigungu_id;
-
-    @Size(max = 20)
-    @NotNull
-    @Column(nullable = false)
-    private String dong_name;
+    @Column(name = "sigungu_id", nullable = false)
+    private Long sigunguId;
 
     @Size(max = 20)
     @NotNull
-    @Column(nullable = false)
-    private String sido_name;
+    @Column(name = "dong_name",nullable = false)
+    private String dongName;
 
     @Size(max = 20)
     @NotNull
-    @Column(nullable = false)
-    private String sigungu_name;
+    @Column(name = "sido_name",nullable = false)
+    private String sidoName;
+
+    @Size(max = 20)
+    @NotNull
+    @Column(name = "sigungu_name",nullable = false)
+    private String sigunguName;
 
     public String getAddress(){
-        return sido_name+" "+sigungu_name+" "+dong_name;
+        return sidoName+" "+sigunguName+" "+dongName;
     }
 }

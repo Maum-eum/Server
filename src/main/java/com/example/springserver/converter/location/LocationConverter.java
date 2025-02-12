@@ -30,19 +30,19 @@ public class LocationConverter {
     // Sigungu -> SigunguDto
     public static ResponseSigunguDto toResponseSigunguDto(Sigungu sigungu){
         return ResponseSigunguDto.builder()
-                .sigunguId(sigungu.getSigungu_id())
-                .sigunguName(sigungu.getSigungu_name())
+                .sigunguId(sigungu.getSigunguId())
+                .sigunguName(sigungu.getSigunguName())
                 .build();
     }
 
     // Location -> LocationDto
     private static ResponseLocationDto toResponseLocationDto(Location location) {
         return ResponseLocationDto.builder()
-                .location_id(location.getLocation_id())
-                .sido_name(location.getSido_name())
-                .sigungu_name(location.getSigungu_name())
-                .dong_name(location.getDong_name())
-                .address(location.getSido_name()+" "+location.getSigungu_name()+" "+location.getDong_name())
+                .locationId(location.getLocationId())
+                .sidoName(location.getSidoName())
+                .sigunguName(location.getSigunguName())
+                .dongName(location.getDongName())
+                .address(location.getSidoName()+" "+location.getSigunguName()+" "+location.getDongName())
                 .build();
     }
 

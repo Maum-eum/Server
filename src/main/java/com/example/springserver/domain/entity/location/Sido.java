@@ -21,9 +21,9 @@ public class Sido {
 
     @Size(max = 20)
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "sido_name", nullable = false)
     private String sidoName;
 
-    @OneToMany(mappedBy = "sido", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sigunguId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sigungu> sigunguList = new ArrayList<>();
 }
