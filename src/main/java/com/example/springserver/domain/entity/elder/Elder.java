@@ -21,7 +21,7 @@ public class Elder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "elder_id", nullable = false)
-    private Long elder_id;
+    private Long elderId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -48,7 +48,7 @@ public class Elder extends BaseEntity {
 
     @Size(max = 255)
     @Column(name = "img")
-    private String img;
+    private String imgUrl;
 
     @Column(name = "weight")
     private Integer weight;
