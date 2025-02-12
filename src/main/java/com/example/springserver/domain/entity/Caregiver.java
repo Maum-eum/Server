@@ -3,19 +3,21 @@ package com.example.springserver.domain.entity;
 import com.example.springserver.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.Instant;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@Builder
+@DynamicUpdate
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Caregiver extends BaseEntity {
 
     @Id
@@ -36,11 +38,11 @@ public class Caregiver extends BaseEntity {
     private String connect;
 
     @NotNull
-    @ColumnDefault("0")
-    private Boolean hasCar;
+    @ColumnDefault("1")
+    private Boolean car;
 
     @NotNull
-    @ColumnDefault("0")
+    @ColumnDefault("1")
     private Boolean education;
 
     private String img;

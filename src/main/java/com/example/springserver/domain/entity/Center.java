@@ -4,10 +4,10 @@ import com.example.springserver.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -16,7 +16,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@DynamicUpdate
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Center extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +32,23 @@ public class Center extends BaseEntity {
     @OneToMany(mappedBy = "center")
     private List<Admin> admins;
 
+    @OneToMany(mappedBy = "center")
+    private List<Elder> elders;
+
     @NotNull
-    @ColumnDefault("0")
-    private Boolean hasCar;
+    private String centerName;
+
+    @NotNull
+    @ColumnDefault("1")
+    private Boolean car;
 
     private String rate;
 
     private String intro;
 
-    private LocalDateTime startTime;
+    private String startTime;
 
-    private LocalDateTime endTime;
+    private String endTime;
 
     private String address;
 
