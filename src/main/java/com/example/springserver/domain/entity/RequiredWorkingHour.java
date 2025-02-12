@@ -1,10 +1,10 @@
 package com.example.springserver.domain.entity;
 
+import com.example.springserver.domain.entity.recruit.RecruitCondition;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
@@ -20,7 +20,7 @@ public class RequiredWorkingHour {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "requirement_condition_id", nullable = false)
-    private JobRequirementCondition requirementCondition;
+    private RecruitCondition requirementCondition;
 
     @NotNull
     @Lob
