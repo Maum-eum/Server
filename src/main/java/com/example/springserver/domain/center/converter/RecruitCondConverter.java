@@ -1,10 +1,10 @@
 package com.example.springserver.domain.center.converter;
 
 import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.dto.request.recruit.RecruitCondRequestDto.CreateReqDto;
-import com.example.springserver.domain.center.dto.request.recruit.RecruitCondResponseDto;
-import com.example.springserver.domain.center.dto.request.recruit.RecruitCondResponseDto.CreateDto;
-import com.example.springserver.domain.center.dto.request.recruit.RecruitCondResponseDto.ResponseDto;
+import com.example.springserver.domain.center.dto.request.RecruitCondRequestDto.CreateReqDto;
+import com.example.springserver.domain.center.dto.response.RecruitCondResponseDto;
+import com.example.springserver.domain.center.dto.response.RecruitCondResponseDto.CreateDto;
+import com.example.springserver.domain.center.dto.response.RecruitCondResponseDto.ResponseDto;
 
 public class RecruitCondConverter {
 

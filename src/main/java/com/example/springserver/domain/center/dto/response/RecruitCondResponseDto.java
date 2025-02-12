@@ -1,4 +1,4 @@
-package com.example.springserver.domain.center.dto.request.recruit;
+package com.example.springserver.domain.center.dto.response;
 
 import com.example.springserver.domain.center.entity.enums.CareType;
 import lombok.AllArgsConstructor;
