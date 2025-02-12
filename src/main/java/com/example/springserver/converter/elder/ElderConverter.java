@@ -2,6 +2,7 @@ package com.example.springserver.converter.elder;
 
 import com.example.springserver.domain.entity.elder.Elder;
 import com.example.springserver.dto.elder.ElderRequestDto.CreateReqDto;
+import com.example.springserver.dto.elder.ElderResponseDto;
 import com.example.springserver.dto.elder.ElderResponseDto.CreateDto;
 import com.example.springserver.dto.elder.ElderResponseDto.ResponseDto;
 
