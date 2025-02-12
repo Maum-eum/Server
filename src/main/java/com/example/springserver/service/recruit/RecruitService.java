@@ -1,16 +1,16 @@
 package com.example.springserver.service.recruit;
 
-import com.example.springserver.apiPayload.code.status.ErrorStatus;
-import com.example.springserver.apiPayload.exception.elder.ElderException;
-import com.example.springserver.apiPayload.exception.recruit.RecruitException;
-import com.example.springserver.converter.recruit.RecruitCondConverter;
-import com.example.springserver.domain.entity.recruit.RecruitCondition;
-import com.example.springserver.dto.recruitCond.RecruitCondRequestDto.CreateReqDto;
-import com.example.springserver.dto.recruitCond.RecruitCondRequestDto.CreateReqTimeDto;
-import com.example.springserver.dto.recruitCond.RecruitCondRequestDto.UpdateRequestDto;
+import com.example.springserver.global.apiPayload.format.ElderException;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.RecruitException;
+import com.example.springserver.domain.center.converter.RecruitCondConverter;
+import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.center.dto.request.recruit.RecruitCondRequestDto.CreateReqDto;
+import com.example.springserver.domain.center.dto.request.recruit.RecruitCondRequestDto.CreateReqTimeDto;
+import com.example.springserver.domain.center.dto.request.recruit.RecruitCondRequestDto.UpdateRequestDto;
+import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
 import com.example.springserver.repository.center.CenterRepository;
 import com.example.springserver.repository.recruitCond.RecruitCondRepository;
-import com.example.springserver.validation.validator.RecruitLaborLawValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +38,7 @@ public class RecruitService {
         isValidCenter(centerId);
 
         RecruitCondition recruitCond = recruitCondRepository.findById(recruitConditionId)
-                .orElseThrow(() -> new RecruitException(ErrorStatus.RECRUIT_NOT_FOUND));
+                .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
 
         return updateRecruitConditionEntity(recruitCond, requestDto); // 상태 변경
     }
@@ -47,7 +47,7 @@ public class RecruitService {
         isValidCenter(centerId);
 
         RecruitCondition recruitCondition = recruitCondRepository.findById(recruitConditionId)
-                        .orElseThrow(() -> new RecruitException(ErrorStatus.RECRUIT_NOT_FOUND));
+                        .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
         recruitCondRepository.delete(recruitCondition);
 
         return "삭제 완료";
@@ -55,7 +55,7 @@ public class RecruitService {
 
     public void isValidCenter(Long centerId) { // 센터 유효성 체크
         centerRepository.findById(centerId)
-                .orElseThrow(() -> new ElderException(ErrorStatus.CENTER_NOT_FOUND));
+                .orElseThrow(() -> new ElderException(ErrorCode.CENTER_NOT_FOUND));
     }
 
     public RecruitCondition updateRecruitConditionEntity(RecruitCondition recruitCondition, UpdateRequestDto requestDto) {

@@ -277,8 +277,8 @@ FROM (
 JOIN Sido s ON s.sido_name = v.sido_name;
 
 
-INSERT INTO Location (sigungu_id, dong, sido, sigungu)
-SELECT sg.sigungu_id, v.dong, v.sido_name, v.sigungu_name
+INSERT INTO Location (sigungu_id, dong_name, sido_name, sigungu_name)
+SELECT sg.sigungu_id, v.dong_name, v.sido_name, v.sigungu_name
 FROM (
     SELECT '강동면', '강원특별자치도', '강릉시' UNION ALL
     SELECT '강문동', '강원특별자치도', '강릉시' UNION ALL
@@ -5348,6 +5348,6 @@ FROM (
     SELECT '칠금동', '충청북도', '충주시' UNION ALL
     SELECT '풍동', '충청북도', '충주시' UNION ALL
     SELECT '호암동', '충청북도', '충주시'
-) AS v(dong, sido_name, sigungu_name)
+) AS v(dong_name, sido_name, sigungu_name)
 JOIN Sigungu sg ON sg.sigungu_name = v.sigungu_name
 JOIN Sido s ON s.sido_name = v.sido_name AND sg.sido_id = s.sido_id;

@@ -1,10 +1,10 @@
 package com.example.springserver.service;
 
-import com.example.springserver.apiPayload.code.status.ErrorStatus;
-import com.example.springserver.apiPayload.exception.GeneralException;
-import com.example.springserver.jwt.JWTUtil;
-import com.example.springserver.util.CookieUtil;
-import jakarta.servlet.http.Cookie;
+
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
+import com.example.springserver.global.security.jwt.JWTUtil;
+import com.example.springserver.global.security.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class ReissueService {
 
         String refresh = refreshTokenService.extractRefreshToken(request);
         if (refresh == null) {
-            throw new GeneralException(ErrorStatus.INVALID_REFRESH_TOKEN); // Refresh Token이 없는 경우 예외 처리
+            throw new GlobalException(ErrorCode.INVALID_REFRESH_TOKEN); // Refresh Token이 없는 경우 예외 처리
         }
 
         // 유효성 검사 및 예외 발생
