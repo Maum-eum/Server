@@ -19,11 +19,13 @@ public class LocationService {
     private final LocationRepository locationRepository;
 
     public List<Location> getLocationList(Long sigunguId) {
+        if(sigunguId == 0)
+            throw new GeneralException(ErrorStatus.BAD_REQUEST);
         return locationRepository.findAllBySigunguId(sigunguId);
     }
 
     public String getLocation(Long locationId){
-        if(locationId == null)
+        if(locationId == 0)
             throw new GeneralException(ErrorStatus.BAD_REQUEST);
         Optional<Location> byId = locationRepository.findById(locationId);
         if(byId.isEmpty())
