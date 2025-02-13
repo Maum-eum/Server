@@ -9,15 +9,15 @@ import java.time.LocalDate;
 public class ElderRequestDto {
 
     @Getter
-    public static class RequestDto {
+    public static class RequestDto { // 공통 필드
 
         private String name;
-        private Center cetnter;
+        private String centerName;
         private Integer gender;
         private LocalDate birth;
         private ElderRate rate; // 장기 요양 등급
         private String imgUrl;
-        private int weight;
+        private Integer weight;
     }
 
     @Getter
@@ -28,7 +28,17 @@ public class ElderRequestDto {
         private LocalDate birth;
         private ElderRate rate; // 장기 요양 등급
         private String imgUrl;
-        private int weight;
+        private Integer weight;
+    }
+
+    @Getter
+    public static class UpdateRequestDto {
+
+        private String name;
+        private String centerName;
+        private ElderRate rate; // 장기 요양 등급
+        private String imgUrl;
+        private Integer weight;
     }
 
 }
