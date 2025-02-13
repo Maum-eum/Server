@@ -17,28 +17,18 @@ public class CareGiverService {
 
     private final CaregiverRepository caregiverRepository;
 
-
     public Caregiver getUserInfo(CustomUserDetails request) {
         String username = request.getUsername();
-        try{
-            return caregiverRepository.findByUsername(username);
-        }catch (GlobalException e) {
-            throw new GlobalException(ErrorCode.USER_NOT_FOUND);
-        }
+        return caregiverRepository.findByUsername(username)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
     public Caregiver updateUserInfo(CaregiverRequestDTO.UpdateCaregiverReq request) {
-        Caregiver caregiver = caregiverRepository.findByUsername(request.getUsername());
-        if(caregiver==null)
-            throw new GlobalException(ErrorCode.USER_NOT_FOUND);
+        Caregiver caregiver = caregiverRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         caregiver.setUpdate(request);
-
-        try{
-            return caregiverRepository.save(caregiver);
-        }catch (GlobalException e) {
-            throw new GlobalException(ErrorCode.USER_NOT_FOUND);
-        }
+        return caregiverRepository.save(caregiver);
     }
 }

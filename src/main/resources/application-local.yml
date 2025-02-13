@@ -20,17 +20,8 @@ spring:
     init:
       mode: always
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
 
 springdoc:
   show-login-endpoint: true
-
-logging:
-  level:
-    org.springframework.data.redis: DEBUG

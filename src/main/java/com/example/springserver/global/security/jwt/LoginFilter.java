@@ -1,8 +1,8 @@
 package com.example.springserver.global.security.jwt;
 
+import com.example.springserver.global.apiPayload.format.ResultResponse;
 import com.example.springserver.global.common.dto.request.UserRequestDTO;
-import com.example.springserver.global.security.util.CookieUtil;
-import com.example.springserver.global.security.util.RefreshUtil;
+import com.example.springserver.global.security.util.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,19 +18,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final RefreshUtil refreshUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshUtil refreshUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.refreshUtil = refreshUtil;
-        setFilterProcessesUrl("/auth/login"); // 원하는 엔드포인트로 변경
+        setFilterProcessesUrl("/login"); // 원하는 엔드포인트로 변경
     }
 
     @Override
@@ -61,10 +61,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // 로그인 성공시 실행하는 메소드 (여기서 JWT를 발급하면 됨)
     // Authentication(getPrincipal(), getCredentials(), getAuthorities(), isAuthenticated(), getDetails(), getName())
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         // 유저 정보
-        String username = authentication.getName();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getId(); // 사용자 ID 가져오기
+        String username = userDetails.getUsername();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -73,21 +74,33 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         // 토큰 생성
-        String access = jwtUtil.createJwt("access", username, role, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String access = jwtUtil.createJwt("access", role, username, userId, 86400000L);
 
-        // Refresh 토큰을 Redis에 저장
-        refreshUtil.addRefreshToken(username, refresh, 86400000L);
+        // 응답 데이터 구성
+        Map<String, Object> responseData = Map.of(
+                "userId", userId,
+                "role", role
+        );
+        ResultResponse<Map<String, Object>> responseBody = ResultResponse.success(responseData);
 
-        //응답 설정
-        response.setHeader("access", access);
-        response.addCookie(CookieUtil.createCookie("refresh", refresh));
+        // 응답 설정
+        response.setHeader("Authorization", "Bearer " + access);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.OK.value());
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+
+        ResultResponse<String> responseBody = ResultResponse.fail("아이디 또는 비밀번호가 올바르지 않습니다.");
+
+        // 응답 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }
