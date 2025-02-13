@@ -4,8 +4,6 @@ import com.example.springserver.global.security.jwt.CustomLogoutFilter;
 import com.example.springserver.global.security.jwt.JWTFilter;
 import com.example.springserver.global.security.jwt.JWTUtil;
 import com.example.springserver.global.security.jwt.LoginFilter;
-import com.example.springserver.service.RefreshTokenService;
-import com.example.springserver.global.security.util.RefreshUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,15 +23,11 @@ public class SecurityConfig {
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final RefreshUtil refreshUtil;
-    private final RefreshTokenService refreshTokenService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshUtil refreshUtil, RefreshTokenService refreshTokenService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
-        this.refreshUtil = refreshUtil;
-        this.refreshTokenService = refreshTokenService;
     }
 
     //AuthenticationManager Bean 등록
@@ -67,9 +61,10 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/auth/login", "/admin/signup", "/", "/caregiver/signup", "/reissue").permitAll()
+                        .requestMatchers("/login", "/admin/signup", "/", "/caregiver/signup", "/reissue").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/caregiver").hasRole("CAREGIVER")
                         .anyRequest().authenticated());
 
         //JWT 검증 Filter 추가
@@ -78,10 +73,10 @@ public class SecurityConfig {
 
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(new CustomLogoutFilter(refreshTokenService, jwtUtil), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil), LogoutFilter.class);
         //세션 설정
         http
                 .sessionManagement((session) -> session
