@@ -1,5 +1,7 @@
 package com.example.springserver.domain.center.dto.response;
 
+import com.example.springserver.domain.center.dto.response.AdminResponseDTO.AdminResponseDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.domain.center.entity.Elder;
 import jakarta.persistence.Column;
@@ -19,9 +21,9 @@ public class CenterResponseDto {
     public static class CenterSearchDto {
         private Long centerId;
 
-        private List<Admin> admins;
+        private List<AdminResponseDto> admins;
 
-        private List<Elder> elders;
+        private List<ResponseDto> elders;
 
         private String centerName;
 

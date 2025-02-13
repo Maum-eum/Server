@@ -80,6 +80,9 @@ public class JoinService {
         // Admin 객체 converter를 통해 생성
         Admin newAdmin = AdminConverter.toAdmin(request, bCryptPasswordEncoder, centerData);
 
+        // 양방향 연관관계 매핑
+        newAdmin.changeCenter(centerData);
+
         return adminRepository.save(newAdmin);
     }
 

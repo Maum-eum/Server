@@ -1,5 +1,6 @@
 package com.example.springserver.domain.center.converter;
 
+import com.example.springserver.domain.center.dto.response.AdminResponseDTO.AdminResponseDto;
 import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
@@ -33,6 +34,13 @@ public class AdminConverter {
                 .name(request.getName())
                 .connect(request.getConnect())
                 .center(center)
+                .build();
+    }
+
+    public static AdminResponseDto toResponseDto(Admin admin){
+        return AdminResponseDTO.AdminResponseDto.builder()
+                .adminId(admin.getId())
+                .createAt(formatDateTime(admin.getCreatedAt()))
                 .build();
     }
 }
