@@ -94,20 +94,39 @@ public class Caregiver extends BaseEntity {
 
 
 
-    public void setUpdate(UpdateCaregiverReq request){
+    public void setUpdate(Caregiver user, UpdateCaregiverReq request) {
         this.car = request.getCar();
         this.img = request.getImg();
         this.education = request.getEducation();
         this.address = request.getAddress();
         this.contact = request.getContact();
         this.intro = request.getIntro();
-        this.certificates = request.getCertificateRequestDTOList().stream()
-                .map(CaregiverConverter::toCertificate)
+
+        List<Certificate> newCertificates = request.getCertificateRequestDTOList().stream()
+                .map(dto -> CaregiverConverter.toCertificate(user, dto))
                 .collect(Collectors.toList());
-        this.experiences = request.getExperienceRequestDTOList().stream()
-                .map(CaregiverConverter::toExperience)
+
+        newCertificates.forEach(cert -> {
+            if (!this.certificates.contains(cert)) {
+                this.certificates.add(cert);
+            }
+        });
+
+        this.certificates.removeIf(cert -> !newCertificates.contains(cert));
+
+        List<Experience> newExperiences = request.getExperienceRequestDTOList().stream()
+                .map(dto -> CaregiverConverter.toExperience(user, dto))
                 .collect(Collectors.toList());
+
+        newExperiences.forEach(exp -> {
+            if (!this.experiences.contains(exp)) {
+                this.experiences.add(exp);
+            }
+        });
+
+        this.experiences.removeIf(exp -> !newExperiences.contains(exp));
     }
+
 
     public String getRole() {
         return "ROLE_CAREGIVER";
