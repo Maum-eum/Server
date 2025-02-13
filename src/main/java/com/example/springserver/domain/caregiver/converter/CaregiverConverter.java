@@ -2,9 +2,10 @@ package com.example.springserver.domain.caregiver.converter;
 
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.CertificateRequestDTO;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.ExperienceRequestDTO;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.*;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO;
+
 import com.example.springserver.domain.caregiver.entity.Certificate;
 import com.example.springserver.domain.caregiver.entity.Experience;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,12 +21,47 @@ public class CaregiverConverter {
         return dateTime.format(formatter);
     }
 
-    public static CaregiverResponseDTO.SignUpCaregiverResult toSignUpCaregiverResult(Caregiver caregiver){
-        return CaregiverResponseDTO.SignUpCaregiverResult.builder()
+    public static SignUpCaregiverResult toSignUpCaregiverResult(Caregiver caregiver){
+        return SignUpCaregiverResult.builder()
                 .caregiverId(caregiver.getId())
                 .createAt(formatDateTime(caregiver.getCreatedAt()))
                 .build();
     }
+
+    public static CareGiverInfoResponseDTO infoResponseDto(Caregiver caregiver){
+        return CareGiverInfoResponseDTO.builder()
+                .name(caregiver.getName())
+                .contact(caregiver.getContact())
+                .car(caregiver.getCar())
+                .education(caregiver.getEducation())
+                .intro(caregiver.getIntro())
+                .address(caregiver.getAddress())
+                .certificateResponseDTOList(caregiver.getCertificates().stream()
+                        .map(CaregiverConverter::toResponseCertificate)
+                        .toList())
+                .experienceResponseDTOList(caregiver.getExperiences().stream()
+                        .map(CaregiverConverter::toResponseExperience)
+                        .toList())
+                .img(caregiver.getImg())
+                .build();
+    }
+
+    private static ExperienceResponseDTO toResponseExperience(Experience experience) {
+        return ExperienceResponseDTO.builder()
+                .duration(experience.getDuration())
+                .title(experience.getTitle())
+                .description(experience.getDescription())
+                .build();
+    }
+
+    private static CertificateResponseDTO toResponseCertificate(Certificate certificate) {
+        return CertificateResponseDTO.builder()
+                .certNum(certificate.getCertNum())
+                .certRate(certificate.getCertRate())
+                .certType(certificate.getCertType())
+                .build();
+    }
+
 
     //    Caregiver 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
     public static Caregiver toCaregiver(CaregiverRequestDTO.SignUpCaregiverReq request, BCryptPasswordEncoder bCryptPasswordEncoder){
@@ -34,7 +70,7 @@ public class CaregiverConverter {
                 .username(request.getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
-                .connect(request.getContact())
+                .contact(request.getContact())
                 .car(request.getCar())
                 .education(request.getEducation())
                 .img(request.getImg())
@@ -44,6 +80,14 @@ public class CaregiverConverter {
                 .build();
     }
 
+
+    public static Experience toExperience( ExperienceRequestDTO request){
+        return Experience.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .duration(request.getDuration())
+                .build();
+    }
     public static Experience toExperience(Caregiver caregiver, ExperienceRequestDTO request){
         return Experience.builder()
                 .title(request.getTitle())
@@ -53,8 +97,17 @@ public class CaregiverConverter {
                 .build();
     }
 
+    public static Certificate toCertificate(CertificateRequestDTO request){
+        return Certificate.builder()
+                .certNum(request.getCertNum())
+                .certRate(request.getCertRate())
+                .certType(request.getCertType())
+                .build();
+    }
+
     public static Certificate toCertificate(Caregiver caregiver, CertificateRequestDTO request){
         return Certificate.builder()
+                .certNum(request.getCertNum())
                 .certRate(request.getCertRate())
                 .certType(request.getCertType())
                 .caregiver(caregiver)
