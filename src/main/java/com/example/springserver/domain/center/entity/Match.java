@@ -23,11 +23,11 @@ public class Match {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "requirement_condition_id", nullable = false)
-    private JobRequirementCondition requirementCondition;
+    private RecruitCondition requirementCondition;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "requirement_condition_id2", nullable = false)
-    private JobRequirementCondition requirementConditionId2;
+    private RecruitCondition requirementConditionId2;
 
 }

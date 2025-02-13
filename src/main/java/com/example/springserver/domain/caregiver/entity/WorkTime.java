@@ -1,6 +1,6 @@
 package com.example.springserver.domain.caregiver.entity;
 
-import com.example.springserver.domain.center.entity.JobRequirementCondition;
+import com.example.springserver.domain.center.entity.RecruitCondition;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -27,6 +27,6 @@ public class WorkTime {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "requirement_condition_id", nullable = false)
-    private JobRequirementCondition requirementCondition;
+    private RecruitCondition requirementCondition;
 
 }
