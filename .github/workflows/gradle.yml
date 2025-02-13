@@ -46,7 +46,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             echo "Deleting old application files..."
-            rm -f /home/ubuntu/app.jar /home/ubuntu/app.tar.gz
+            rm -rf /home/ubuntu/app.jar /home/ubuntu/app.tar.gz
           EOF
 
       # 🚀 압축 후 업로드 (JAR을 tar.gz으로 압축)
