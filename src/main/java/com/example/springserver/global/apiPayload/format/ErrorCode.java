@@ -49,7 +49,8 @@ public enum ErrorCode {
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),
 
-
+    // 시간 관련 에러
+    TIME_LIMIT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "TIME_LIMIT_OUT4001","시간 범위 초과 입력입니다."),
 
     // 지역 관련 에러
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),
