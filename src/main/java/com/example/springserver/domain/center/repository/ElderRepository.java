@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ElderRepository extends JpaRepository<Elder, Long> {
 
-    List<Elder> findByCenterId(Long centerId);
+    List<Elder> findByCenterIdAndIsTemporary(Long centerId, boolean isTemporary);
 
-    Elder findByCenterIdAndElderId(Long centerId, Long elderId);
+    Elder findByCenterIdAndElderIdAndIsTemporary(Long centerId, Long elderId, boolean isTemporary);
 }
