@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Java CI/CD with Gradle
 
 on:
   push:
@@ -36,6 +36,24 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: ./gradlew build -x test
+
+      - name: Upload JAR to EC2
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          scp -o StrictHostKeyChecking=no -i private_key.pem build/libs/*.jar ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/app.jar
+
+      - name: Deploy to EC2
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            echo "Stopping old application..."
+            pkill -f 'java -jar' || true
+
+            echo "Starting new application..."
+            nohup java -jar /home/ubuntu/app.jar --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
+          EOF
 
   dependency-submission:
     runs-on: ubuntu-latest
