@@ -2,11 +2,12 @@ package com.example.springserver.domain.caregiver.dto.request;
 
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.Week;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 
+import java.time.Instant;
 import java.util.List;
 
 public class CaregiverRequestDTO {
@@ -82,7 +83,75 @@ public class CaregiverRequestDTO {
 
     }
 
+    @Getter
+    public static class JobConditionRequestDTO {
 
+        private Boolean flexibleSchedule = false;
+
+        private Boolean desiredHourlyWage = false;
+
+        private Boolean selfFeeding = false;
+
+        private Boolean mealPreparation = false;
+
+        private Boolean cookingAssistance = false;
+
+        private Boolean enteralNutritionSupport = false;
+
+        private Boolean selfToileting = false;
+
+        private Boolean occasionalToiletingAssist = false;
+
+        private Boolean diaperCare = false;
+
+        private Boolean catheterOrStomaCare = false;
+
+        private Boolean independentMobility = false;
+
+        private Boolean mobilityAssist = false;
+
+        private Boolean wheelchairAssist = false;
+
+        private Boolean immobile = false;
+
+        private Boolean cleaningLaundryAssist = false;
+
+        private Boolean bathingAssist = false;
+
+        private Boolean hospitalAccompaniment = false;
+
+        private Boolean exerciseSupport = false;
+
+        private Boolean emotionalSupport = false;
+
+        private Boolean cognitiveStimulation = false;
+
+        private List<LocationRequestDTO> locationRequestDTOList;
+
+        private List<WorkTimeRequestDTO> workTimeRequestDTOList;
+    }
+
+    @Getter
+    public static class LocationRequestDTO{
+
+        @NotNull
+        private Long locationId;
+
+    }
+
+    @Getter
+    public static class WorkTimeRequestDTO{
+
+        @NotNull
+        private Week dayOfWeek;
+
+        @NotNull
+        private int startTime;
+
+        @NotNull
+        private int endTime;
+
+    }
 
     @Getter
     public static class CertificateRequestDTO{
