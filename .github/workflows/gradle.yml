@@ -15,10 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 🔥 SSH 키 디코딩을 가장 먼저 수행
+      - name: Decode SSH Key
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" | base64 --decode > private_key.pem
+          chmod 600 private_key.pem
+
       - name: Set up SSH tunnel to EC2
         run: |
-          echo "${{ secrets.AWS_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -N -L 13306:${{ secrets.RDS_HOST }}:3306 ubuntu@${{ secrets.EC2_PUBLIC_IP }} -i private_key.pem &
 
       - name: Set up JDK 17
@@ -28,7 +32,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build and Test
         env:
@@ -39,14 +43,10 @@ jobs:
 
       - name: Upload JAR to EC2
         run: |
-          echo "${{ secrets.AWS_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
           scp -o StrictHostKeyChecking=no -i private_key.pem build/libs/*.jar ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/app.jar
 
       - name: Deploy to EC2
         run: |
-          echo "${{ secrets.AWS_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             echo "Stopping old application..."
             pkill -f 'java -jar' || true
@@ -70,4 +70,4 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/dependency-submission@v4.0.0
