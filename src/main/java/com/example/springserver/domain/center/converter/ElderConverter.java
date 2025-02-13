@@ -1,5 +1,9 @@
 package com.example.springserver.domain.center.converter;
 
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResultDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.UpdateResultDto;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
@@ -17,8 +21,7 @@ public class ElderConverter {
         return dateTime.format(formatter);
     }
 
-    public static Elder toElder(ResponseDto request) {
-
+    public static Elder toElder(RequestDto request) {
         return Elder.builder()
                 .name(request.getName())
                 .birth(request.getBirth())
@@ -41,6 +44,17 @@ public class ElderConverter {
                 .build();
     }
 
+    public static Elder toUpdateElder(UpdateRequestDto dto, Center center) {
+        return Elder.builder()
+                .center(center)
+                .name(dto.getName())
+                .rate(dto.getRate())
+                .imgUrl(dto.getImgUrl())
+                .weight(dto.getWeight())
+                .isTemporary(false) // 업데이트가 완료되면 임시 저장 상태 변경
+                .build();
+    }
+
     public static CreateDto toCreateDto(Elder elder) {
         return CreateDto.builder()
                 .elderId(elder.getElderId())
@@ -58,6 +72,23 @@ public class ElderConverter {
                 .birth(elder.getBirth())
                 .img(elder.getImgUrl())
                 .weight(elder.getWeight())
+                .build();
+    }
+
+    public static UpdateResultDto toUpdateResponseDto(Elder elder) {
+        return UpdateResultDto.builder()
+                .elderId(elder.getElderId())
+                .name(elder.getName())
+                .rate(elder.getRate())
+                .img(elder.getImgUrl())
+                .weight(elder.getWeight())
+                .build();
+    }
+
+    public static DeleteResultDto toDeleteResponseDto(Elder elder) {
+        return DeleteResultDto.builder()
+                .elderId(elder.getElderId())
+                .name(elder.getName())
                 .build();
     }
 
