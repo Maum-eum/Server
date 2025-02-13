@@ -60,14 +60,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 역할에 맞는 객체 생성
         CustomUserDetails customUserDetails;
-        if ("ADMIN".equalsIgnoreCase(role)) {
+        if ("ROLE_ADMIN".equalsIgnoreCase(role)) {
             Admin admin = Admin.builder()
                     .id(userId)
                     .username(username)
                     .password("")
                     .build();
             customUserDetails = new CustomUserDetails(admin);
-        } else if ("CAREGIVER".equalsIgnoreCase(role)) {
+        } else if ("ROLE_CAREGIVER".equalsIgnoreCase(role)) {
             Caregiver caregiver = Caregiver.builder()
                     .id(userId)
                     .username(username)
