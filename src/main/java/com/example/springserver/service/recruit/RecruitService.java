@@ -9,7 +9,7 @@ import com.example.springserver.domain.center.dto.request.RecruitCondRequestDto.
 import com.example.springserver.domain.center.dto.request.RecruitCondRequestDto.CreateReqTimeDto;
 import com.example.springserver.domain.center.dto.request.RecruitCondRequestDto.UpdateRequestDto;
 import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
-import com.example.springserver.repository.center.CenterRepository;
+import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.repository.recruit.RecruitCondRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

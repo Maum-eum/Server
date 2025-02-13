@@ -46,4 +46,12 @@ public class Elder extends BaseEntity {
     private Integer weight;
 
     private boolean isTemporary;
+
+    /* 양방향 연관관계 편의 메서드 */
+    public void changeCenter(Center center) {
+        this.center = center;
+        if (!center.getElders().contains(this)) {
+            center.getElders().add(this);
+        }
+    }
 }

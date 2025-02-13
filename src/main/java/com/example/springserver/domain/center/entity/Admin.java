@@ -36,4 +36,12 @@ public class Admin extends BaseEntity {
 
     @NotNull
     private String connect;
+
+    /* 양방향 연관관계 편의 메서드 */
+    public void changeCenter(Center center) {
+        this.center = center;
+        if (!center.getAdmins().contains(this)) {
+            center.getAdmins().add(this);
+        }
+    }
 }

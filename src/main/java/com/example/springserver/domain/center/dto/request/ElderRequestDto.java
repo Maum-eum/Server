@@ -24,7 +24,6 @@ public class ElderRequestDto {
     public static class CreateRequestDto {
 
         private String name;
-        private Center cetnter;
         private Integer gender;
         private LocalDate birth;
         private ElderRate rate; // 장기 요양 등급
