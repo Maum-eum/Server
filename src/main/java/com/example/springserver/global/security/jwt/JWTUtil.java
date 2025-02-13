@@ -46,12 +46,12 @@ public class JWTUtil {
     }
 
     // jwt 생성 함수
-    public String createJwt(String category, String username, String role, Long expiredMs, Long userId) {
+    public String createJwt(String category, String role, String username, Long userId, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("category", category)
-                .claim("username", username)
                 .claim("role", role)
+                .claim("username", username)
                 .claim("userId", userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
