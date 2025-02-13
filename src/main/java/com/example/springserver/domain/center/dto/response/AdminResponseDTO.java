@@ -15,4 +15,13 @@ public class AdminResponseDTO {
         private Long adminId;
         private String createAt;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AdminResponseDto {
+        private Long adminId;
+        private String createAt;
+    }
 }

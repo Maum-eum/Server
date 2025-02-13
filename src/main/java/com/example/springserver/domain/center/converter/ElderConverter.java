@@ -1,5 +1,6 @@
 package com.example.springserver.domain.center.converter;
 
+import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.CreateDto;
@@ -27,9 +28,9 @@ public class ElderConverter {
                 .build();
     }
 
-    public static Elder toSaveElder(CreateRequestDto dto, boolean isTemporary) {
+    public static Elder toSaveElder(CreateRequestDto dto, boolean isTemporary, Center center) {
         return Elder.builder()
-                .center(dto.getCetnter())
+                .center(center)
                 .name(dto.getName())
                 .gender(dto.getGender())
                 .birth(dto.getBirth())
@@ -44,7 +45,6 @@ public class ElderConverter {
         return CreateDto.builder()
                 .elderId(elder.getElderId())
                 .name(elder.getName())
-                .createAt(formatDateTime(elder.getCreatedAt()))
                 .build();
     }
 

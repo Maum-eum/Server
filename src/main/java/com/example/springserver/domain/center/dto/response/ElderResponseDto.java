@@ -16,7 +16,7 @@ public class ElderResponseDto {
     public static class CreateDto {
         private Long elderId;
         private String name;
-        private String createAt;
+        private int gender;
     }
 
     @Builder

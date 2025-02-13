@@ -1,11 +1,13 @@
 package com.example.springserver.domain.center.service;
 
+import com.example.springserver.domain.center.entity.Center;
+import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ElderException;
 import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
-import com.example.springserver.repository.center.CenterRepository;
+import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,30 +28,46 @@ public class ElderService {
 
     @Transactional
     public Elder createElder(Long centerId, CreateRequestDto createDto, boolean isTemporary) {
-        isValidCenter(centerId);
-        return elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary));
+
+        Center center = centerRepository.findById(centerId)
+                .orElseThrow(() -> new CenterException(ErrorCode.CENTER_NOT_FOUND));
+
+        Elder createdElder = elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary, center));
+        createdElder.changeCenter(center);
+
+        return createdElder;
     }
 
     @Transactional
     public List<Elder> getElderList(Long centerId, boolean isTemporary) {
         isValidCenter(centerId);
-        return elderRepository.findByCenterIdAndIsTemporary(centerId, isTemporary);
+        return elderRepository.findByIsTemporary(isTemporary);
     }
 
     public Elder getElderDetail(Long centerId, Long elderId, boolean isTemporary) {
         isValidCenter(centerId);
         isValidElder(centerId);
-        return elderRepository.findByCenterIdAndElderIdAndIsTemporary(centerId, elderId, isTemporary);
+        return elderRepository.findByElderIdAndIsTemporary(elderId, isTemporary);
     }
 
     @Transactional
     public void deleteElder(Long centerId, Long elderId) {
+
         Elder elder = isValidElder(elderId);
 
-        // 센터에 속하지 않는 어르신 삭제 방지
-        if (!elder.getCenter().getId().equals(centerId))
-            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+        Center center = centerRepository.findById(centerId)
+                .orElseThrow(() -> new CenterException(ErrorCode.CENTER_NOT_FOUND));
 
+        // 센터에 속하지 않는 어르신 삭제 방지
+        if (!elder.getCenter().getCenterId().equals(centerId)) {
+            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+        }
+
+        // 양방향 연관관계 해제
+        center.getElders().remove(elder);
+        elder.setCenter(null);
+
+        // DB에서 어르신 삭제
         elderRepository.delete(elder);
     }
 
