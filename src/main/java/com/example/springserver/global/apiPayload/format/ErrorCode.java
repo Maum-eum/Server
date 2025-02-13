@@ -34,6 +34,22 @@ public enum ErrorCode {
     // 어르신 관련 에러
     ELDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ELDER4001", "어르신 정보가 존재하지 않습니다."),
     ELDER_NOT_BELONG_TO_CENTER(HttpStatus.BAD_REQUEST, "ELDER4001", "센터에 어르신이 존재하지 않습니다."),
+    INVALID_ELDER_DATA(HttpStatus.BAD_REQUEST, "ELDER4003", "어르신 필수 정보값이 누락되었습니다."),
+
+    // 구인 관련 에러
+
+    RECRUIT_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECRUIT-COND4001", "구인 정보가 존재하지 않습니다."),
+    RECRUIT_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-TIME4002", "구인 시간이 올바르지 않습니다."),
+    RECRUIT_DAILY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-DAILY-LABOR-TIME4002", "근로법 위반: 하루 최대 근무 시간(8시간)을 초과할 수 없습니다."),
+    RECRUIT_MONTHLY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-MONTHLY-LABOR-TIME4002", "근로법 위반: 한달 최대 근무 시간(40시간)을 초과할 수 없습니다."),
+    RECRUIT_LABOR_WAGE_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-LABOR-WAGE4002", "근로법 위반: 최저임금(10,030원) 미만의 급여입니다."),
+
+
+    // 요양보호사 관련 에러
+
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),
+
+
 
     // 지역 관련 에러
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),

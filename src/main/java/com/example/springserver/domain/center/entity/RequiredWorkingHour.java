@@ -19,7 +19,7 @@ public class RequiredWorkingHour {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "requirement_condition_id", nullable = false)
-    private JobRequirementCondition requirementCondition;
+    private RecruitCondition requirementCondition;
 
     @NotNull
     @Lob

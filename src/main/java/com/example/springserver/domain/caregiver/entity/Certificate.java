@@ -1,17 +1,22 @@
 package com.example.springserver.domain.caregiver.entity;
 
 
+import com.example.springserver.domain.caregiver.entity.enums.CertType;
+import com.example.springserver.domain.caregiver.entity.enums.Level;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "certificate")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Certificate {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "certificate_id", nullable = false)
     private Long id;
 
@@ -20,13 +25,17 @@ public class Certificate {
     @JoinColumn(name = "caregiver_id", nullable = false)
     private Caregiver caregiver;
 
+
     @NotNull
-    @Column(name = "cert_type", nullable = false)
-    private String certType;
-
-    @Column(name = "cert_rate", nullable = false)
-    private String certRate;
-
-    // todo: 간단한 자격증 번호 Valid 필요
+    @Column(name = "cert_num")
     private String certNum;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cert_type", nullable = false)
+    private CertType certType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cert_rate")
+    private Level certRate;
 }

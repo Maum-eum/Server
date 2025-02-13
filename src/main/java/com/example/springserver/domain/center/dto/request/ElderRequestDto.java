@@ -1,8 +1,7 @@
 package com.example.springserver.domain.center.dto.request;
 
+import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,19 +9,27 @@ import java.time.LocalDate;
 public class ElderRequestDto {
 
     @Getter
-    public static class CreateReqDto {
+    public static class RequestDto {
 
         private String name;
-        private int gender;
+        private Center cetnter;
+        private Integer gender;
         private LocalDate birth;
-        @Enumerated(EnumType.STRING)
         private ElderRate rate; // 장기 요양 등급
-        private String img;
+        private String imgUrl;
         private int weight;
     }
 
-    public static class JoinDto {
+    @Getter
+    public static class CreateRequestDto {
 
+        private String name;
+        private Center cetnter;
+        private Integer gender;
+        private LocalDate birth;
+        private ElderRate rate; // 장기 요양 등급
+        private String imgUrl;
+        private int weight;
     }
 
 }
