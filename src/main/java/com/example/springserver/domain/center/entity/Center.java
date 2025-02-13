@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,17 +21,17 @@ import java.util.List;
 public class Center extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
+    @Column(name="center_id", nullable = false)
     private Long centerId;
 
     @Column(nullable = false)
     private Long leaderId;
 
-    @OneToMany(mappedBy = "center")
+    @OneToMany(mappedBy = "center", cascade = CascadeType.ALL)
     private List<Admin> admins;
 
-    @OneToMany(mappedBy = "center")
-    private List<Elder> elders;
+    @OneToMany(mappedBy = "center", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Elder> elders = new ArrayList<>();
 
     @Column(nullable = false)
     private String centerName;
