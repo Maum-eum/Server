@@ -5,7 +5,7 @@ import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
-import com.example.springserver.repository.center.CenterRepository;
+import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,22 +32,22 @@ public class ElderService {
     @Transactional
     public List<Elder> getElderList(Long centerId, boolean isTemporary) {
         isValidCenter(centerId);
-        return elderRepository.findByCenterIdAndIsTemporary(centerId, isTemporary);
+        return elderRepository.findByIsTemporary(isTemporary);
     }
 
     public Elder getElderDetail(Long centerId, Long elderId, boolean isTemporary) {
         isValidCenter(centerId);
         isValidElder(centerId);
-        return elderRepository.findByCenterIdAndElderIdAndIsTemporary(centerId, elderId, isTemporary);
+        return elderRepository.findByElderIdAndIsTemporary(elderId, isTemporary);
     }
 
     @Transactional
     public void deleteElder(Long centerId, Long elderId) {
         Elder elder = isValidElder(elderId);
 
-        // 센터에 속하지 않는 어르신 삭제 방지
-        if (!elder.getCenter().getId().equals(centerId))
-            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+//        // 센터에 속하지 않는 어르신 삭제 방지
+//        if (!elder.getCenter().getElderId().equals(centerId))
+//            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
 
         elderRepository.delete(elder);
     }
