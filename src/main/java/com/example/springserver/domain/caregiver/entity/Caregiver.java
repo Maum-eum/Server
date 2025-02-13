@@ -37,11 +37,9 @@ public class Caregiver extends BaseEntity {
     private String connect;
 
     @NotNull
-    @ColumnDefault("1")
     private Boolean car;
 
     @NotNull
-    @ColumnDefault("1")
     private Boolean education;
 
     private String img;

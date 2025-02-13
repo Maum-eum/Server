@@ -1,8 +1,12 @@
 package com.example.springserver.domain.caregiver.converter;
 
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.CertificateRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.ExperienceRequestDTO;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO;
+import com.example.springserver.domain.caregiver.entity.Certificate;
+import com.example.springserver.domain.caregiver.entity.Experience;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -30,13 +34,30 @@ public class CaregiverConverter {
                 .username(request.getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
-                .connect(request.getConnect())
+                .connect(request.getContact())
                 .car(request.getCar())
                 .education(request.getEducation())
                 .img(request.getImg())
                 .intro(request.getIntro())
                 .address(request.getAddress())
                 .employmentStatus(request.getEmploymentStatus())
+                .build();
+    }
+
+    public static Experience toExperience(Caregiver caregiver, ExperienceRequestDTO request){
+        return Experience.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .duration(request.getDuration())
+                .caregiver(caregiver)
+                .build();
+    }
+
+    public static Certificate toCertificate(Caregiver caregiver, CertificateRequestDTO request){
+        return Certificate.builder()
+                .certRate(request.getCertRate())
+                .certType(request.getCertType())
+                .caregiver(caregiver)
                 .build();
     }
 }
