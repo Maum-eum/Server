@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -109,9 +110,9 @@ public class JobCondition extends BaseEntity {
 
     @NotNull
     @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<WorkTime> workTimes;
+    private List<WorkTime> workTimes = new ArrayList<>();
 
     @NotNull
     @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<WorkLocation> workLocations;
+    private List<WorkLocation> workLocations = new ArrayList<>();
 }
