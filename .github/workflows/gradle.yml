@@ -61,12 +61,17 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             echo "Stopping old application..."
             pkill -f 'java -jar' || true
-          
+      
             echo "Extracting new application..."
             tar xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/
           
-            echo "Finding JAR file..."
-            APP_JAR=$(ls /home/ubuntu/*.jar | head -n 1)
+            echo "Finding correct JAR file..."
+            APP_JAR=$(ls /home/ubuntu/*.jar | grep -v plain | head -n 1)
+      
+            if [ -z "$APP_JAR" ]; then
+              echo "ERROR: No valid JAR file found!"
+              exit 1
+            fi
           
             echo "Starting new application with $APP_JAR"
             nohup java -jar $APP_JAR --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
