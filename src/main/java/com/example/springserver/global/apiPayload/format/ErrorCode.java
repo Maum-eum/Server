@@ -33,10 +33,10 @@ public enum ErrorCode {
     // 어르신 관련 에러
     ELDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ELDER4001", "어르신 정보가 존재하지 않습니다."),
     ELDER_NOT_BELONG_TO_CENTER(HttpStatus.BAD_REQUEST, "ELDER4001", "센터에 어르신이 존재하지 않습니다."),
-    INVALID_ELDER_DATA(HttpStatus.BAD_REQUEST, "ELDER4003", "어르신 필수 정보값이 누락되었습니다."),
+    INVALID_TEMP_ELDER_DATA(HttpStatus.BAD_REQUEST, "ELDER4003", "임시 저장시 어르신 이름, 성별, 생일은 필수 입력 항목입니다."),
+    INVALID_ELDER_DATA(HttpStatus.BAD_REQUEST, "ELDER4003", "저장시 어르신 전체 정보는 필수 입력 항목입니다."),
 
     // 구인 관련 에러
-
     RECRUIT_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECRUIT-COND4001", "구인 정보가 존재하지 않습니다."),
     RECRUIT_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-TIME4002", "구인 시간이 올바르지 않습니다."),
     RECRUIT_DAILY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-DAILY-LABOR-TIME4002", "근로법 위반: 하루 최대 근무 시간(8시간)을 초과할 수 없습니다."),
