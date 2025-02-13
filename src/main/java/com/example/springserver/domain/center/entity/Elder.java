@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -22,33 +23,27 @@ public class Elder extends BaseEntity {
     @Column(name = "elder_id", nullable = false)
     private Long elderId;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "center_id", nullable = false)
     private Center center;
 
     @Size(max = 255)
-    @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "gender", nullable = false)
+    @Column(nullable = false)
     private Integer gender;
 
-    @NotNull
-    @Column(name = "birth", nullable = false)
+    @Column(nullable = false)
     private LocalDate birth;
 
-    @Lob
-    @Column(name = "rate")
     @Enumerated(EnumType.STRING)
     private ElderRate rate; // 장기 요양 등급
 
     @Size(max = 255)
-    @Column(name = "img")
     private String imgUrl;
 
-    @Column(name = "weight")
     private Integer weight;
+
+    private boolean isTemporary;
 }
