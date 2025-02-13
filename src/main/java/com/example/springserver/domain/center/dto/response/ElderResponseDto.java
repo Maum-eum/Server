@@ -33,4 +33,25 @@ public class ElderResponseDto {
         private Integer weight;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateResultDto {
+        private Long elderId;
+        private String name;
+        private ElderRate rate;
+        private String img;
+        private Integer weight;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteResultDto {
+        private Long elderId;
+        private String name;
+    }
+
 }
