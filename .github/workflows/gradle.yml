@@ -65,8 +65,11 @@ jobs:
             echo "Extracting new application..."
             tar xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/
           
-            echo "Starting new application..."
-            nohup java -jar /home/ubuntu/*.jar --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
+            echo "Finding JAR file..."
+            APP_JAR=$(ls /home/ubuntu/*.jar | head -n 1)
+          
+            echo "Starting new application with $APP_JAR"
+            nohup java -jar $APP_JAR --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
             echo "Application started successfully!"
           EOF
 
