@@ -3,16 +3,18 @@ package com.example.springserver.domain.caregiver.entity;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
 @Entity
+@Builder
 @Table(name = "experience")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Experience extends BaseEntity {
     @Id
     @Column(name = "experience_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
