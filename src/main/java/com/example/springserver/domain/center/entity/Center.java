@@ -19,10 +19,10 @@ import java.util.List;
 public class Center extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "center_id", nullable = false)
-    private Long id;
+    @Column(nullable = false)
+    private Long centerId;
 
-    @Column(name = "leader_id")
+    @Column(nullable = false)
     private Long leaderId;
 
     @OneToMany(mappedBy = "center")
@@ -31,12 +31,11 @@ public class Center extends BaseEntity {
     @OneToMany(mappedBy = "center")
     private List<Elder> elders;
 
-    @NotNull
+    @Column(nullable = false)
     private String centerName;
 
-    @NotNull
-    @ColumnDefault("1")
-    private Boolean car;
+    @Column(nullable = false)
+    private Boolean hasBathCar; // 목욕차량 보유 여부
 
     private String rate;
 
@@ -47,5 +46,4 @@ public class Center extends BaseEntity {
     private String endTime;
 
     private String address;
-
 }
