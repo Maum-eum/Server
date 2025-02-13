@@ -1,7 +1,8 @@
 package com.example.springserver.global.security.util;
 
-import com.example.springserver.global.common.entity.UserEntity;
-import com.example.springserver.global.common.entity.enums.AccountStatus;
+import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.center.entity.Admin;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,39 +11,47 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final UserEntity userEntity;
+    @Getter
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final String role;
+//    private final boolean isAccountNonLocked;
+//    private final boolean isEnabled;
 
-    public CustomUserDetails(UserEntity userEntity){
-        this.userEntity = userEntity;
+    public CustomUserDetails(Admin admin) {
+        this.id = admin.getId();
+        this.username = admin.getUsername();
+        this.password = admin.getPassword();
+        this.role = "ROLE_ADMIN";
+//        this.isAccountNonLocked = admin.getAccountStatus() != AccountStatus.LOCKED;
+//        this.isEnabled = admin.getAccountStatus() == AccountStatus.ACTIVE;
     }
 
-    // 여러 권한을 가질 수 있으므로 Collection 사용
-    // 스프링 시큐리티는 GrantedAuthority를 기반으로 권한을 처리하기 때문에 GrantedAuthority 인터페이스를 사용하여 권한 설정
-    // -> 그냥 String으로 사용할 경우 시큐리티의 여러 보안 기능을 사용하지 못할 수 있음 (예: hasRole(), hasAuthority())
+    public CustomUserDetails(Caregiver caregiver) {
+        this.id = caregiver.getId();
+        this.username = caregiver.getUsername();
+        this.password = caregiver.getPassword();
+        this.role = "ROLE_CAREGIVER";
+//        this.isAccountNonLocked = caregiver.getAccountStatus() != AccountStatus.LOCKED;
+//        this.isEnabled = caregiver.getAccountStatus() == AccountStatus.ACTIVE;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         Collection<GrantedAuthority> collection = new ArrayList<>();
-
-        collection.add(new GrantedAuthority() {
-
-            @Override
-            public String getAuthority() {
-                return userEntity.getRole();
-            }
-        });
-
+        collection.add(() -> role);
         return collection;
     }
 
     @Override
     public String getPassword() {
-        return userEntity.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getUsername();
+        return username;
     }
 
     @Override
@@ -50,18 +59,18 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return userEntity.getAccountStatus() != AccountStatus.LOCKED;
-    }
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return isAccountNonLocked;
+//    }
 
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return userEntity.getAccountStatus() == AccountStatus.ACTIVE;
-    }
+//    @Override
+//    public boolean isEnabled() {
+//        return isEnabled;
+//    }
 }

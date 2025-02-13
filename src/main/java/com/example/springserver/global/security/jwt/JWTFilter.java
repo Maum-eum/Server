@@ -1,8 +1,9 @@
 package com.example.springserver.global.security.jwt;
 
+import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
-import com.example.springserver.global.common.entity.UserEntity;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -27,16 +28,17 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 헤더에서 access키에 담긴 토큰을 꺼냄
-        String accessToken = request.getHeader("access");
+        // Authorization 헤더에서 access token을 꺼냄
+        String accessToken = request.getHeader("Authorization");
 
         // 토큰이 없다면 다음 필터로 넘김
-        if (accessToken == null){
-
+        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-
             return;
         }
+
+        // "Bearer "를 제거하고 실제 토큰만 남김
+        accessToken = accessToken.substring(7);
 
         // 토큰 만료 여부 확인, 만료시 예외 발생
         try {
@@ -54,15 +56,28 @@ public class JWTFilter extends OncePerRequestFilter {
         //토큰에서 username과 role 획득
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
+        Long userId = jwtUtil.getUserId(accessToken);
 
-        //userEntity를 생성하여 값 set
-        UserEntity userEntity = UserEntity.builder()
-                .username(username)
-                .role(role)
-                .build();
+        // 역할에 맞는 객체 생성
+        CustomUserDetails customUserDetails;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            Admin admin = Admin.builder()
+                    .id(userId)
+                    .username(username)
+                    .password("")
+                    .build();
+            customUserDetails = new CustomUserDetails(admin);
+        } else if ("CAREGIVER".equalsIgnoreCase(role)) {
+            Caregiver caregiver = Caregiver.builder()
+                    .id(userId)
+                    .username(username)
+                    .password("")
+                    .build();
+            customUserDetails = new CustomUserDetails(caregiver);
+        } else {
+            throw new GlobalException(ErrorCode.INVALID_MEMBER_ROLE);
+        }
 
-        //UserDetails에 회원 정보 객체 담기 -> 스프링 시큐리티에서 요구하는 사용자 정보 형식을 따르기 위함
-        CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         //세션에 사용자 등록

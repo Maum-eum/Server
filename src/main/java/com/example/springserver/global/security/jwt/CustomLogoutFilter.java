@@ -2,7 +2,8 @@ package com.example.springserver.global.security.jwt;
 
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
-import com.example.springserver.service.RefreshTokenService;
+import com.example.springserver.global.apiPayload.format.ResultResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -16,11 +17,9 @@ import java.io.IOException;
 
 public class CustomLogoutFilter extends GenericFilterBean {
 
-    private final RefreshTokenService refreshTokenService;
     private final JWTUtil jwtUtil;
 
-    public CustomLogoutFilter(RefreshTokenService refreshTokenService, JWTUtil jwtUtil) {
-        this.refreshTokenService = refreshTokenService;
+    public CustomLogoutFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -41,22 +40,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String refresh = refreshTokenService.extractRefreshToken(request);
-        if (refresh == null) {
-            throw new GlobalException(ErrorCode.INVALID_REFRESH_TOKEN); // Refresh Token이 없는 경우 예외 처리
-        }
-        // 유효성 검사 및 예외 발생
-        refreshTokenService.validateRefreshToken(refresh);
-
-        String username = jwtUtil.getUsername(refresh);
-        // 로그아웃 진행
-        refreshTokenService.removeRefreshToken(username);
-        Cookie cookie = new Cookie("refresh", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
+        ResultResponse<Object> responseBody = ResultResponse.success(null);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
     }
 }
