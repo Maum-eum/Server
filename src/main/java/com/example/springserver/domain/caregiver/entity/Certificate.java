@@ -25,6 +25,11 @@ public class Certificate {
     @JoinColumn(name = "caregiver_id", nullable = false)
     private Caregiver caregiver;
 
+
+    @NotNull
+    @Column(name = "cert_num")
+    private String certNum;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "cert_type", nullable = false)

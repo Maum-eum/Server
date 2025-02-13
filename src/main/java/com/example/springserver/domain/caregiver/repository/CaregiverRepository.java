@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CaregiverRepository extends JpaRepository<Caregiver, Long> {
 
     Boolean existsByUsername(String username);
+
+    Caregiver findByUsername(String username);
 }

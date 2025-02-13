@@ -56,6 +56,35 @@ public class CaregiverRequestDTO {
     }
 
     @Getter
+    public static class UpdateCaregiverReq{
+
+        @NotEmpty
+        private String username;
+
+        @NotEmpty
+        private String contact;
+
+        @NotNull
+        private Boolean car;
+
+        @NotNull
+        private Boolean education;
+
+        private String img;
+
+        private String intro;
+
+        private String address;
+
+        private List<CertificateRequestDTO> certificateRequestDTOList;
+
+        private List<ExperienceRequestDTO> experienceRequestDTOList;
+
+    }
+
+
+
+    @Getter
     public static class CertificateRequestDTO{
 
         private String certNum;
