@@ -1,5 +1,6 @@
 package com.example.springserver.domain.center.service;
 
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ElderException;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,6 +31,9 @@ public class ElderService {
 
         Center center = centerRepository.findById(centerId)
                 .orElseThrow(() -> new CenterException(ErrorCode.CENTER_NOT_FOUND));
+
+        // 필수 입력 필드 검증
+        validateElderFields(createDto);
 
         Elder createdElder = elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary, center));
         createdElder.changeCenter(center);
@@ -51,7 +54,30 @@ public class ElderService {
     }
 
     @Transactional
-    public void deleteElder(Long centerId, Long elderId) {
+    public Elder updateElder(Long centerId, Long elderId, UpdateRequestDto updateRequestDto) {
+
+        Center center = centerRepository.findById(centerId)
+                .orElseThrow(() -> new CenterException(ErrorCode.CENTER_NOT_FOUND));
+
+        Elder existingElder = elderRepository.findById(elderId)
+                .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_FOUND));
+
+
+        // 수정 요청한 센터, 어르신 정보 일치 여부 검증
+        if (!existingElder.getCenter().getCenterId().equals(centerId)) {
+            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+        }
+
+        existingElder.setName(updateRequestDto.getName());
+        existingElder.setRate(updateRequestDto.getRate());
+        existingElder.setImgUrl(updateRequestDto.getImgUrl());
+        existingElder.setWeight(updateRequestDto.getWeight());
+
+        return elderRepository.save(existingElder);
+    }
+
+    @Transactional
+    public Elder deleteElder(Long centerId, Long elderId) {
 
         Elder elder = isValidElder(elderId);
 
@@ -69,6 +95,8 @@ public class ElderService {
 
         // DB에서 어르신 삭제
         elderRepository.delete(elder);
+
+        return elder;
     }
 
     public void isValidCenter(Long centerId) { // 센터 유효성 체크
@@ -82,7 +110,6 @@ public class ElderService {
     }
 
     private void validateElderFields(CreateRequestDto createRequestDto) { // 필수 항목 입력 체크
-        log.info("name은 = {} gender는 = {} birth는 = {}", createRequestDto.getName(), createRequestDto.getGender(), createRequestDto.getBirth());
         if (createRequestDto.getName() == null || createRequestDto.getGender() == null || createRequestDto.getBirth() == null) {
             throw new ElderException(ErrorCode.INVALID_ELDER_DATA);
         }
