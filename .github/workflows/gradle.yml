@@ -34,29 +34,41 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build and Test
+      - name: Build without Tests
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:13306/${{ secrets.DB_NAME }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: ./gradlew build -x test
 
+      # 🚀 기존 JAR 파일 삭제 (업로드 전 안전하게 삭제)
+      - name: Remove Old JAR from EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            echo "Deleting old application files..."
+            rm -f /home/ubuntu/app.jar /home/ubuntu/app.tar.gz
+          EOF
+
+      # 🚀 압축 후 업로드 (JAR을 tar.gz으로 압축)
       - name: Upload JAR to EC2 (Optimized)
         run: |
           tar czf app.tar.gz -C build/libs .
           scp -o StrictHostKeyChecking=no -i private_key.pem app.tar.gz ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/
 
+      # 🚀 배포 및 실행
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             echo "Stopping old application..."
             pkill -f 'java -jar' || true
           
+            echo "Extracting new application..."
+            tar xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/
+          
             echo "Starting new application..."
-            nohup java -jar /home/ubuntu/app.jar --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
+            nohup java -jar /home/ubuntu/*.jar --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
             echo "Application started successfully!"
           EOF
-
 
   dependency-submission:
     runs-on: ubuntu-latest
