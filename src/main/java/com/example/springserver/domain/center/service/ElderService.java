@@ -3,17 +3,19 @@ package com.example.springserver.domain.center.service;
 import com.example.springserver.global.apiPayload.format.ElderException;
 import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateReqDto;
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.repository.center.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ElderService {
@@ -22,20 +24,23 @@ public class ElderService {
     private final CenterRepository centerRepository;
 
     @Transactional
-    public Elder createElder(Long centerId, CreateReqDto createDto) {
+    public Elder createElder(Long centerId, CreateRequestDto createDto, boolean isTemporary) {
         isValidCenter(centerId);
-        return elderRepository.save(ElderConverter.toElder(createDto));
+
+        validateElderFields(createDto);
+        return elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary));
     }
 
-    public List<Elder> getElderList(Long centerId) {
+    @Transactional
+    public List<Elder> getElderList(Long centerId, boolean isTemporary) {
         isValidCenter(centerId);
-        return elderRepository.findByCenterId(centerId);
+        return elderRepository.findByCenterIdAndIsTemporary(centerId, isTemporary);
     }
 
-    public Elder getElderDetail(Long centerId, Long elderId) {
+    public Elder getElderDetail(Long centerId, Long elderId, boolean isTemporary) {
         isValidCenter(centerId);
         isValidElder(centerId);
-        return elderRepository.findByCenterIdAndElderId(centerId, elderId);
+        return elderRepository.findByCenterIdAndElderIdAndIsTemporary(centerId, elderId, isTemporary);
     }
 
     @Transactional
@@ -57,5 +62,12 @@ public class ElderService {
     public Elder isValidElder(Long elderId) { // 어르신 유효성 체크
         return elderRepository.findById(elderId)
                 .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_FOUND));
+    }
+
+    private void validateElderFields(CreateRequestDto createRequestDto) { // 필수 항목 입력 체크
+        log.info("name은 = {} gender는 = {} birth는 = {}", createRequestDto.getName(), createRequestDto.getGender(), createRequestDto.getBirth());
+        if (createRequestDto.getName() == null || createRequestDto.getGender() == null || createRequestDto.getBirth() == null) {
+            throw new ElderException(ErrorCode.INVALID_ELDER_DATA);
+        }
     }
 }

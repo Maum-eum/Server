@@ -33,6 +33,7 @@ public enum ErrorCode {
     // 어르신 관련 에러
     ELDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ELDER4001", "어르신 정보가 존재하지 않습니다."),
     ELDER_NOT_BELONG_TO_CENTER(HttpStatus.BAD_REQUEST, "ELDER4001", "센터에 어르신이 존재하지 않습니다."),
+    INVALID_ELDER_DATA(HttpStatus.BAD_REQUEST, "ELDER4003", "어르신 필수 정보값이 누락되었습니다."),
 
     // 지역 관련 에러
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),
