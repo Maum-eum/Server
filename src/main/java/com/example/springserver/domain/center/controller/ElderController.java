@@ -1,6 +1,8 @@
 package com.example.springserver.domain.center.controller;
 
 import com.example.springserver.domain.center.converter.ElderConverter;
+import com.example.springserver.domain.center.dto.request.ElderRequestDto;
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResultDto;
 import com.example.springserver.domain.center.entity.Elder;
@@ -65,14 +67,14 @@ public class ElderController {
     }
 
     // 센터 내 어르신 수정
-    @PutMapping("{elder_id}")
-    public ResponseDto deleteElder(@PathVariable Long center_id, @PathVariable Long elder_id, @RequestBody UpdateRequestDto updateRequestDto) {
-        Elder updatedElder = elderService.updateElder(center_id, elder_id, updateRequestDto);
-        return ElderConverter.toResponseDto(updatedElder);
+    @PutMapping("/{elder_id}")
+    public RequestDto updateElder(@PathVariable Long center_id, @PathVariable Long elder_id, @RequestBody RequestDto updateRequestDto) {
+        elderService.updateElder(center_id, elder_id, updateRequestDto);
+        return updateRequestDto;
     }
 
     // 센터 내 어르신 삭제
-    @DeleteMapping("{elder_id}")
+    @DeleteMapping("/{elder_id}")
     public DeleteResultDto deleteElder(@PathVariable Long center_id, @PathVariable Long elder_id) {
         Elder deletedElder = elderService.deleteElder(center_id, elder_id);
         return ElderConverter.toDeleteResponseDto(deletedElder);
