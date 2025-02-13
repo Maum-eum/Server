@@ -36,7 +36,7 @@ jobs:
 
       - name: Build without Tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:13306/${{ secrets.DB_NAME }}
+          SPRING_DATASOURCE_URL: ${{ secrets.DB_NAME }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: ./gradlew build -x test
@@ -60,9 +60,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             echo "Setting environment variables..."
-            export SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
-            export SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-            export SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+            export SPRING_DATASOURCE_URL=${{ secrets.DB_NAME }}
+            export SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}
+            export SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
             echo "Stopping old application..."
             pkill -f 'java -jar' || true
       
