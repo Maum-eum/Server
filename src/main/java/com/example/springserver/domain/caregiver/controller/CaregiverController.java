@@ -2,6 +2,7 @@ package com.example.springserver.domain.caregiver.controller;
 
 import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.service.CareGiverService;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.service.JoinService;
@@ -42,9 +43,55 @@ public class CaregiverController {
 
     @Operation(summary = "요양보호사 정보수정", description = "Put")
     @PutMapping("/profile")
-    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
-        Caregiver searched = careGiverService.updateUserInfo(request);
+    public CareGiverInfoResponseDTO updateCaregiver(@AuthenticationPrincipal CustomUserDetails user,
+                                                    @RequestBody @Valid UpdateCaregiverReq request){
+        Caregiver searched = careGiverService.updateUserInfo(user,request);
         return CaregiverConverter.infoResponseDto(searched);
     }
+
+    @Operation(summary = "요양보호사 구직조건등록", description = "Post")
+    @PostMapping("/preferences")
+    public JobConditionResponseDTO createCaregiver(@AuthenticationPrincipal CustomUserDetails user,
+                                                    @RequestBody @Valid JobConditionRequestDTO request){
+        return  careGiverService.createJobCondition(user,request);
+    }
+//
+//    @Operation(summary = "요양보호사 정보수정", description = "Put")
+//    @PutMapping("/profile")
+//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
+//        Caregiver searched = careGiverService.updateUserInfo(request);
+//        return CaregiverConverter.infoResponseDto(searched);
+//    }
+//
+//    @Operation(summary = "요양보호사 정보수정", description = "Put")
+//    @PutMapping("/profile")
+//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
+//        Caregiver searched = careGiverService.updateUserInfo(request);
+//        return CaregiverConverter.infoResponseDto(searched);
+//    }
+//
+//    @Operation(summary = "요양보호사 정보수정", description = "Put")
+//    @PutMapping("/profile")
+//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
+//        Caregiver searched = careGiverService.updateUserInfo(request);
+//        return CaregiverConverter.infoResponseDto(searched);
+//    }
+//
+//    @Operation(summary = "요양보호사 정보수정", description = "Put")
+//    @PutMapping("/profile")
+//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
+//        Caregiver searched = careGiverService.updateUserInfo(request);
+//        return CaregiverConverter.infoResponseDto(searched);
+//    }
+//
+//    @Operation(summary = "요양보호사 정보수정", description = "Put")
+//    @PutMapping("/profile")
+//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
+//        Caregiver searched = careGiverService.updateUserInfo(request);
+//        return CaregiverConverter.infoResponseDto(searched);
+//    }
+//
+//
+
 
 }

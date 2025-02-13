@@ -3,11 +3,10 @@ package com.example.springserver.domain.caregiver.converter;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.CertificateRequestDTO;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.ExperienceRequestDTO;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.*;
-import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.caregiver.entity.*;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 
-import com.example.springserver.domain.caregiver.entity.Certificate;
-import com.example.springserver.domain.caregiver.entity.Experience;
+import com.example.springserver.domain.location.entity.Location;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -113,4 +112,39 @@ public class CaregiverConverter {
                 .caregiver(caregiver)
                 .build();
     }
+
+//    public static JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
+//        return JobConditionResponseDTO.builder()
+//                .bathingAssist(saved.getBathingAssist())
+//                .catheterOrStomaCare(saved.getCatheterOrStomaCare())
+//                .diaperCare(saved.getDiaperCare())
+//                .cleaningLaundryAssist(saved.getCleaningLaundryAssist())
+//                .selfToileting(saved.getSelfToileting())
+//                .selfFeeding(saved.getSelfFeeding())
+//                .cognitiveStimulation(saved.getCognitiveStimulation())
+//                .cookingAssistance(saved.getCookingAssistance())
+//                .desiredHourlyWage(saved.getDesiredHourlyWage())
+//                .emotionalSupport(saved.getEmotionalSupport())
+//                .enteralNutritionSupport(saved.getEnteralNutritionSupport())
+//                .exerciseSupport(saved.getExerciseSupport())
+//                .hospitalAccompaniment(saved.getHospitalAccompaniment())
+//                .flexibleSchedule(saved.getFlexibleSchedule())
+//                .mealPreparation(saved.getMealPreparation())
+//                .immobile(saved.getImmobile())
+//                .occasionalToiletingAssist(saved.getOccasionalToiletingAssist())
+//                .mobilityAssist(saved.getMobilityAssist())
+//                .wheelchairAssist(saved.getWheelchairAssist())
+//                .independentMobility(saved.getIndependentMobility())
+//                .locationRequestDTOList(saved.getWorkLocations().stream()
+//                        .map(CaregiverConverter::toLocationResponseDto)
+//                        .toList())
+//                .workTimeRequestDTOList(saved.getWorkTimes().stream()
+//                        .map(CaregiverConverter::toWorkTimeResponseDto)
+//                        .toList())
+//                .build();
+//    }
+//
+//    private static LocationResponseDTO toLocationResponseDto(WorkLocation workLocation) {
+//        Location.
+//    }
 }
