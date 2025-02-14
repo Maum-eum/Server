@@ -37,11 +37,13 @@ public class JoinService {
     @Transactional
     public Caregiver signUpCaregiver(SignUpCaregiverReq request) {
 
-        Boolean isExist = caregiverRepository.existsByUsername(request.getUsername());
         List<CertificateRequestDTO> certificateRequestDTOList = request.getCertificateRequestDTOList();
         List<ExperienceRequestDTO> experienceRequestDTOList = request.getExperienceRequestDTOList();
 
-        if(isExist){
+        Boolean isAdminExist = adminRepository.existsByUsername(request.getUsername());
+        Boolean isCaregiverExist = caregiverRepository.existsByUsername(request.getUsername());
+
+        if(isAdminExist || isCaregiverExist){
             throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
         }
 
@@ -68,9 +70,10 @@ public class JoinService {
     @Transactional
     public Admin signUpAdmin(AdminRequestDTO.SignUpAdminReq request) {
 
-        Boolean isExist = adminRepository.existsByUsername(request.getUsername());
+        Boolean isAdminExist = adminRepository.existsByUsername(request.getUsername());
+        Boolean isCaregiverExist = caregiverRepository.existsByUsername(request.getUsername());
 
-        if(isExist){
+        if(isAdminExist || isCaregiverExist){
             throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
         }
 
