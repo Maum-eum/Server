@@ -39,6 +39,7 @@ jobs:
           SPRING_DATASOURCE_URL: ${{ secrets.DB_NAME }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
         run: ./gradlew build -x test
 
       # 🚀 기존 JAR 파일 삭제 (업로드 전 안전하게 삭제)
@@ -63,6 +64,7 @@ jobs:
             export SPRING_DATASOURCE_URL=${{ secrets.DB_NAME }}
             export SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}
             export SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export JWT_SECRET=${{ secrets.JWT_SECRET }}
             echo "Stopping old application..."
             pkill -f 'java -jar' || true
       
