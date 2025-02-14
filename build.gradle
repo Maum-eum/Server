@@ -54,8 +54,9 @@ tasks.named('test') {
 }
 
 bootJar {
-    enabled = true  // 🚀 실행 가능한 JAR 생성
-    archiveFileName = "SpringServer-0.0.1-SNAPSHOT.jar"  // JAR 파일 이름 지정
+    enabled = true
+    archiveFileName = "SpringServer-0.0.1-SNAPSHOT.jar"
+    launchScript() // 🚀 실행 가능한 JAR 유지
 }
 
 jar {
