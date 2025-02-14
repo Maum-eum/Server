@@ -39,3 +39,4 @@ out/
 ### Docker ###
 
 application-local.yml
+application-key.yml
