@@ -101,28 +101,21 @@ public class CareGiverService {
     public JobConditionResponseDTO updateJobCondition(CustomUserDetails user, JobConditionRequestDTO request) {
         Caregiver caregiver = getById(user);
 
-        // ✅ 기존 JobCondition 조회
         JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
 
-        // ✅ 기존 데이터 삭제 (연관 엔티티들)
         workTimeRepository.deleteByJobCondition(jobCondition);
         workLocationRepository.deleteByJobCondition(jobCondition);
 
-        // ✅ 기존 리스트 초기화 (JPA 내부 캐시에서도 제거)
         jobCondition.getWorkTimes().clear();
         jobCondition.getWorkLocations().clear();
 
-        // ✅ 새로운 데이터 업데이트
         jobCondition.updateInfo(request);
 
-        // ✅ `jobCondition`을 다시 `managed` 상태로 저장
         jobCondition = jobConditionRepository.save(jobCondition);
 
-        // ✅ 새로운 WorkTime & WorkLocation 저장
         saveWorkTimesAndLocations(request, jobCondition);
 
-        // ✅ **변경된 데이터를 최신 상태로 가져오기**
         jobCondition = jobConditionRepository.findById(jobCondition.getId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
 
@@ -137,7 +130,6 @@ public class CareGiverService {
     private void saveWorkTimesAndLocations(JobConditionRequestDTO request, JobCondition jobCondition) {
         final JobCondition finalJobCondition = jobCondition;
 
-        // ✅ 새로운 WorkTimes 저장
         List<WorkTime> workTimes = request.getWorkTimeRequestDTOList().stream()
                 .map(dto -> WorkTime.builder()
                         .jobCondition(finalJobCondition)  // `managed` 상태의 jobCondition 사용
@@ -148,22 +140,21 @@ public class CareGiverService {
                 .collect(Collectors.toList());
 
         workTimeRepository.saveAll(workTimes);
-        jobCondition.setWorkTimes(workTimes); // ✅ 최신 workTimes 반영
+        jobCondition.setWorkTimes(workTimes);
 
-        // ✅ 새로운 WorkLocations 저장
         List<WorkLocation> workLocations = request.getLocationRequestDTOList().stream()
                 .map(dto -> {
                     Location location = locationRepository.findById(dto.getLocationId())
                             .orElseThrow(() -> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
                     return WorkLocation.builder()
-                            .jobCondition(finalJobCondition)  // `managed` 상태의 jobCondition 사용
+                            .jobCondition(finalJobCondition)
                             .locationId(location)
                             .build();
                 })
                 .collect(Collectors.toList());
 
         workLocationRepository.saveAll(workLocations);
-        jobCondition.setWorkLocations(workLocations); // ✅ 최신 workLocations 반영
+        jobCondition.setWorkLocations(workLocations);
     }
 
 
@@ -215,5 +206,12 @@ public class CareGiverService {
                                 .build())
                         .toList())
                 .build();
+    }
+
+    public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
+        Caregiver byId = getById(user);
+        JobCondition jobCondition = jobConditionRepository.findByCaregiver(byId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+        return toJobConditionResponseDto(jobCondition);
     }
 }
