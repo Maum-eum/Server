@@ -144,38 +144,4 @@ public class CaregiverConverter {
                 .build();
     }
 
-//    public static JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
-//        return JobConditionResponseDTO.builder()
-//                .bathingAssist(saved.getBathingAssist())
-//                .catheterOrStomaCare(saved.getCatheterOrStomaCare())
-//                .diaperCare(saved.getDiaperCare())
-//                .cleaningLaundryAssist(saved.getCleaningLaundryAssist())
-//                .selfToileting(saved.getSelfToileting())
-//                .selfFeeding(saved.getSelfFeeding())
-//                .cognitiveStimulation(saved.getCognitiveStimulation())
-//                .cookingAssistance(saved.getCookingAssistance())
-//                .desiredHourlyWage(saved.getDesiredHourlyWage())
-//                .emotionalSupport(saved.getEmotionalSupport())
-//                .enteralNutritionSupport(saved.getEnteralNutritionSupport())
-//                .exerciseSupport(saved.getExerciseSupport())
-//                .hospitalAccompaniment(saved.getHospitalAccompaniment())
-//                .flexibleSchedule(saved.getFlexibleSchedule())
-//                .mealPreparation(saved.getMealPreparation())
-//                .immobile(saved.getImmobile())
-//                .occasionalToiletingAssist(saved.getOccasionalToiletingAssist())
-//                .mobilityAssist(saved.getMobilityAssist())
-//                .wheelchairAssist(saved.getWheelchairAssist())
-//                .independentMobility(saved.getIndependentMobility())
-//                .locationRequestDTOList(saved.getWorkLocations().stream()
-//                        .map(CaregiverConverter::toLocationResponseDto)
-//                        .toList())
-//                .workTimeRequestDTOList(saved.getWorkTimes().stream()
-//                        .map(CaregiverConverter::toWorkTimeResponseDto)
-//                        .toList())
-//                .build();
-//    }
-//
-//    private static LocationResponseDTO toLocationResponseDto(WorkLocation workLocation) {
-//        Location.
-//    }
 }
