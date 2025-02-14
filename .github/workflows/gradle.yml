@@ -53,36 +53,55 @@ jobs:
       # 🚀 압축 후 업로드 (JAR을 tar.gz으로 압축)
       - name: Upload JAR to EC2 (Optimized)
         run: |
-          tar czf app.tar.gz -C build/libs .
+          echo "Finding correct JAR file..."
+          JAR_FILE=$(ls build/libs/*.jar | grep -v plain | head -n 1)
+
+          if [ -z "$JAR_FILE" ]; then
+            echo "ERROR: No valid JAR file found!"
+            exit 1
+          fi
+
+          echo "Compressing JAR file..."
+          tar czf app.tar.gz -C build/libs $(basename $JAR_FILE)
+
+          echo "Uploading JAR to EC2..."
           scp -o StrictHostKeyChecking=no -i private_key.pem app.tar.gz ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/
+
 
       # 🚀 배포 및 실행
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            echo "Setting environment variables..."
-            export SPRING_DATASOURCE_URL=${{ secrets.DB_NAME }}
-            export SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}
-            export SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export JWT_SECRET=${{ secrets.JWT_SECRET }}
             echo "Stopping old application..."
-            pkill -f 'java -jar' || true
-      
+            pids=$(pgrep -f 'java -jar')
+            if [ -n "$pids" ]; then
+              echo "Killing process: $pids"
+              kill -9 $pids
+            else
+              echo "No process found."
+            fi
+
             echo "Extracting new application..."
             tar xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/
-          
+
             echo "Finding correct JAR file..."
             APP_JAR=$(ls /home/ubuntu/*.jar | grep -v plain | head -n 1)
-      
+
             if [ -z "$APP_JAR" ]; then
               echo "ERROR: No valid JAR file found!"
               exit 1
             fi
-          
-            echo "Starting new application with $APP_JAR"
+
+            echo "Starting new application with $APP_JAR..."
+            SPRING_DATASOURCE_URL=${{ secrets.DB_NAME }} \
+            SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} \
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            JWT_SECRET=${{ secrets.JWT_SECRET }} \
             nohup java -jar $APP_JAR --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
+
             echo "Application started successfully!"
           EOF
+
 
   dependency-submission:
     runs-on: ubuntu-latest
