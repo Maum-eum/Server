@@ -59,7 +59,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/admin/signup", "/", "/caregiver/signup", "/reissue").permitAll()
+                        .requestMatchers("/login", "/admin/signup", "/", "/caregiver/signup", "/reissue", "/health/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/caregiver").hasRole("CAREGIVER")
