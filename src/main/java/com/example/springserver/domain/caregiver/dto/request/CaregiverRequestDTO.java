@@ -134,6 +134,8 @@ public class CaregiverRequestDTO {
     @Getter
     public static class LocationRequestDTO{
 
+        private Long workLocationId;
+
         @NotNull
         private Long locationId;
 
@@ -141,6 +143,8 @@ public class CaregiverRequestDTO {
 
     @Getter
     public static class WorkTimeRequestDTO{
+
+        private Long workTimeId;
 
         @NotNull
         private Week dayOfWeek;

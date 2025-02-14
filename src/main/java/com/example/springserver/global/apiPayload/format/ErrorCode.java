@@ -46,7 +46,7 @@ public enum ErrorCode {
 
 
     // 요양보호사 관련 에러
-
+    JOB_CONDITION_NOT_FOUND(HttpStatus.NOT_FOUND,"JOB_CONDITION_NOTFOUND4001","보호사의 구직정보가 존재하지 않습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),
 
     // 시간 관련 에러

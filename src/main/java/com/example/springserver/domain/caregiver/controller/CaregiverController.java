@@ -55,14 +55,14 @@ public class CaregiverController {
                                                     @RequestBody @Valid JobConditionRequestDTO request){
         return  careGiverService.createJobCondition(user,request);
     }
-//
-//    @Operation(summary = "요양보호사 정보수정", description = "Put")
-//    @PutMapping("/profile")
-//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
-//        Caregiver searched = careGiverService.updateUserInfo(request);
-//        return CaregiverConverter.infoResponseDto(searched);
-//    }
-//
+
+    @Operation(summary = "요양보호사 구직조건수정", description = "Put")
+    @PutMapping("/preferences")
+    public JobConditionResponseDTO updateCaregiver(@AuthenticationPrincipal CustomUserDetails user,
+                                                    @RequestBody @Valid JobConditionRequestDTO request){
+        return  careGiverService.updateJobCondition(user,request);
+    }
+
 //    @Operation(summary = "요양보호사 정보수정", description = "Put")
 //    @PutMapping("/profile")
 //    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
