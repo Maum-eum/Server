@@ -21,7 +21,7 @@ public class RecruitLaborLawValidator { // 2025년 근로기준법 기준
     }
 
     // 근로 시간 검증: 1일 최대 8시간 근무
-    public void validateWorkingHours(int hoursPerDay) {
+    public void validateWorkingHours(long hoursPerDay) {
         if (hoursPerDay > DAILY_MAXIMUM_LABOR_TIME) {
             throw new RecruitException(ErrorCode.RECRUIT_DAILY_LABOR_TIME_INVALID);
         }
