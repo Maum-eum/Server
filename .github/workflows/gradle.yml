@@ -42,6 +42,10 @@ jobs:
           JWT_SECRET: ${{secrets.JWT_SECRET}}
         run: ./gradlew build -x test
 
+      - name: Debug Build Output
+        run: ls -lah build/libs/
+
+
       # 🚀 기존 JAR 파일 삭제 (업로드 전 안전하게 삭제)
       - name: Remove Old JAR from EC2
         run: |

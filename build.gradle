@@ -33,8 +33,6 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-
-
     // SECURITY ⭐
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -56,22 +54,18 @@ tasks.named('test') {
 }
 
 bootJar {
-    enabled = false
+    enabled = true  // 🚀 실행 가능한 JAR 생성
+    archiveFileName = "SpringServer-0.0.1-SNAPSHOT.jar"  // JAR 파일 이름 지정
+}
+
+jar {
+    enabled = false  // ❌ 일반 JAR(-plain.jar) 비활성화
 }
 
 tasks.withType(Jar).configureEach {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-jar {
-    enabled = true
-    manifest {
-        attributes(
-                'Main-Class': 'com.yourpackage.YourApplication' // 실제 Main 클래스 경로
-        )
-    }
-}
 springBoot {
     mainClass = 'com.example.springserver.SpringServerApplication'
 }
-
