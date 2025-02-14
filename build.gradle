@@ -59,10 +59,19 @@ bootJar {
     enabled = false
 }
 
-jar {
-    enabled = true
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+jar {
+    enabled = true
+    manifest {
+        attributes(
+                'Main-Class': 'com.yourpackage.YourApplication' // 실제 Main 클래스 경로
+        )
+    }
+}
 springBoot {
     mainClass = 'com.example.springserver.SpringServerApplication'
 }
+
