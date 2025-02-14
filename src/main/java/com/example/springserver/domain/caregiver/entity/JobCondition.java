@@ -1,17 +1,18 @@
 package com.example.springserver.domain.caregiver.entity;
 
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.JobConditionRequestDTO;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @Entity
+@Setter
 @Table(name = "job_condition")
 @Builder
 @NoArgsConstructor
@@ -109,10 +110,33 @@ public class JobCondition extends BaseEntity {
     private Caregiver caregiver;
 
     @NotNull
-    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<WorkTime> workTimes = new ArrayList<>();
 
     @NotNull
-    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<WorkLocation> workLocations = new ArrayList<>();
+
+    public void updateInfo(JobConditionRequestDTO req){
+        this.flexibleSchedule = req.getFlexibleSchedule();
+        this.desiredHourlyWage = req.getDesiredHourlyWage();
+        this.selfFeeding = req.getSelfFeeding();
+        this.mealPreparation = req.getMealPreparation();
+        this.cookingAssistance = req.getCookingAssistance();
+        this.enteralNutritionSupport = req.getEnteralNutritionSupport();
+        this.selfToileting = req.getSelfToileting();
+        this.occasionalToiletingAssist = req.getOccasionalToiletingAssist();
+        this.diaperCare = req.getDiaperCare();
+        this.catheterOrStomaCare = req.getCatheterOrStomaCare();
+        this.independentMobility = req.getIndependentMobility();
+        this.mobilityAssist = req.getMobilityAssist();
+        this.wheelchairAssist = req.getWheelchairAssist();
+        this.immobile = req.getImmobile();
+        this.cleaningLaundryAssist = req.getCleaningLaundryAssist();
+        this.bathingAssist = req.getBathingAssist();
+        this.hospitalAccompaniment = req.getHospitalAccompaniment();
+        this.exerciseSupport = req.getExerciseSupport();
+        this.emotionalSupport = req.getEmotionalSupport();
+        this.cognitiveStimulation = req.getCognitiveStimulation();
+    }
 }

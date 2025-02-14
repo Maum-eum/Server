@@ -107,7 +107,8 @@ public class CaregiverResponseDTO {
     @Builder
     public static class LocationResponseDTO{
 
-        @NotNull
+        private Long workLocationId;
+
         private String locationName;
 
     }
@@ -116,13 +117,12 @@ public class CaregiverResponseDTO {
     @Builder
     public static class WorkTimeResponseDTO{
 
-        @NotNull
+        private Long workTimeId;
+
         private Week dayOfWeek;
 
-        @NotNull
         private LocalDateTime start_time;
 
-        @NotNull
         private LocalDateTime end_time;
 
     }
