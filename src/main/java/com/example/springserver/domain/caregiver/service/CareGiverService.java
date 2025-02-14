@@ -29,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +45,6 @@ public class CareGiverService {
     private final WorkLocationRepository workLocationRepository;
     private final LocationRepository locationRepository;
     private final LocationService locationService;
-
 
     public Caregiver getUserInfo(CustomUserDetails user) {
         Long userId = user.getId();
@@ -63,64 +64,114 @@ public class CareGiverService {
         Caregiver caregiver = getById(user);
 
         JobCondition jobCondition = JobCondition.builder()
-                .bathingAssist(request.getBathingAssist())
-                .catheterOrStomaCare(request.getCatheterOrStomaCare())
-                .diaperCare(request.getDiaperCare())
-                .cleaningLaundryAssist(request.getCleaningLaundryAssist())
-                .selfToileting(request.getSelfToileting())
-                .selfFeeding(request.getSelfFeeding())
-                .cognitiveStimulation(request.getCognitiveStimulation())
-                .cookingAssistance(request.getCookingAssistance())
-                .desiredHourlyWage(request.getDesiredHourlyWage())
-                .emotionalSupport(request.getEmotionalSupport())
-                .enteralNutritionSupport(request.getEnteralNutritionSupport())
-                .exerciseSupport(request.getExerciseSupport())
-                .hospitalAccompaniment(request.getHospitalAccompaniment())
-                .flexibleSchedule(request.getFlexibleSchedule())
-                .mealPreparation(request.getMealPreparation())
-                .immobile(request.getImmobile())
-                .occasionalToiletingAssist(request.getOccasionalToiletingAssist())
-                .mobilityAssist(request.getMobilityAssist())
-                .wheelchairAssist(request.getWheelchairAssist())
-                .independentMobility(request.getIndependentMobility())
                 .caregiver(caregiver)
+                .bathingAssist(defaultFalse(request.getBathingAssist()))
+                .catheterOrStomaCare(defaultFalse(request.getCatheterOrStomaCare()))
+                .diaperCare(defaultFalse(request.getDiaperCare()))
+                .cleaningLaundryAssist(defaultFalse(request.getCleaningLaundryAssist()))
+                .selfToileting(defaultFalse(request.getSelfToileting()))
+                .selfFeeding(defaultFalse(request.getSelfFeeding()))
+                .cognitiveStimulation(defaultFalse(request.getCognitiveStimulation()))
+                .cookingAssistance(defaultFalse(request.getCookingAssistance()))
+                .desiredHourlyWage(defaultFalse(request.getDesiredHourlyWage()))
+                .emotionalSupport(defaultFalse(request.getEmotionalSupport()))
+                .enteralNutritionSupport(defaultFalse(request.getEnteralNutritionSupport()))
+                .exerciseSupport(defaultFalse(request.getExerciseSupport()))
+                .hospitalAccompaniment(defaultFalse(request.getHospitalAccompaniment()))
+                .flexibleSchedule(defaultFalse(request.getFlexibleSchedule()))
+                .mealPreparation(defaultFalse(request.getMealPreparation()))
+                .immobile(defaultFalse(request.getImmobile()))
+                .occasionalToiletingAssist(defaultFalse(request.getOccasionalToiletingAssist()))
+                .mobilityAssist(defaultFalse(request.getMobilityAssist()))
+                .wheelchairAssist(defaultFalse(request.getWheelchairAssist()))
+                .independentMobility(defaultFalse(request.getIndependentMobility()))
                 .workTimes(new ArrayList<>())
                 .workLocations(new ArrayList<>())
                 .build();
 
-        JobCondition savedJobCondition = jobConditionRepository.save(jobCondition);
+        jobCondition = jobConditionRepository.save(jobCondition);
 
-        List<WorkTimeRequestDTO> timeList = request.getWorkTimeRequestDTOList();
-        List<WorkTime> workTimes = timeList.stream()
+        saveWorkTimesAndLocations(request, jobCondition);
+
+        return toJobConditionResponseDto(jobCondition);
+    }
+
+
+    @Transactional
+    public JobConditionResponseDTO updateJobCondition(CustomUserDetails user, JobConditionRequestDTO request) {
+        Caregiver caregiver = getById(user);
+
+        // ✅ 기존 JobCondition 조회
+        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+
+        // ✅ 기존 데이터 삭제 (연관 엔티티들)
+        workTimeRepository.deleteByJobCondition(jobCondition);
+        workLocationRepository.deleteByJobCondition(jobCondition);
+
+        // ✅ 기존 리스트 초기화 (JPA 내부 캐시에서도 제거)
+        jobCondition.getWorkTimes().clear();
+        jobCondition.getWorkLocations().clear();
+
+        // ✅ 새로운 데이터 업데이트
+        jobCondition.updateInfo(request);
+
+        // ✅ `jobCondition`을 다시 `managed` 상태로 저장
+        jobCondition = jobConditionRepository.save(jobCondition);
+
+        // ✅ 새로운 WorkTime & WorkLocation 저장
+        saveWorkTimesAndLocations(request, jobCondition);
+
+        // ✅ **변경된 데이터를 최신 상태로 가져오기**
+        jobCondition = jobConditionRepository.findById(jobCondition.getId())
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+
+        return toJobConditionResponseDto(jobCondition);
+    }
+
+
+
+
+
+
+    private void saveWorkTimesAndLocations(JobConditionRequestDTO request, JobCondition jobCondition) {
+        final JobCondition finalJobCondition = jobCondition;
+
+        // ✅ 새로운 WorkTimes 저장
+        List<WorkTime> workTimes = request.getWorkTimeRequestDTOList().stream()
                 .map(dto -> WorkTime.builder()
-                        .jobCondition(savedJobCondition)
-                        .startTime((long)dto.getStartTime())
-                        .endTime((long)dto.getEndTime())
+                        .jobCondition(finalJobCondition)  // `managed` 상태의 jobCondition 사용
+                        .startTime((long) dto.getStartTime())
+                        .endTime((long) dto.getEndTime())
                         .dayOfWeek(dto.getDayOfWeek())
                         .build())
                 .collect(Collectors.toList());
 
         workTimeRepository.saveAll(workTimes);
-        jobCondition.setWorkTimes(workTimes);
+        jobCondition.setWorkTimes(workTimes); // ✅ 최신 workTimes 반영
 
-        List<LocationRequestDTO> locationList = request.getLocationRequestDTOList();
-        List<WorkLocation> workLocations = locationList.stream()
+        // ✅ 새로운 WorkLocations 저장
+        List<WorkLocation> workLocations = request.getLocationRequestDTOList().stream()
                 .map(dto -> {
                     Location location = locationRepository.findById(dto.getLocationId())
                             .orElseThrow(() -> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
                     return WorkLocation.builder()
-                            .jobCondition(savedJobCondition)
+                            .jobCondition(finalJobCondition)  // `managed` 상태의 jobCondition 사용
                             .locationId(location)
                             .build();
                 })
                 .collect(Collectors.toList());
 
         workLocationRepository.saveAll(workLocations);
-        jobCondition.setWorkLocations(workLocations);
-
-        return toJobConditionResponseDto(jobConditionRepository.save(jobCondition));
+        jobCondition.setWorkLocations(workLocations); // ✅ 최신 workLocations 반영
     }
 
+
+
+
+    private Boolean defaultFalse(Boolean value) {
+        return value != null ? value : false;
+    }
 
     private Caregiver getById(CustomUserDetails user) throws GlobalException {
         return caregiverRepository.findById(user.getId()).orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
@@ -150,12 +201,14 @@ public class CareGiverService {
                 .independentMobility(saved.getIndependentMobility())
                 .locationRequestDTOList(saved.getWorkLocations().stream()
                         .map(dto -> CaregiverResponseDTO.LocationResponseDTO.builder()
+                                .workLocationId(dto.getId())
                                 .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
                                 .build()
                         )
                         .toList())
                 .workTimeRequestDTOList(saved.getWorkTimes().stream()
                         .map(dto -> CaregiverResponseDTO.WorkTimeResponseDTO.builder()
+                                .workTimeId(dto.getId())
                                 .start_time(TimeConverter.convertToDateTime(dto.getStartTime()))
                                 .end_time(TimeConverter.convertToDateTime(dto.getEndTime()))
                                 .dayOfWeek(dto.getDayOfWeek())
