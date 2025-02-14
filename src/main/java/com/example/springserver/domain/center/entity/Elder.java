@@ -9,6 +9,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.util.*;
 
 @Getter
 @Setter
@@ -46,6 +47,9 @@ public class Elder extends BaseEntity {
     private Integer weight;
 
     private boolean isTemporary;
+
+    @OneToMany(mappedBy = "elder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecruitCondition> recruitConditions = new ArrayList<>();
 
     /* 양방향 연관관계 편의 메서드 */
     public void changeCenter(Center center) {
