@@ -3,6 +3,7 @@ package com.example.springserver.domain.caregiver.dto.response;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Week;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class CaregiverResponseDTO {
@@ -56,45 +58,120 @@ public class CaregiverResponseDTO {
 
         private Long jobConditionId;
 
-        private Boolean flexibleSchedule;
+        private ScheduleAvailability flexibleSchedule;
 
-        private Boolean desiredHourlyWage;
+        private ScheduleAvailability desiredHourlyWage;
 
-        private Boolean selfFeeding;
+        private ScheduleAvailability selfFeeding;
 
-        private Boolean mealPreparation;
+        private ScheduleAvailability mealPreparation;
 
-        private Boolean cookingAssistance;
+        private ScheduleAvailability cookingAssistance;
 
-        private Boolean enteralNutritionSupport;
+        private ScheduleAvailability enteralNutritionSupport;
 
-        private Boolean selfToileting;
+        private ScheduleAvailability selfToileting;
 
-        private Boolean occasionalToiletingAssist;
+        private ScheduleAvailability occasionalToiletingAssist;
 
-        private Boolean diaperCare;
+        private ScheduleAvailability diaperCare;
 
-        private Boolean catheterOrStomaCare;
+        private ScheduleAvailability catheterOrStomaCare;
 
-        private Boolean independentMobility;
+        private ScheduleAvailability independentMobility;
 
-        private Boolean mobilityAssist;
+        private ScheduleAvailability mobilityAssist;
 
-        private Boolean wheelchairAssist;
+        private ScheduleAvailability wheelchairAssist;
 
-        private Boolean immobile;
+        private ScheduleAvailability immobile;
 
-        private Boolean cleaningLaundryAssist;
+        private ScheduleAvailability cleaningLaundryAssist;
 
-        private Boolean bathingAssist;
+        private ScheduleAvailability bathingAssist;
 
-        private Boolean hospitalAccompaniment;
+        private ScheduleAvailability hospitalAccompaniment;
 
-        private Boolean exerciseSupport;
+        private ScheduleAvailability exerciseSupport;
 
-        private Boolean emotionalSupport;
+        private ScheduleAvailability emotionalSupport;
 
-        private Boolean cognitiveStimulation;
+        private ScheduleAvailability cognitiveStimulation;
+
+        private List<LocationResponseDTO> locationRequestDTOList;
+
+        private List<WorkTimeResponseDTO> workTimeRequestDTOList;
+    }
+
+    @Getter
+    @Builder
+    public static class DetailJobConditionResponseDTO {
+
+        //CareGiver info
+
+        private String name;
+
+        private String contact;
+
+        private Boolean car;
+
+        private Boolean education;
+
+        private String img;
+
+        private String intro;
+
+        private String address;
+
+        private Boolean employmentStatus;
+
+        private List<CertificateResponseDTO> certificateResponseDTOList;
+
+        private List<ExperienceResponseDTO> experienceResponseDTOList ;
+
+        //jobCondition
+
+        private Long jobConditionId;
+
+        private ScheduleAvailability flexibleSchedule;
+
+        private ScheduleAvailability desiredHourlyWage;
+
+        private ScheduleAvailability selfFeeding;
+
+        private ScheduleAvailability mealPreparation;
+
+        private ScheduleAvailability cookingAssistance;
+
+        private ScheduleAvailability enteralNutritionSupport;
+
+        private ScheduleAvailability selfToileting;
+
+        private ScheduleAvailability occasionalToiletingAssist;
+
+        private ScheduleAvailability diaperCare;
+
+        private ScheduleAvailability catheterOrStomaCare;
+
+        private ScheduleAvailability independentMobility;
+
+        private ScheduleAvailability mobilityAssist;
+
+        private ScheduleAvailability wheelchairAssist;
+
+        private ScheduleAvailability immobile;
+
+        private ScheduleAvailability cleaningLaundryAssist;
+
+        private ScheduleAvailability bathingAssist;
+
+        private ScheduleAvailability hospitalAccompaniment;
+
+        private ScheduleAvailability exerciseSupport;
+
+        private ScheduleAvailability emotionalSupport;
+
+        private ScheduleAvailability cognitiveStimulation;
 
         private List<LocationResponseDTO> locationRequestDTOList;
 
@@ -119,9 +196,9 @@ public class CaregiverResponseDTO {
 
         private Week dayOfWeek;
 
-        private LocalDateTime start_time;
+        private LocalTime start_time;
 
-        private LocalDateTime end_time;
+        private LocalTime end_time;
 
     }
 
