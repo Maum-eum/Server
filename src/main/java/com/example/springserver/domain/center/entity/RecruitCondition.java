@@ -1,9 +1,7 @@
 package com.example.springserver.domain.center.entity;
 
-import com.example.springserver.domain.center.converter.RecruitConverter;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.UpdateRequestDto;
+import com.example.springserver.domain.center.converter.CareTypeListConverter;
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -26,22 +24,27 @@ public class RecruitCondition extends BaseEntity {
     @Column(name = "recruit_condition_id", nullable = false)
     private Long recruitConditionId;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
-    @NotNull
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private CareType careType; // 근무 종류
+    @Convert(converter = CareTypeListConverter.class)
+    @Column(name = "care_types", nullable = false)
+    private List<CareType> careTypes = new ArrayList<>();
 
-    @NotNull
     @Column(nullable = false)
     private boolean flexibleSchedule; // 시간 협의 여부
 
     @OneToMany(mappedBy = "recruitCondition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitTime> recruitTimes = new ArrayList<>();
+
+    private boolean mealAssistance;
+
+    private boolean toiletAssistance;
+
+    private boolean moveAssistance;
+
+    private boolean dailyLivingAssistance;
 
     private Integer desiredHourlyWage; // 희망 급여
 
@@ -81,6 +84,8 @@ public class RecruitCondition extends BaseEntity {
 
     private boolean cognitiveStimulation; // 인지 자극 활동
 
+    private String detailRequiredService;
+
     public void addRecruitTime(RecruitTime recruitTime) {
         if (!this.recruitTimes.contains(recruitTime)) {
             this.recruitTimes.add(recruitTime);
@@ -88,29 +93,27 @@ public class RecruitCondition extends BaseEntity {
         }
     }
 
-    public void update(UpdateRequestDto updateRequestDto) {
-        if (updateRequestDto.getCareType() != null) {
-            this.careType = updateRequestDto.getCareType();
-        }
-        this.flexibleSchedule = updateRequestDto.isFlexibleSchedule();
-        this.desiredHourlyWage = updateRequestDto.getDesiredHourlyWage();
-        this.selfFeeding = updateRequestDto.isSelfFeeding();
-        this.mealPreparation = updateRequestDto.isMealPreparation();
-        this.cookingAssistance = updateRequestDto.isCookingAssistance();
-        this.enteralNutritionSupport = updateRequestDto.isEnteralNutritionSupport();
-        this.selfToileting = updateRequestDto.isSelfToileting();
-        this.occasionalToiletingAssist = updateRequestDto.isOccasionalToiletingAssist();
-        this.diaperCare = updateRequestDto.isDiaperCare();
-        this.catheterOrStomaCare = updateRequestDto.isCatheterOrStomaCare();
-        this.independentMobility = updateRequestDto.isIndependentMobility();
-        this.mobilityAssist = updateRequestDto.isMobilityAssist();
-        this.wheelchairAssist = updateRequestDto.isWheelchairAssist();
-        this.immobile = updateRequestDto.isImmobile();
-        this.cleaningLaundryAssist = updateRequestDto.isCleaningLaundryAssist();
-        this.bathingAssist = updateRequestDto.isBathingAssist();
-        this.hospitalAccompaniment = updateRequestDto.isHospitalAccompaniment();
-        this.exerciseSupport = updateRequestDto.isExerciseSupport();
-        this.emotionalSupport = updateRequestDto.isEmotionalSupport();
-        this.cognitiveStimulation = updateRequestDto.isCognitiveStimulation();
+    public void update(RequestDto requestDto) {
+        this.careTypes = requestDto.getCareTypes();
+        this.flexibleSchedule = requestDto.isFlexibleSchedule();
+        this.desiredHourlyWage = requestDto.getDesiredHourlyWage();
+        this.selfFeeding = requestDto.isSelfFeeding();
+        this.mealPreparation = requestDto.isMealPreparation();
+        this.cookingAssistance = requestDto.isCookingAssistance();
+        this.enteralNutritionSupport = requestDto.isEnteralNutritionSupport();
+        this.selfToileting = requestDto.isSelfToileting();
+        this.occasionalToiletingAssist = requestDto.isOccasionalToiletingAssist();
+        this.diaperCare = requestDto.isDiaperCare();
+        this.catheterOrStomaCare = requestDto.isCatheterOrStomaCare();
+        this.independentMobility = requestDto.isIndependentMobility();
+        this.mobilityAssist = requestDto.isMobilityAssist();
+        this.wheelchairAssist = requestDto.isWheelchairAssist();
+        this.immobile = requestDto.isImmobile();
+        this.cleaningLaundryAssist = requestDto.isCleaningLaundryAssist();
+        this.bathingAssist = requestDto.isBathingAssist();
+        this.hospitalAccompaniment = requestDto.isHospitalAccompaniment();
+        this.exerciseSupport = requestDto.isExerciseSupport();
+        this.emotionalSupport = requestDto.isEmotionalSupport();
+        this.cognitiveStimulation = requestDto.isCognitiveStimulation();
     }
 }
