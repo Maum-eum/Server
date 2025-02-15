@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.elasticsearch.annotations.Mapping;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,6 @@ import java.util.List;
 @Getter
 @Entity
 @Setter
-@DynamicUpdate
-@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Center extends BaseEntity {
