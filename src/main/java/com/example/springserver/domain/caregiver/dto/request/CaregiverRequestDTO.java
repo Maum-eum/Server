@@ -3,6 +3,7 @@ package com.example.springserver.domain.caregiver.dto.request;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.Week;
+import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -129,6 +130,15 @@ public class CaregiverRequestDTO {
         private List<LocationRequestDTO> locationRequestDTOList;
 
         private List<WorkTimeRequestDTO> workTimeRequestDTOList;
+    }
+
+    @Getter
+    public static class RecruitReq {
+
+        private Long matchId;
+
+        private RecruitStatus status;
+
     }
 
     @Getter
