@@ -48,7 +48,11 @@ public class CaregiverController {
         return CaregiverConverter.infoResponseDto(searched);
     }
 
-    //===================수정해야할곳  ====================================================================
+    @Operation(summary = "요양보호사 구인상태변경", description = "Put")
+    @PutMapping("/status")
+    public Boolean changeStatus(@AuthenticationPrincipal CustomUserDetails user){
+        return careGiverService.changeStatus(user);
+    }
 
     @Operation(summary = "요양보호사 구직조건등록 및 수정", description = "Post")
     @PostMapping("/jobcondition")
@@ -82,6 +86,7 @@ public class CaregiverController {
                                                       @RequestBody @Valid RecruitReq request){
         return careGiverService.responseToRecruit(user,request);
     }
+
 //
 //    @Operation(summary = "요양보호사 정보수정", description = "Put")
 //    @PutMapping("/profile")

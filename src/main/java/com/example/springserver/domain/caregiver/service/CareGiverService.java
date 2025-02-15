@@ -133,6 +133,13 @@ public class CareGiverService {
         return toJobConditionResponseDto(jobCondition);
     }
 
+    @Transactional
+    public Boolean changeStatus(CustomUserDetails user) {
+        Caregiver byId = getById(user);
+        byId.setEmploymentStatus(!byId.getEmploymentStatus());
+        return caregiverRepository.save(byId).getEmploymentStatus();
+    }
+
     public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
         Caregiver byId = getById(user);
         JobCondition jobCondition = getJobCondition(byId);

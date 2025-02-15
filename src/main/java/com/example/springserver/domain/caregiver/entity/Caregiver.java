@@ -92,7 +92,9 @@ public class Caregiver extends BaseEntity {
         this.experiences = experiences;
     }
 
-
+    public void setEmploymentStatus(Boolean status) {
+        this.employmentStatus = status;
+    }
 
     public void setUpdate(Caregiver user, UpdateCaregiverReq request) {
         this.car = request.getCar();
