@@ -22,7 +22,7 @@ public class RecruitResponseDto {
 
         private Long elderId;
 
-        private CareType careType; // 근무 종류
+        private List<CareType> careTypes; // 근무 종류
 
         private boolean flexibleSchedule; // 시간 협의 여부
 
@@ -65,6 +65,8 @@ public class RecruitResponseDto {
         private boolean cognitiveStimulation; // 인지 자극 활동
 
         private List<RequestTimeDto> recruitTimes;
+
+        private String detailRequiredService; // 추가 요청 사항
     }
 
     @Builder
