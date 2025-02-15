@@ -50,24 +50,30 @@ public class CaregiverController {
 
     //===================수정해야할곳  ====================================================================
 
-    @Operation(summary = "요양보호사 구직조건등록", description = "Post")
-    @PostMapping("/preferences")
+    @Operation(summary = "요양보호사 구직조건등록 및 수정", description = "Post")
+    @PostMapping("/jobcondition")
     public JobConditionResponseDTO createJobCondition(@AuthenticationPrincipal CustomUserDetails user,
                                                       @RequestBody @Valid JobConditionRequestDTO request){
-        return  careGiverService.createJobCondition(user,request);
+        return  careGiverService.createOrUpdateJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직조건수정", description = "Put")
-    @PutMapping("/preferences")
+    @PutMapping("/jobcondition")
     public JobConditionResponseDTO updateJobCondition(@AuthenticationPrincipal CustomUserDetails user,
                                                       @RequestBody @Valid JobConditionRequestDTO request){
-        return  careGiverService.updateJobCondition(user,request);
+        return  careGiverService.createOrUpdateJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직정보조회", description = "Get")
-    @GetMapping("/preferences")
+    @GetMapping("/jobcondition")
     public JobConditionResponseDTO getJobCondition(@AuthenticationPrincipal CustomUserDetails user){
         return careGiverService.getJobCondition(user);
+    }
+
+    @Operation(summary = "요양보호사 상세정보조회", description = "Get")
+    @GetMapping("/detail")
+    public DetailJobConditionResponseDTO getDetailJobCondition(@AuthenticationPrincipal CustomUserDetails user){
+        return careGiverService.getDetailedJobCondition(user);
     }
 
     @Operation(summary = "요양보호사 구인요청응답", description = "Put")
