@@ -1,8 +1,7 @@
 package com.example.springserver.domain.center.controller;
 
 import com.example.springserver.domain.center.converter.RecruitConverter;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.CreateReqDto;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.UpdateRequestDto;
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.service.RecruitService;
@@ -34,15 +33,15 @@ public class RecruitController {
     // 구인 요양보호사 조건 등록
     @PostMapping
     public ResponseDto createRecruit(@PathVariable Long center_id, @PathVariable Long elder_id,
-                                     @RequestBody CreateReqDto createReqDto) {
-        return recruitService.createRecruit(center_id, elder_id, createReqDto);
+                                     @RequestBody RequestDto requestDto) {
+        return recruitService.createRecruit(center_id, elder_id, requestDto);
     }
 
     // 구인 요양보호사 조건 수정
     @PutMapping("/{recruit_id}")
     public void updateRecruit(@PathVariable Long center_id, @PathVariable Long elder_id, @PathVariable Long recruit_id,
-                                              @RequestBody UpdateRequestDto updateRequestDto) {
-        recruitService.updateRecruitCondition(center_id, recruit_id, elder_id, updateRequestDto);
+                                              @RequestBody RequestDto requestDto) {
+        recruitService.updateRecruitCondition(center_id, recruit_id, elder_id, requestDto);
     }
 
     // 구인 요양보호사 조건 삭제
