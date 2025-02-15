@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class CaregiverResponseDTO {
@@ -120,9 +121,9 @@ public class CaregiverResponseDTO {
 
         private Week dayOfWeek;
 
-        private LocalDateTime start_time;
+        private LocalTime start_time;
 
-        private LocalDateTime end_time;
+        private LocalTime end_time;
 
     }
 
