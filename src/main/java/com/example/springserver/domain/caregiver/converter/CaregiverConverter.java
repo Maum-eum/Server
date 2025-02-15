@@ -38,6 +38,7 @@ public class CaregiverConverter {
                 .education(caregiver.getEducation())
                 .intro(caregiver.getIntro())
                 .address(caregiver.getAddress())
+                .employmentStatus(caregiver.getEmploymentStatus())
                 .certificateResponseDTOList(caregiver.getCertificates().stream()
                         .map(CaregiverConverter::toResponseCertificate)
                         .toList())
