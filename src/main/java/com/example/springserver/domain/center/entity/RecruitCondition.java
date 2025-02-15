@@ -38,6 +38,14 @@ public class RecruitCondition extends BaseEntity {
     @OneToMany(mappedBy = "recruitCondition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitTime> recruitTimes = new ArrayList<>();
 
+    private boolean mealAssistance;
+
+    private boolean toiletAssistance;
+
+    private boolean moveAssistance;
+
+    private boolean dailyLivingAssistance;
+
     private Integer desiredHourlyWage; // 희망 급여
 
     private boolean selfFeeding; // 스스로 식사 가능

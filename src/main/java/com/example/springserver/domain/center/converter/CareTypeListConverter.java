@@ -12,13 +12,16 @@ public class CareTypeListConverter implements AttributeConverter<List<CareType>,
 
     @Override
     public String convertToDatabaseColumn(List<CareType> attribute) {
-        if (attribute == null || attribute.isEmpty()) return "";
-        return attribute.stream().map(Enum::name).collect(Collectors.joining(","));
+        return (attribute == null || attribute.isEmpty())
+                ? null : attribute.stream().map(Enum::name).collect(Collectors.joining(","));
     }
 
     @Override
     public List<CareType> convertToEntityAttribute(String dbData) {
-        if (dbData == null || dbData.isEmpty()) return List.of();
-        return Arrays.stream(dbData.split(",")).map(CareType::valueOf).collect(Collectors.toList());
+        return (dbData == null || dbData.isBlank())
+                ? List.of() : Arrays.stream(dbData.split(","))
+                    .map(CareType::valueOf)
+                    .collect(Collectors.toList());
     }
 }
+

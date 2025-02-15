@@ -17,6 +17,14 @@ public class RecruitRequestDto {
 
         private List<CareType> careTypes; // 근무 종류
 
+        private boolean mealAssistance;
+
+        private boolean toiletAssistance;
+
+        private boolean moveAssistance;
+
+        private boolean dailyLivingAssistance;
+
         private boolean flexibleSchedule; // 시간 협의 여부
 
         private int desiredHourlyWage; // 희망 급여
