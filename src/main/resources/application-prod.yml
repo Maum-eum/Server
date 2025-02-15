@@ -16,6 +16,11 @@ spring:
 
     defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연
 
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:/center.sql
+
   jwt:
     secret: ${JWT_SECRET}
 
