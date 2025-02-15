@@ -48,6 +48,8 @@ public class CaregiverController {
         return CaregiverConverter.infoResponseDto(searched);
     }
 
+    //===================수정해야할곳  ====================================================================
+
     @Operation(summary = "요양보호사 구직조건등록", description = "Post")
     @PostMapping("/preferences")
     public JobConditionResponseDTO createJobCondition(@AuthenticationPrincipal CustomUserDetails user,

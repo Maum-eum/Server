@@ -3,6 +3,7 @@ package com.example.springserver.domain.caregiver.dto.response;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Week;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -56,45 +57,45 @@ public class CaregiverResponseDTO {
 
         private Long jobConditionId;
 
-        private Boolean flexibleSchedule;
+        private ScheduleAvailability flexibleSchedule;
 
-        private Boolean desiredHourlyWage;
+        private ScheduleAvailability desiredHourlyWage;
 
-        private Boolean selfFeeding;
+        private ScheduleAvailability selfFeeding;
 
-        private Boolean mealPreparation;
+        private ScheduleAvailability mealPreparation;
 
-        private Boolean cookingAssistance;
+        private ScheduleAvailability cookingAssistance;
 
-        private Boolean enteralNutritionSupport;
+        private ScheduleAvailability enteralNutritionSupport;
 
-        private Boolean selfToileting;
+        private ScheduleAvailability selfToileting;
 
-        private Boolean occasionalToiletingAssist;
+        private ScheduleAvailability occasionalToiletingAssist;
 
-        private Boolean diaperCare;
+        private ScheduleAvailability diaperCare;
 
-        private Boolean catheterOrStomaCare;
+        private ScheduleAvailability catheterOrStomaCare;
 
-        private Boolean independentMobility;
+        private ScheduleAvailability independentMobility;
 
-        private Boolean mobilityAssist;
+        private ScheduleAvailability mobilityAssist;
 
-        private Boolean wheelchairAssist;
+        private ScheduleAvailability wheelchairAssist;
 
-        private Boolean immobile;
+        private ScheduleAvailability immobile;
 
-        private Boolean cleaningLaundryAssist;
+        private ScheduleAvailability cleaningLaundryAssist;
 
-        private Boolean bathingAssist;
+        private ScheduleAvailability bathingAssist;
 
-        private Boolean hospitalAccompaniment;
+        private ScheduleAvailability hospitalAccompaniment;
 
-        private Boolean exerciseSupport;
+        private ScheduleAvailability exerciseSupport;
 
-        private Boolean emotionalSupport;
+        private ScheduleAvailability emotionalSupport;
 
-        private Boolean cognitiveStimulation;
+        private ScheduleAvailability cognitiveStimulation;
 
         private List<LocationResponseDTO> locationRequestDTOList;
 
