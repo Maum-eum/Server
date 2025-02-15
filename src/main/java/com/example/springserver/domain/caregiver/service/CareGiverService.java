@@ -103,6 +103,7 @@ public class CareGiverService {
 
     @Transactional
     public JobConditionResponseDTO updateJobCondition(CustomUserDetails user, JobConditionRequestDTO request) {
+
         Caregiver caregiver = getById(user);
 
         JobCondition jobCondition = getJobCondition(caregiver);
@@ -134,12 +135,17 @@ public class CareGiverService {
         final JobCondition finalJobCondition = jobCondition;
 
         List<WorkTime> workTimes = request.getWorkTimeRequestDTOList().stream()
-                .map(dto -> WorkTime.builder()
+                .map(dto -> {
+                    if (dto.getStartTime() >= dto.getEndTime()) {
+                        throw new GlobalException(ErrorCode.WORK_TIME_INVALID);
+                    }
+                    return WorkTime.builder()
                         .jobCondition(finalJobCondition)  // `managed` 상태의 jobCondition 사용
                         .startTime((long) dto.getStartTime())
                         .endTime((long) dto.getEndTime())
                         .dayOfWeek(dto.getDayOfWeek())
-                        .build())
+                        .build();
+                    })
                 .collect(Collectors.toList());
 
         workTimeRepository.saveAll(workTimes);

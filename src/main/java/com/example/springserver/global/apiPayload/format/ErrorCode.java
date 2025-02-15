@@ -51,6 +51,7 @@ public enum ErrorCode {
 
     // 시간 관련 에러
     TIME_LIMIT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "TIME_LIMIT_OUT4001","시간 범위 초과 입력입니다."),
+    WORK_TIME_INVALID(HttpStatus.BAD_REQUEST,"REQUEST_TIME_INVALID4001" , "근무 시작시간보다 끝시간이 더 짧을 수 없습니다." ),
 
     // 지역 관련 에러
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),
@@ -67,8 +68,8 @@ public enum ErrorCode {
 
     // 페이징 에러
     PAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PAGE001", "페이지가 0 이하입니다."),
-    NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!")
-    ;
+    NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!");
+
     private final HttpStatus status;
     private final String code;
     private final String message;
