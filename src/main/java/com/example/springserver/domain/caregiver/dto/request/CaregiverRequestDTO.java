@@ -2,6 +2,7 @@ package com.example.springserver.domain.caregiver.dto.request;
 
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Week;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import jakarta.validation.constraints.NotEmpty;
@@ -87,45 +88,45 @@ public class CaregiverRequestDTO {
     @Getter
     public static class JobConditionRequestDTO {
 
-        private Boolean flexibleSchedule = false;
+        private ScheduleAvailability flexibleSchedule;
 
-        private Boolean desiredHourlyWage = false;
+        private ScheduleAvailability desiredHourlyWage;
 
-        private Boolean selfFeeding = false;
+        private ScheduleAvailability selfFeeding;
 
-        private Boolean mealPreparation = false;
+        private ScheduleAvailability mealPreparation;
 
-        private Boolean cookingAssistance = false;
+        private ScheduleAvailability cookingAssistance;
 
-        private Boolean enteralNutritionSupport = false;
+        private ScheduleAvailability enteralNutritionSupport;
 
-        private Boolean selfToileting = false;
+        private ScheduleAvailability selfToileting;
 
-        private Boolean occasionalToiletingAssist = false;
+        private ScheduleAvailability occasionalToiletingAssist;
 
-        private Boolean diaperCare = false;
+        private ScheduleAvailability diaperCare;
 
-        private Boolean catheterOrStomaCare = false;
+        private ScheduleAvailability catheterOrStomaCare;
 
-        private Boolean independentMobility = false;
+        private ScheduleAvailability independentMobility;
 
-        private Boolean mobilityAssist = false;
+        private ScheduleAvailability mobilityAssist;
 
-        private Boolean wheelchairAssist = false;
+        private ScheduleAvailability wheelchairAssist;
 
-        private Boolean immobile = false;
+        private ScheduleAvailability immobile;
 
-        private Boolean cleaningLaundryAssist = false;
+        private ScheduleAvailability cleaningLaundryAssist;
 
-        private Boolean bathingAssist = false;
+        private ScheduleAvailability bathingAssist;
 
-        private Boolean hospitalAccompaniment = false;
+        private ScheduleAvailability hospitalAccompaniment;
 
-        private Boolean exerciseSupport = false;
+        private ScheduleAvailability exerciseSupport;
 
-        private Boolean emotionalSupport = false;
+        private ScheduleAvailability emotionalSupport;
 
-        private Boolean cognitiveStimulation = false;
+        private ScheduleAvailability cognitiveStimulation;
 
         private List<LocationRequestDTO> locationRequestDTOList;
 
