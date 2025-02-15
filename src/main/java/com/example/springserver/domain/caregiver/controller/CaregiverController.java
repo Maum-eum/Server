@@ -68,12 +68,12 @@ public class CaregiverController {
         return careGiverService.getJobCondition(user);
     }
 
-//    @Operation(summary = "요양보호사 정보수정", description = "Put")
-//    @PutMapping("/profile")
-//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
-//        Caregiver searched = careGiverService.updateUserInfo(request);
-//        return CaregiverConverter.infoResponseDto(searched);
-//    }
+    @Operation(summary = "요양보호사 구인요청응답", description = "Put")
+    @PutMapping("/response")
+    public String responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
+                                                      @RequestBody @Valid RecruitReq request){
+        return careGiverService.responseToRecruit(user,request);
+    }
 //
 //    @Operation(summary = "요양보호사 정보수정", description = "Put")
 //    @PutMapping("/profile")

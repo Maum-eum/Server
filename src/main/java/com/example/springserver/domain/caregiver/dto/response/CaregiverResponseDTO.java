@@ -29,16 +29,12 @@ public class CaregiverResponseDTO {
     @Getter
     public static class CareGiverInfoResponseDTO{
 
-        @NotEmpty
         private String name;
 
-        @NotEmpty
         private String contact;
 
-        @NotNull
         private Boolean car;
 
-        @NotNull
         private Boolean education;
 
         private String img;
@@ -58,45 +54,47 @@ public class CaregiverResponseDTO {
     @Builder
     public static class JobConditionResponseDTO {
 
-        private Boolean flexibleSchedule = false;
+        private Long jobConditionId;
 
-        private Boolean desiredHourlyWage = false;
+        private Boolean flexibleSchedule;
 
-        private Boolean selfFeeding = false;
+        private Boolean desiredHourlyWage;
 
-        private Boolean mealPreparation = false;
+        private Boolean selfFeeding;
 
-        private Boolean cookingAssistance = false;
+        private Boolean mealPreparation;
 
-        private Boolean enteralNutritionSupport = false;
+        private Boolean cookingAssistance;
 
-        private Boolean selfToileting = false;
+        private Boolean enteralNutritionSupport;
 
-        private Boolean occasionalToiletingAssist = false;
+        private Boolean selfToileting;
 
-        private Boolean diaperCare = false;
+        private Boolean occasionalToiletingAssist;
 
-        private Boolean catheterOrStomaCare = false;
+        private Boolean diaperCare;
 
-        private Boolean independentMobility = false;
+        private Boolean catheterOrStomaCare;
 
-        private Boolean mobilityAssist = false;
+        private Boolean independentMobility;
 
-        private Boolean wheelchairAssist = false;
+        private Boolean mobilityAssist;
 
-        private Boolean immobile = false;
+        private Boolean wheelchairAssist;
 
-        private Boolean cleaningLaundryAssist = false;
+        private Boolean immobile;
 
-        private Boolean bathingAssist = false;
+        private Boolean cleaningLaundryAssist;
 
-        private Boolean hospitalAccompaniment = false;
+        private Boolean bathingAssist;
 
-        private Boolean exerciseSupport = false;
+        private Boolean hospitalAccompaniment;
 
-        private Boolean emotionalSupport = false;
+        private Boolean exerciseSupport;
 
-        private Boolean cognitiveStimulation = false;
+        private Boolean emotionalSupport;
+
+        private Boolean cognitiveStimulation;
 
         private List<LocationResponseDTO> locationRequestDTOList;
 
@@ -133,10 +131,8 @@ public class CaregiverResponseDTO {
 
         private String certNum;
 
-        @NotNull
         private CertType certType;
 
-        @NotNull
         private Level certRate;
 
     }
@@ -145,13 +141,10 @@ public class CaregiverResponseDTO {
     @Builder
     public static class ExperienceResponseDTO{
 
-        @NotNull
         private int duration;
 
-        @NotEmpty
         private String title;
 
-        @NotEmpty
         private String description;
 
     }

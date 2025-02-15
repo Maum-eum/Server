@@ -1,5 +1,6 @@
 package com.example.springserver.domain.center.dto.request;
 
+import com.example.springserver.domain.caregiver.entity.enums.Week;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -118,12 +119,10 @@ public class RecruitRequestDto {
     @AllArgsConstructor
     public static class RequestTimeDto {
 
-        private String dayOfWeek;
+        private Week dayOfWeek;
 
-        @JsonFormat(pattern = "HH:mm")
-        private LocalTime startTime;
+        private Long startTime;
 
-        @JsonFormat(pattern = "HH:mm")
-        private LocalTime endTime;
+        private Long endTime;
     }
 }
