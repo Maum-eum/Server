@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/center")
+@RequestMapping("/center")
 public class CenterController {
 
     private final CenterService centerService;
