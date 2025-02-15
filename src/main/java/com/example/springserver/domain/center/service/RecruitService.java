@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -111,10 +112,21 @@ public class RecruitService {
 
         // 첫 번째 시간 정보로 유효성 검사 진행 (필요시 모든 recruitTimes를 검증할 수 있음)
         RequestTimeDto requestTimeDto = createRecruitDto.getRecruitTimes().get(0);
-        long dailyHour = Duration.between(requestTimeDto.getStartTime(), requestTimeDto.getEndTime()).toHours();
+        long dailyHour = Duration.between(
+                changeToLocalDateTime(
+                        requestTimeDto
+                                .getStartTime()),
+                changeToLocalDateTime(
+                        requestTimeDto
+                                .getEndTime()))
+                .toHours();
 
         // 최저임금과 근로시간 검증
         recruitLaborLawValidator.validateMinimumWage(createRecruitDto.getDesiredHourlyWage()); // 희망 급여에 대한 최저임금 검증
         recruitLaborLawValidator.validateWorkingHours(dailyHour); // 근로시간 검증
+    }
+
+    public LocalTime changeToLocalDateTime(Long time){
+        return LocalTime.MIN.plusMinutes(time * 30);
     }
 }

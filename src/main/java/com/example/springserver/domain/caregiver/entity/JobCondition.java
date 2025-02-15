@@ -1,7 +1,7 @@
 package com.example.springserver.domain.caregiver.entity;
 
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.JobConditionRequestDTO;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -25,84 +25,104 @@ public class JobCondition extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "flexible_schedule", nullable = false)
-    private Boolean flexibleSchedule;
+    private ScheduleAvailability flexibleSchedule;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "desired_hourly_wage", nullable = false)
-    private Boolean desiredHourlyWage = false;
+    private ScheduleAvailability desiredHourlyWage;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "self_feeding", nullable = false)
-    private Boolean selfFeeding = false;
+    private ScheduleAvailability selfFeeding;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "meal_preparation", nullable = false)
-    private Boolean mealPreparation = false;
+    private ScheduleAvailability mealPreparation;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "cooking_assistance", nullable = false)
-    private Boolean cookingAssistance = false;
+    private ScheduleAvailability cookingAssistance;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "enteral_nutrition_support", nullable = false)
-    private Boolean enteralNutritionSupport = false;
+    private ScheduleAvailability enteralNutritionSupport;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "self_toileting", nullable = false)
-    private Boolean selfToileting = false;
+    private ScheduleAvailability selfToileting;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "occasional_toileting_assist", nullable = false)
-    private Boolean occasionalToiletingAssist = false;
+    private ScheduleAvailability occasionalToiletingAssist;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "diaper_care", nullable = false)
-    private Boolean diaperCare = false;
+    private ScheduleAvailability diaperCare;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "catheter_or_stoma_care", nullable = false)
-    private Boolean catheterOrStomaCare = false;
+    private ScheduleAvailability catheterOrStomaCare;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "independent_mobility", nullable = false)
-    private Boolean independentMobility = false;
+    private ScheduleAvailability independentMobility;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "mobility_assist", nullable = false)
-    private Boolean mobilityAssist = false;
+    private ScheduleAvailability mobilityAssist;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "wheelchair_assist", nullable = false)
-    private Boolean wheelchairAssist = false;
+    private ScheduleAvailability wheelchairAssist;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "immobile", nullable = false)
-    private Boolean immobile = false;
+    private ScheduleAvailability immobile;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "cleaning_laundry_assist", nullable = false)
-    private Boolean cleaningLaundryAssist = false;
+    private ScheduleAvailability cleaningLaundryAssist;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "bathing_assist", nullable = false)
-    private Boolean bathingAssist = false;
+    private ScheduleAvailability bathingAssist;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "hospital_accompaniment", nullable = false)
-    private Boolean hospitalAccompaniment = false;
+    private ScheduleAvailability hospitalAccompaniment;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "exercise_support", nullable = false)
-    private Boolean exerciseSupport = false;
+    private ScheduleAvailability exerciseSupport;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "emotional_support", nullable = false)
-    private Boolean emotionalSupport = false;
+    private ScheduleAvailability emotionalSupport;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "cognitive_stimulation", nullable = false)
-    private Boolean cognitiveStimulation = false;
+    private ScheduleAvailability cognitiveStimulation;
 
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false)
