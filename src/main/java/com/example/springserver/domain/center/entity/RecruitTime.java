@@ -1,5 +1,6 @@
 package com.example.springserver.domain.center.entity;
 
+import com.example.springserver.domain.caregiver.entity.enums.Week;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
 import jakarta.persistence.*;
@@ -28,14 +29,15 @@ public class RecruitTime {
     private RecruitCondition recruitCondition;
 
     @ColumnDefault("'MON'")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String dayOfWeek;
+    private Week dayOfWeek;
 
     @Column(nullable = false)
-    private LocalTime startTime;
+    private Long startTime;
 
     @Column(nullable = false)
-    private LocalTime endTime;
+    private Long endTime;
 
     public void setRecruitCondition(RecruitCondition recruitCondition) {
         this.recruitCondition = recruitCondition;
