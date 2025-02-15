@@ -21,11 +21,13 @@ public class CenterResponseDto {
     public static class CenterSearchDto {
         private Long centerId;
 
+        private String centerName;
+
+        private String centerLeaderName;
+
         private List<AdminResponseDto> admins;
 
         private List<ResponseDto> elders;
-
-        private String centerName;
 
         private Boolean hasBathCar; // 목욕차량 보유 여부
 

@@ -35,7 +35,8 @@ public class ElasticsearchInitializer {
 
             // Elasticsearch에 저장
             List<CenterDocument> documents = centers.stream()
-                    .map(c -> new CenterDocument(c.getCenterId(), c.getCenterName(), c.getAddress()))
+                    .map(c -> new CenterDocument(c.getCenterId(), c.getCenterName(), c.getCenterLeaderName(), c.getAddress(),
+                            c.getHasBathCar(), c.getRate(), c.getIntro(), c.getStartTime(), c.getEndTime()))
                     .collect(Collectors.toList());
 
             centerSearchRepository.saveAll(documents);
