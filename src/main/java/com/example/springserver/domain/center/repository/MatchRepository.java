@@ -13,10 +13,13 @@ public interface MatchRepository extends JpaRepository<Match,Long> {
 
     List<Match> findAllByJobCondition(JobCondition jobCondition);
 
-    @Query("SELECT m FROM Match m WHERE m.jobCondition = :jobCondition AND m.status IN (:statuses)")
+    @Query("SELECT DISTINCT m FROM Match m "
+            + "JOIN FETCH m.requirementCondition rc "
+            + "JOIN FETCH rc.elder e "
+            + "LEFT JOIN FETCH rc.recruitTimes rt "
+            + "WHERE m.jobCondition = :jobCondition AND m.status IN (:statuses)")
     List<Match> findAllByJobConditionWithStatus(
             @Param("jobCondition") JobCondition jobCondition,
             @Param("statuses") List<MatchStatus> statuses
     );
-
 }
