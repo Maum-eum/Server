@@ -56,6 +56,9 @@ public class Elder extends BaseEntity {
     @OneToMany(mappedBy = "elder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitCondition> recruitConditions = new ArrayList<>();
 
+    @OneToOne(mappedBy = "elder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Care careInfo;
+
     /* 양방향 연관관계 편의 메서드 */
     public void changeCenter(Center center) {
         this.center = center;
