@@ -6,6 +6,7 @@ import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.center.repository.RecruitTimeRepository;
+import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.apiPayload.format.ElderException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.RecruitException;
@@ -14,6 +15,7 @@ import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
 import com.example.springserver.domain.center.repository.RecruitCondRepository;
+import com.example.springserver.repository.location.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,18 +33,17 @@ public class RecruitService {
 
     private final RecruitCondRepository recruitCondRepository;
     private final RecruitTimeRepository recruitTimeRepository;
+    private final LocationRepository locationRepository;
     private final ElderRepository elderRepository;
 
     private final RecruitLaborLawValidator recruitLaborLawValidator;
 
     public List<RecruitCondition> getRecruitConditionList(Long centerId, Long elderId) {
-
         isValidCenter(elderId, centerId);
         return recruitCondRepository.findWithRecruitTimesByElderId(elderId);
     }
 
     public RecruitCondition getRecruitCondition(Long centerId, Long elderId, Long recruitId) {
-
         isValidCenter(elderId, centerId);
         return recruitCondRepository.findWithRecruitTimesById(recruitId)
                 .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
@@ -50,43 +51,26 @@ public class RecruitService {
 
     @Transactional
     public ResponseDto createRecruit(Long centerId, Long elderId, RequestDto createRequestDto) {
+
+        // 요청 데이터 검증
         isValidCenter(elderId, centerId);
+        isValidRecruitCondition(createRequestDto);
 
-        Elder elder = elderRepository.findById(elderId)
-                .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_FOUND));
+        Elder elder = getElderById(elderId);
+        RecruitCondition recruitCondition = saveOrUpdateRecruitCondition(null, elder, createRequestDto);
 
-        RecruitCondition recruitCondition = RecruitConverter.toRecruitCondition(createRequestDto, elder);
-
-        for (RequestTimeDto time : createRequestDto.getRecruitTimes()) {
-            RecruitTime recruitTime = RecruitConverter.toRecruitTime(time, recruitCondition);
-            recruitCondition.addRecruitTime(recruitTime); // 연관관계 매핑
-        }
-
-        elder.getRecruitConditions().add(recruitCondition);
-
-        recruitCondRepository.save(recruitCondition);
         return RecruitConverter.toConditionResponseDto(recruitCondition);
     }
 
     @Transactional
     public void updateRecruitCondition(Long centerId, Long elderId, Long recruitConditionId, RequestDto requestDto) {
 
+        // 요청 데이터 검증
         isValidCenter(elderId, centerId);
         isValidRecruitCondition(requestDto);
 
-        RecruitCondition recruitCondition = recruitCondRepository.findById(recruitConditionId)
-                .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
-
-        recruitTimeRepository.deleteByRecruitConditionId(recruitConditionId);
-        recruitCondition.getRecruitTimes().clear();
-
-        recruitCondition.update(requestDto);
-
-        for (RequestTimeDto time : requestDto.getRecruitTimes()) {
-            RecruitTime recruitTime = RecruitConverter.toRecruitTime(time, recruitCondition);
-            recruitCondition.addRecruitTime(recruitTime); // 연관관계 매핑
-        }
-        recruitCondRepository.save(recruitCondition);
+        Elder elder = getElderById(elderId);
+        saveOrUpdateRecruitCondition(recruitConditionId, elder, requestDto);
     }
 
     @Transactional
@@ -94,39 +78,65 @@ public class RecruitService {
         isValidCenter(elderId, centerId);
 
         RecruitCondition recruitCondition = recruitCondRepository.findById(recruitConditionId)
-                        .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
+                .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
+
         recruitCondRepository.delete(recruitCondition);
     }
 
-    public void isValidCenter(Long elderId, Long centerId) {
+    private RecruitCondition saveOrUpdateRecruitCondition(Long recruitConditionId, Elder elder, RequestDto requestDto) {
+        Location location = locationRepository.findByLocationId(requestDto.getRecruitLocation());
+        RecruitCondition recruitCondition;
+
+        if (recruitConditionId == null) { // create
+            recruitCondition = RecruitConverter.toRecruitCondition(requestDto, elder, location);
+        } else { // update
+            recruitCondition = recruitCondRepository.findById(recruitConditionId)
+                    .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
+
+            recruitCondition.update(requestDto, location);
+            recruitTimeRepository.deleteByRecruitConditionId(recruitConditionId);
+            recruitCondition.getRecruitTimes().clear();
+        }
+
+        recruitCondRepository.save(recruitCondition);
+        RecruitTimesMapping(recruitCondition, requestDto.getRecruitTimes());
+        return recruitCondition;
+    }
+
+    private void RecruitTimesMapping(RecruitCondition recruitCondition, List<RequestTimeDto> recruitTimes) {
+        recruitTimes.forEach(time -> {
+            RecruitTime recruitTime = RecruitConverter.toRecruitTime(time, recruitCondition);
+            recruitCondition.addRecruitTime(recruitTime);
+        });
+    }
+
+    private Elder getElderById(Long elderId) {
+        return elderRepository.findById(elderId)
+                .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_FOUND));
+    }
+
+    private void isValidCenter(Long elderId, Long centerId) {
         elderRepository.findByElderIdAndCenter_CenterId(elderId, centerId)
                 .orElseThrow(() -> new ElderException(ErrorCode.CENTER_NOT_FOUND));
     }
 
-    // 근로기준법 시간 검증 메서드
-    public void isValidRecruitCondition(RequestDto createRecruitDto) {
-
+    private void isValidRecruitCondition(RequestDto createRecruitDto) {
         if (createRecruitDto.getRecruitTimes() == null || createRecruitDto.getRecruitTimes().isEmpty()) {
             throw new RecruitException(ErrorCode.RECRUIT_TIME_INVALID);
         }
 
-        // 첫 번째 시간 정보로 유효성 검사 진행 (필요시 모든 recruitTimes를 검증할 수 있음)
-        RequestTimeDto requestTimeDto = createRecruitDto.getRecruitTimes().get(0);
-        long dailyHour = Duration.between(
-                changeToLocalDateTime(
-                        requestTimeDto
-                                .getStartTime()),
-                changeToLocalDateTime(
-                        requestTimeDto
-                                .getEndTime()))
-                .toHours();
-
-        // 최저임금과 근로시간 검증
-        recruitLaborLawValidator.validateMinimumWage(createRecruitDto.getDesiredHourlyWage()); // 희망 급여에 대한 최저임금 검증
-        recruitLaborLawValidator.validateWorkingHours(dailyHour); // 근로시간 검증
+        for(RequestTimeDto requestTimeDto : createRecruitDto.getRecruitTimes()) {
+            long dailyHour = Duration.between(
+                            convertTime(requestTimeDto.getStartTime()),
+                            convertTime(requestTimeDto.getEndTime()))
+                    .toHours();
+            log.info("현재 하루 근무 시간은 = {} - {} = {}", convertTime(requestTimeDto.getEndTime()), convertTime(requestTimeDto.getStartTime()), dailyHour);
+            recruitLaborLawValidator.validateMinimumWage(createRecruitDto.getDesiredHourlyWage());
+            recruitLaborLawValidator.validateWorkingHours(dailyHour);
+        }
     }
 
-    public LocalTime changeToLocalDateTime(Long time){
+    private LocalTime convertTime(Long time) {
         return LocalTime.MIN.plusMinutes(time * 30);
     }
 }
