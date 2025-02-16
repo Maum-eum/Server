@@ -44,12 +44,12 @@ public class ElderService {
     @Transactional
     public List<Elder> getElderList(Long centerId, boolean isTemporary) {
         getValidCenter(centerId);
-        return elderRepository.findByIsTemporary(isTemporary);
+        return elderRepository.findByIsTemporarySave(isTemporary);
     }
 
     public Elder getElderDetail(Long centerId, Long elderId, boolean isTemporary) {
         getValidElder(elderId, centerId);
-        return elderRepository.findByElderIdAndIsTemporary(elderId, isTemporary);
+        return elderRepository.findByElderIdAndIsTemporarySave(elderId, isTemporary);
     }
 
     @Transactional
