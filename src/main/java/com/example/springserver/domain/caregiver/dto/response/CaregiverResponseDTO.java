@@ -1,18 +1,13 @@
 package com.example.springserver.domain.caregiver.dto.response;
 
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
-import com.example.springserver.domain.caregiver.entity.enums.Week;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -98,9 +93,13 @@ public class CaregiverResponseDTO {
 
         private ScheduleAvailability cognitiveStimulation;
 
-        private List<LocationResponseDTO> locationRequestDTOList;
+        private String dayOfWeek;
 
-        private List<WorkTimeResponseDTO> workTimeRequestDTOList;
+        private Long startTime;
+
+        private Long endTime;
+
+        private List<LocationResponseDTO> locationRequestDTOList;
     }
 
     @Getter
@@ -173,9 +172,14 @@ public class CaregiverResponseDTO {
 
         private ScheduleAvailability cognitiveStimulation;
 
+        private String dayOfWeek;
+
+        private Long startTime;
+
+        private Long endTime;
+
         private List<LocationResponseDTO> locationRequestDTOList;
 
-        private List<WorkTimeResponseDTO> workTimeRequestDTOList;
     }
 
     @Getter
@@ -185,20 +189,6 @@ public class CaregiverResponseDTO {
         private Long workLocationId;
 
         private String locationName;
-
-    }
-
-    @Getter
-    @Builder
-    public static class WorkTimeResponseDTO{
-
-        private Long workTimeId;
-
-        private Week dayOfWeek;
-
-        private LocalTime start_time;
-
-        private LocalTime end_time;
 
     }
 
