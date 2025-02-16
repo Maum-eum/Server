@@ -1,12 +1,13 @@
 package com.example.springserver.domain.center.entity;
 
+import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
+import com.example.springserver.domain.center.converter.enums.InmateEnumListConverter;
+import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.global.common.entity.BaseEntity;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -40,6 +41,10 @@ public class Elder extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ElderRate rate; // 장기 요양 등급
+
+    @Convert(converter = InmateEnumListConverter.class)
+    @Column(name = "inmate_types")
+    private List<Inmate> inmateTypes; // 동거인 여부 enum list
 
     @Size(max = 255)
     private String imgUrl;
