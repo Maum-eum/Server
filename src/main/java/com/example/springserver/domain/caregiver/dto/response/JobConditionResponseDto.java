@@ -3,49 +3,12 @@ package com.example.springserver.domain.caregiver.dto.response;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.List;
 
-public class CaregiverResponseDTO {
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SignUpCaregiverResult {
-        private Long caregiverId;
-        private String createAt;
-    }
-
-    @Builder
-    @Getter
-    public static class CareGiverInfoResponseDTO{
-
-        private String name;
-
-        private String contact;
-
-        private Boolean car;
-
-        private Boolean education;
-
-        private String img;
-
-        private String intro;
-
-        private String address;
-
-        private Boolean employmentStatus;
-
-        private List<CertificateResponseDTO> certificateResponseDTOList;
-
-        private List<ExperienceResponseDTO> experienceResponseDTOList ;
-    }
+public class JobConditionResponseDto {
 
     @Getter
     @Builder
@@ -55,7 +18,7 @@ public class CaregiverResponseDTO {
 
         private ScheduleAvailability flexibleSchedule;
 
-        private ScheduleAvailability desiredHourlyWage;
+        private Integer desiredHourlyWage;
 
         private ScheduleAvailability selfFeeding;
 
@@ -99,7 +62,7 @@ public class CaregiverResponseDTO {
 
         private Long endTime;
 
-        private List<LocationResponseDTO> locationRequestDTOList;
+        private List<LocationResponseDTO> locationRequestDtoList;
     }
 
     @Getter
@@ -134,7 +97,7 @@ public class CaregiverResponseDTO {
 
         private ScheduleAvailability flexibleSchedule;
 
-        private ScheduleAvailability desiredHourlyWage;
+        private Integer desiredHourlyWage;
 
         private ScheduleAvailability selfFeeding;
 
@@ -192,7 +155,6 @@ public class CaregiverResponseDTO {
 
     }
 
-    @Getter
     @Builder
     public static class CertificateResponseDTO{
 
@@ -215,5 +177,4 @@ public class CaregiverResponseDTO {
         private String description;
 
     }
-
 }
