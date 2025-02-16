@@ -2,6 +2,7 @@ package com.example.springserver.domain.center.dto.request;
 
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.location.entity.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,8 @@ public class RecruitRequestDto {
     public static class RequestDto {
 
         private List<CareType> careTypes; // 근무 종류
+
+        private Long recruitLocation;
 
         private boolean mealAssistance;
 
