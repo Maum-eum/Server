@@ -1,5 +1,9 @@
 package com.example.springserver.global.security.jwt;
 
+import com.example.springserver.domain.center.entity.Admin;
+import com.example.springserver.domain.center.repository.AdminRepository;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.apiPayload.format.ResultResponse;
 import com.example.springserver.global.common.dto.request.UserRequestDTO;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -17,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -81,6 +86,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 "userId", userId,
                 "role", role
         );
+
+        // ROLE_ADMIN이면 centerId 추가
+        if ("ROLE_ADMIN".equals(role)) {
+            Long centerId = userDetails.getCenter().getCenterId();
+            String centerName = userDetails.getCenter().getCenterName();
+            String name = userDetails.getName();
+            responseData = new HashMap<>(responseData); // 불변 Map을 변경 가능하도록 변환
+            responseData.put("centerId", centerId);
+            responseData.put("centerName", centerName);
+            responseData.put("name", name);
+        }
+
         ResultResponse<Map<String, Object>> responseBody = ResultResponse.success(responseData);
 
         // 응답 설정
