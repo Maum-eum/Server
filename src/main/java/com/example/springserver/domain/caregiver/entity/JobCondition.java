@@ -30,9 +30,8 @@ public class JobCondition extends BaseEntity {
     private ScheduleAvailability flexibleSchedule;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "desired_hourly_wage", nullable = false)
-    private ScheduleAvailability desiredHourlyWage;
+    private Integer desiredHourlyWage;
 
     @NotNull
     @Enumerated(EnumType.STRING)
