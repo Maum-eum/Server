@@ -1,15 +1,12 @@
 package com.example.springserver.domain.center.dto.request;
 
-import com.example.springserver.domain.caregiver.entity.enums.Week;
-import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.enums.CareType;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.springserver.domain.center.entity.enums.Week;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.List;
 
 public class RecruitRequestDto {
