@@ -1,13 +1,11 @@
 package com.example.springserver.domain.caregiver.entity;
 
 import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.UpdateCaregiverReq;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.UpdateCaregiverReqDto;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -96,7 +94,7 @@ public class Caregiver extends BaseEntity {
         this.employmentStatus = status;
     }
 
-    public void setUpdate(Caregiver user, UpdateCaregiverReq request) {
+    public void setUpdate(Caregiver user, UpdateCaregiverReqDto request) {
         this.car = request.getCar();
         this.img = request.getImg();
         this.education = request.getEducation();

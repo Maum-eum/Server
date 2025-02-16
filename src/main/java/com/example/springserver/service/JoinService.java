@@ -1,7 +1,7 @@
 package com.example.springserver.service;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.CertificateRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.ExperienceRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.SignUpCaregiverReq;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.SignUpCaregiverReqDto;
 import com.example.springserver.domain.caregiver.repository.CertificateRepository;
 import com.example.springserver.domain.caregiver.repository.ExperienceRepository;
 import com.example.springserver.domain.center.converter.AdminConverter;
@@ -35,7 +35,7 @@ public class JoinService {
     private final ExperienceRepository experienceRepository;
 
     @Transactional
-    public Caregiver signUpCaregiver(SignUpCaregiverReq request) {
+    public Caregiver signUpCaregiver(SignUpCaregiverReqDto request) {
 
         List<CertificateRequestDTO> certificateRequestDTOList = request.getCertificateRequestDTOList();
         List<ExperienceRequestDTO> experienceRequestDTOList = request.getExperienceRequestDTOList();
