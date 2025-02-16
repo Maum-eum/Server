@@ -1,6 +1,7 @@
-package com.example.springserver.domain.center.entity;
+package com.example.springserver.domain.match.entity;
 
 import com.example.springserver.domain.caregiver.entity.JobCondition;
+import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import jakarta.persistence.*;

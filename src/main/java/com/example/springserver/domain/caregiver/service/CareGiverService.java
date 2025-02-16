@@ -1,7 +1,6 @@
 package com.example.springserver.domain.caregiver.service;
 
 import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.*;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.DetailJobConditionResponseDTO;
@@ -15,11 +14,11 @@ import com.example.springserver.domain.caregiver.repository.JobConditionReposito
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
 import com.example.springserver.domain.caregiver.repository.WorkTimeRepository;
 import com.example.springserver.domain.center.converter.TimeConverter;
-import com.example.springserver.domain.center.entity.Match;
+import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
-import com.example.springserver.domain.center.repository.MatchRepository;
+import com.example.springserver.domain.match.repository.MatchRepository;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
@@ -33,9 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
