@@ -4,7 +4,7 @@ import com.example.springserver.domain.center.dto.request.RecruitRequestDto.Requ
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto.*;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.CreateReqDto;
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.RecruitTime;
 
 import java.util.ArrayList;
@@ -13,31 +13,36 @@ import java.util.stream.Collectors;
 
 public class RecruitConverter {
 
-    public static RecruitCondition toRecruitCondition(CreateReqDto createReqDto, Elder elder) {
+    public static RecruitCondition toRecruitCondition(RequestDto requestDto, Elder elder) {
          return RecruitCondition.builder()
                 .elder(elder)
-                .careType(createReqDto.getCareType())
-                .flexibleSchedule(createReqDto.isFlexibleSchedule())
+                .careTypes(requestDto.getCareTypes())
+                .flexibleSchedule(requestDto.isFlexibleSchedule())
                 .recruitTimes(new ArrayList<>())
-                .desiredHourlyWage(createReqDto.getDesiredHourlyWage())
-                .selfFeeding(createReqDto.isSelfFeeding())
-                .mealPreparation(createReqDto.isMealPreparation())
-                .cookingAssistance(createReqDto.isCookingAssistance())
-                .enteralNutritionSupport(createReqDto.isEnteralNutritionSupport())
-                .selfToileting(createReqDto.isSelfToileting())
-                .occasionalToiletingAssist(createReqDto.isOccasionalToiletingAssist())
-                .diaperCare(createReqDto.isDiaperCare())
-                .catheterOrStomaCare(createReqDto.isCatheterOrStomaCare())
-                .independentMobility(createReqDto.isIndependentMobility())
-                .mobilityAssist(createReqDto.isMobilityAssist())
-                .wheelchairAssist(createReqDto.isWheelchairAssist())
-                .immobile(createReqDto.isImmobile())
-                .cleaningLaundryAssist(createReqDto.isCleaningLaundryAssist())
-                .bathingAssist(createReqDto.isBathingAssist())
-                .hospitalAccompaniment(createReqDto.isHospitalAccompaniment())
-                .exerciseSupport(createReqDto.isExerciseSupport())
-                .emotionalSupport(createReqDto.isEmotionalSupport())
-                .cognitiveStimulation(createReqDto.isCognitiveStimulation())
+                 .mealAssistance(requestDto.isMealAssistance())
+                 .toiletAssistance(requestDto.isToiletAssistance())
+                 .moveAssistance(requestDto.isMoveAssistance())
+                 .dailyLivingAssistance(requestDto.isDailyLivingAssistance())
+                .desiredHourlyWage(requestDto.getDesiredHourlyWage())
+                .selfFeeding(requestDto.isSelfFeeding())
+                .mealPreparation(requestDto.isMealPreparation())
+                .cookingAssistance(requestDto.isCookingAssistance())
+                .enteralNutritionSupport(requestDto.isEnteralNutritionSupport())
+                .selfToileting(requestDto.isSelfToileting())
+                .occasionalToiletingAssist(requestDto.isOccasionalToiletingAssist())
+                .diaperCare(requestDto.isDiaperCare())
+                .catheterOrStomaCare(requestDto.isCatheterOrStomaCare())
+                .independentMobility(requestDto.isIndependentMobility())
+                .mobilityAssist(requestDto.isMobilityAssist())
+                .wheelchairAssist(requestDto.isWheelchairAssist())
+                .immobile(requestDto.isImmobile())
+                .cleaningLaundryAssist(requestDto.isCleaningLaundryAssist())
+                .bathingAssist(requestDto.isBathingAssist())
+                .hospitalAccompaniment(requestDto.isHospitalAccompaniment())
+                .exerciseSupport(requestDto.isExerciseSupport())
+                .emotionalSupport(requestDto.isEmotionalSupport())
+                .cognitiveStimulation(requestDto.isCognitiveStimulation())
+                 .detailRequiredService(requestDto.getDetailRequiredService())
                 .build();
     }
 
@@ -54,7 +59,11 @@ public class RecruitConverter {
         return ResponseDto.builder()
                 .recruitConditionId(recruitCondition.getRecruitConditionId())
                 .elderId(recruitCondition.getElder().getElderId())
-                .careType(recruitCondition.getCareType())
+                .careTypes(recruitCondition.getCareTypes())
+                .mealAssistance(recruitCondition.isMealAssistance())
+                .toiletAssistance(recruitCondition.isToiletAssistance())
+                .moveAssistance(recruitCondition.isMoveAssistance())
+                .dailyLivingAssistance(recruitCondition.isDailyLivingAssistance())
                 .flexibleSchedule(recruitCondition.isFlexibleSchedule())
                 .recruitTimes(toRecruitTimeListDto(recruitCondition.getRecruitTimes()))
                 .desiredHourlyWage(recruitCondition.getDesiredHourlyWage())
@@ -76,6 +85,7 @@ public class RecruitConverter {
                 .exerciseSupport(recruitCondition.isExerciseSupport())
                 .emotionalSupport(recruitCondition.isEmotionalSupport())
                 .cognitiveStimulation(recruitCondition.isCognitiveStimulation())
+                .detailRequiredService(recruitCondition.getDetailRequiredService())
                 .build();
     }
 
