@@ -2,6 +2,7 @@ package com.example.springserver.global.security.jwt;
 
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.center.entity.Admin;
+import com.example.springserver.domain.center.repository.AdminRepository;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -20,9 +21,11 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
+    private final AdminRepository adminRepository;
 
-    public JWTFilter(JWTUtil jwtUtil){
+    public JWTFilter(JWTUtil jwtUtil, AdminRepository adminRepository){
         this.jwtUtil = jwtUtil;
+        this.adminRepository = adminRepository;
     }
 
     @Override
@@ -61,11 +64,9 @@ public class JWTFilter extends OncePerRequestFilter {
         // 역할에 맞는 객체 생성
         CustomUserDetails customUserDetails;
         if ("ROLE_ADMIN".equalsIgnoreCase(role)) {
-            Admin admin = Admin.builder()
-                    .id(userId)
-                    .username(username)
-                    .password("")
-                    .build();
+            // Admin 정보와 center 정보 조회
+            Admin admin = adminRepository.findByUsername(username)
+                    .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
             customUserDetails = new CustomUserDetails(admin);
         } else if ("ROLE_CAREGIVER".equalsIgnoreCase(role)) {
             Caregiver caregiver = Caregiver.builder()
