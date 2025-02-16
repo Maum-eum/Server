@@ -1,5 +1,9 @@
 package com.example.springserver.global.security.jwt;
 
+import com.example.springserver.domain.center.entity.Admin;
+import com.example.springserver.domain.center.repository.AdminRepository;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.apiPayload.format.ResultResponse;
 import com.example.springserver.global.common.dto.request.UserRequestDTO;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -17,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,11 +30,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final AdminRepository adminRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, AdminRepository adminRepository) {
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.adminRepository = adminRepository;
         setFilterProcessesUrl("/login"); // 원하는 엔드포인트로 변경
     }
 
@@ -81,6 +88,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 "userId", userId,
                 "role", role
         );
+
+        // ROLE_ADMIN이면 centerId 추가
+        if ("ROLE_ADMIN".equals(role)) {
+            Admin admin = adminRepository.findByUsername(username)
+                    .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
+            Long centerId = admin.getCenter().getCenterId();
+            String centerName = admin.getCenter().getCenterName();
+            String name = admin.getName();
+            responseData = new HashMap<>(responseData); // 불변 Map을 변경 가능하도록 변환
+            responseData.put("centerId", centerId);
+            responseData.put("centerName", centerName);
+            responseData.put("name", name);
+        }
+
         ResultResponse<Map<String, Object>> responseBody = ResultResponse.success(responseData);
 
         // 응답 설정

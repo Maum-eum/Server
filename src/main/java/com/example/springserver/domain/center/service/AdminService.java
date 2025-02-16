@@ -33,7 +33,7 @@ public class AdminService {
         Admin adminData = adminRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
 
-        Center center = centerRepository.findByLeaderId(admin.getId());
+        Center center = centerRepository.findByCenterLeaderName(adminUsername);
         Boolean isLeader = Objects.equals(center, adminData.getCenter());
 
         return AdminConverter.toSearchAdminResult(adminData, isLeader);
@@ -44,16 +44,6 @@ public class AdminService {
         Admin adminData = adminRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
 
-        // 요청 데이터가 null이 아닐 때만 업데이트
-        if (request.getUsername() != null) {
-            Boolean isAdminExist = adminRepository.existsByUsername(request.getUsername());
-            Boolean isCaregiverExist = caregiverRepository.existsByUsername(request.getUsername());
-
-            if(isAdminExist || isCaregiverExist){
-                throw new GlobalException(ErrorCode.USERNAME_IS_EXIST);
-            }
-            adminData.setUsername(request.getUsername());
-        }
         if (request.getName() != null) {
             adminData.setName(request.getName());
         }
@@ -63,7 +53,7 @@ public class AdminService {
 
         adminRepository.save(adminData);
 
-        Center center = centerRepository.findByLeaderId(admin.getId());
+        Center center = centerRepository.findByCenterLeaderName(adminUsername);
         Boolean isLeader = Objects.equals(center, adminData.getCenter());
 
         return AdminConverter.toSearchAdminResult(adminData, isLeader);

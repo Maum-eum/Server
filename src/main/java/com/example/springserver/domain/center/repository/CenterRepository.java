@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface CenterRepository extends JpaRepository<Center, Long> {
     Optional<Center> findByCenterName(String centerName);
-    Center findByLeaderId(Long adminId);
+    Center findByCenterLeaderName(String adminUsername);
 }

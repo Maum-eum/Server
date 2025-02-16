@@ -28,9 +28,6 @@ public class AdminRequestDTO {
     @Getter
     public static class UpdateAdminReq{
 
-        @Size(min = 1, message = "username은 비워둘 수 없습니다.")
-        private String username;
-
         @Size(min = 1, message = "name은 비워둘 수 없습니다.")
         private String name;
 

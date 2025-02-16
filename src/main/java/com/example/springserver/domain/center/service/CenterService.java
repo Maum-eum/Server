@@ -3,7 +3,6 @@ package com.example.springserver.domain.center.service;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.CenterDocument;
 import com.example.springserver.domain.center.repository.CenterRepository;
-import com.example.springserver.domain.center.repository.CenterSearchRepository;
 import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +21,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CenterService {
 
-    private final CenterSearchRepository centerSearchRepository;
+//    private final CenterSearchRepository centerSearchRepository;
     private final CenterRepository centerRepository;
 
     // Elastic Search - wildcard query
-    public Page<CenterDocument> searchCenters(String keyword, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return centerSearchRepository.findByCenterNameContaining(keyword, pageRequest);
-    }
+//    public Page<CenterDocument> searchCenters(String keyword, int page, int size) {
+//        PageRequest pageRequest = PageRequest.of(page, size);
+//        return centerSearchRepository.findByCenterNameContaining(keyword, pageRequest);
+//    }
 
     public Center getCenter(String centerName) {
         return centerRepository.findByCenterName(centerName)
