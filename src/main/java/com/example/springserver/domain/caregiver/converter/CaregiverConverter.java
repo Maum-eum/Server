@@ -38,6 +38,7 @@ public class CaregiverConverter {
                 .education(caregiver.getEducation())
                 .intro(caregiver.getIntro())
                 .address(caregiver.getAddress())
+                .employmentStatus(caregiver.getEmploymentStatus())
                 .certificateResponseDTOList(caregiver.getCertificates().stream()
                         .map(CaregiverConverter::toResponseCertificate)
                         .toList())
@@ -48,7 +49,7 @@ public class CaregiverConverter {
                 .build();
     }
 
-    private static ExperienceResponseDTO toResponseExperience(Experience experience) {
+    public static ExperienceResponseDTO toResponseExperience(Experience experience) {
         return ExperienceResponseDTO.builder()
                 .duration(experience.getDuration())
                 .title(experience.getTitle())
@@ -56,7 +57,7 @@ public class CaregiverConverter {
                 .build();
     }
 
-    private static CertificateResponseDTO toResponseCertificate(Certificate certificate) {
+    public static CertificateResponseDTO toResponseCertificate(Certificate certificate) {
         return CertificateResponseDTO.builder()
                 .certNum(certificate.getCertNum())
                 .certRate(certificate.getCertRate())

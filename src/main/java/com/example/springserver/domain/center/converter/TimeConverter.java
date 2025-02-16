@@ -8,16 +8,11 @@ import java.time.LocalTime;
 
 public class TimeConverter {
 
-    public static LocalDateTime convertToDateTime(long timeIndex) {
+    public static LocalTime convertToDateTime(long timeIndex) {
         if (timeIndex < 0 || timeIndex > 48) {
             throw new GlobalException(ErrorCode.TIME_LIMIT_OUT_OF_RANGE);
         }
 
-        LocalDate today = LocalDate.now();
-
-        int hours = (int) (timeIndex / 2);
-        int minutes = (int) ((timeIndex % 2) * 30);
-
-        return LocalDateTime.of(today, LocalTime.of(hours, minutes));
+        return LocalTime.MIN.plusMinutes(timeIndex*30);
     }
 }

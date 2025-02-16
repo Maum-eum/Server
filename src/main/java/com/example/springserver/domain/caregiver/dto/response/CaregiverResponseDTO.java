@@ -3,6 +3,7 @@ package com.example.springserver.domain.caregiver.dto.response;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Week;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class CaregiverResponseDTO {
@@ -29,16 +31,12 @@ public class CaregiverResponseDTO {
     @Getter
     public static class CareGiverInfoResponseDTO{
 
-        @NotEmpty
         private String name;
 
-        @NotEmpty
         private String contact;
 
-        @NotNull
         private Boolean car;
 
-        @NotNull
         private Boolean education;
 
         private String img;
@@ -58,45 +56,122 @@ public class CaregiverResponseDTO {
     @Builder
     public static class JobConditionResponseDTO {
 
-        private Boolean flexibleSchedule = false;
+        private Long jobConditionId;
 
-        private Boolean desiredHourlyWage = false;
+        private ScheduleAvailability flexibleSchedule;
 
-        private Boolean selfFeeding = false;
+        private ScheduleAvailability desiredHourlyWage;
 
-        private Boolean mealPreparation = false;
+        private ScheduleAvailability selfFeeding;
 
-        private Boolean cookingAssistance = false;
+        private ScheduleAvailability mealPreparation;
 
-        private Boolean enteralNutritionSupport = false;
+        private ScheduleAvailability cookingAssistance;
 
-        private Boolean selfToileting = false;
+        private ScheduleAvailability enteralNutritionSupport;
 
-        private Boolean occasionalToiletingAssist = false;
+        private ScheduleAvailability selfToileting;
 
-        private Boolean diaperCare = false;
+        private ScheduleAvailability occasionalToiletingAssist;
 
-        private Boolean catheterOrStomaCare = false;
+        private ScheduleAvailability diaperCare;
 
-        private Boolean independentMobility = false;
+        private ScheduleAvailability catheterOrStomaCare;
 
-        private Boolean mobilityAssist = false;
+        private ScheduleAvailability independentMobility;
 
-        private Boolean wheelchairAssist = false;
+        private ScheduleAvailability mobilityAssist;
 
-        private Boolean immobile = false;
+        private ScheduleAvailability wheelchairAssist;
 
-        private Boolean cleaningLaundryAssist = false;
+        private ScheduleAvailability immobile;
 
-        private Boolean bathingAssist = false;
+        private ScheduleAvailability cleaningLaundryAssist;
 
-        private Boolean hospitalAccompaniment = false;
+        private ScheduleAvailability bathingAssist;
 
-        private Boolean exerciseSupport = false;
+        private ScheduleAvailability hospitalAccompaniment;
 
-        private Boolean emotionalSupport = false;
+        private ScheduleAvailability exerciseSupport;
 
-        private Boolean cognitiveStimulation = false;
+        private ScheduleAvailability emotionalSupport;
+
+        private ScheduleAvailability cognitiveStimulation;
+
+        private List<LocationResponseDTO> locationRequestDTOList;
+
+        private List<WorkTimeResponseDTO> workTimeRequestDTOList;
+    }
+
+    @Getter
+    @Builder
+    public static class DetailJobConditionResponseDTO {
+
+        //CareGiver info
+
+        private String name;
+
+        private String contact;
+
+        private Boolean car;
+
+        private Boolean education;
+
+        private String img;
+
+        private String intro;
+
+        private String address;
+
+        private Boolean employmentStatus;
+
+        private List<CertificateResponseDTO> certificateResponseDTOList;
+
+        private List<ExperienceResponseDTO> experienceResponseDTOList ;
+
+        //jobCondition
+
+        private Long jobConditionId;
+
+        private ScheduleAvailability flexibleSchedule;
+
+        private ScheduleAvailability desiredHourlyWage;
+
+        private ScheduleAvailability selfFeeding;
+
+        private ScheduleAvailability mealPreparation;
+
+        private ScheduleAvailability cookingAssistance;
+
+        private ScheduleAvailability enteralNutritionSupport;
+
+        private ScheduleAvailability selfToileting;
+
+        private ScheduleAvailability occasionalToiletingAssist;
+
+        private ScheduleAvailability diaperCare;
+
+        private ScheduleAvailability catheterOrStomaCare;
+
+        private ScheduleAvailability independentMobility;
+
+        private ScheduleAvailability mobilityAssist;
+
+        private ScheduleAvailability wheelchairAssist;
+
+        private ScheduleAvailability immobile;
+
+        private ScheduleAvailability cleaningLaundryAssist;
+
+        private ScheduleAvailability bathingAssist;
+
+        private ScheduleAvailability hospitalAccompaniment;
+
+        private ScheduleAvailability exerciseSupport;
+
+        private ScheduleAvailability emotionalSupport;
+
+        private ScheduleAvailability cognitiveStimulation;
 
         private List<LocationResponseDTO> locationRequestDTOList;
 
@@ -121,9 +196,9 @@ public class CaregiverResponseDTO {
 
         private Week dayOfWeek;
 
-        private LocalDateTime start_time;
+        private LocalTime start_time;
 
-        private LocalDateTime end_time;
+        private LocalTime end_time;
 
     }
 
@@ -133,10 +208,8 @@ public class CaregiverResponseDTO {
 
         private String certNum;
 
-        @NotNull
         private CertType certType;
 
-        @NotNull
         private Level certRate;
 
     }
@@ -145,13 +218,10 @@ public class CaregiverResponseDTO {
     @Builder
     public static class ExperienceResponseDTO{
 
-        @NotNull
         private int duration;
 
-        @NotEmpty
         private String title;
 
-        @NotEmpty
         private String description;
 
     }
