@@ -4,8 +4,6 @@ import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.service.CareGiverService;
-import com.example.springserver.domain.match.dto.request.MatchRequestDto;
-import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.service.JoinService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
-import static com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.*;
 import static com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
 
 @RestController
