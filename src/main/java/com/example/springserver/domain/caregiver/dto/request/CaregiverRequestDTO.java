@@ -91,7 +91,7 @@ public class CaregiverRequestDTO {
 
         private ScheduleAvailability flexibleSchedule;
 
-        private ScheduleAvailability desiredHourlyWage;
+        private Integer desiredHourlyWage;
 
         private ScheduleAvailability selfFeeding;
 
