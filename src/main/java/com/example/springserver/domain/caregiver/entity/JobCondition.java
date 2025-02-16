@@ -125,13 +125,21 @@ public class JobCondition extends BaseEntity {
     private ScheduleAvailability cognitiveStimulation;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "caregiver_id", nullable = false)
-    private Caregiver caregiver;
+    @Column(name = "day_of_week", nullable = false)
+    private Integer dayOfWeek;
 
     @NotNull
-    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private List<WorkTime> workTimes = new ArrayList<>();
+    @Column(name = "start_time", nullable = false)
+    private Long startTime;
+
+    @NotNull
+    @Column(name = "end_time", nullable = false)
+    private Long endTime;
+
+    @NotNull
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "caregiver", nullable = false)
+    private Caregiver caregiver;
 
     @NotNull
     @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
