@@ -91,7 +91,7 @@ public class CaregiverController {
     }
 
     @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
-    @PutMapping("/matching")
+    @GetMapping("/matching")
     public List<MatchedStatus> responseToRecruit(@AuthenticationPrincipal CustomUserDetails user){
         return careGiverService.getCalenderList(user);
     }
