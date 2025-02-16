@@ -1,6 +1,7 @@
 package com.example.springserver.domain.center.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 public class AdminRequestDTO {
@@ -22,5 +23,18 @@ public class AdminRequestDTO {
 
         @NotEmpty
         private String centerName;
+    }
+
+    @Getter
+    public static class UpdateAdminReq{
+
+        @Size(min = 1, message = "username은 비워둘 수 없습니다.")
+        private String username;
+
+        @Size(min = 1, message = "name은 비워둘 수 없습니다.")
+        private String name;
+
+        @Size(min = 1, message = "connect는 비워둘 수 없습니다.")
+        private String connect;
     }
 }
