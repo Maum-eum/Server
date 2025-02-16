@@ -30,13 +30,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final AdminRepository adminRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, AdminRepository adminRepository) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.adminRepository = adminRepository;
         setFilterProcessesUrl("/login"); // 원하는 엔드포인트로 변경
     }
 
@@ -91,11 +89,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // ROLE_ADMIN이면 centerId 추가
         if ("ROLE_ADMIN".equals(role)) {
-            Admin admin = adminRepository.findByUsername(username)
-                    .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
-            Long centerId = admin.getCenter().getCenterId();
-            String centerName = admin.getCenter().getCenterName();
-            String name = admin.getName();
+            Long centerId = userDetails.getCenter().getCenterId();
+            String centerName = userDetails.getCenter().getCenterName();
+            String name = userDetails.getName();
             responseData = new HashMap<>(responseData); // 불변 Map을 변경 가능하도록 변환
             responseData.put("centerId", centerId);
             responseData.put("centerName", centerName);

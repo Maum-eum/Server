@@ -30,7 +30,7 @@ public class Admin extends BaseEntity {
     @Column(nullable = false, length = 40)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "center_id", nullable = false)
     private Center center;
 
