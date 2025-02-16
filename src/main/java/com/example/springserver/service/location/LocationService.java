@@ -32,4 +32,9 @@ public class LocationService {
             throw new GlobalException(ErrorCode.LOCATION_NOT_FOUND);
         return byId.get().getAddress();
     }
+
+    public Location findById(Long locationId) {
+        return locationRepository.findById(locationId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
+    }
 }
