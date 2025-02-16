@@ -1,10 +1,7 @@
 package com.example.springserver.domain.center.service;
 
-import com.example.springserver.domain.center.dto.request.ElderRequestDto;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
-import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
 import com.example.springserver.domain.center.entity.Center;
-import com.example.springserver.domain.center.entity.enums.ElderRate;
 import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ElderException;
 import com.example.springserver.domain.center.converter.ElderConverter;
@@ -15,13 +12,10 @@ import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Request;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Service
