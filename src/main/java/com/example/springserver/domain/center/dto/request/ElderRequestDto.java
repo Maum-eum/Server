@@ -1,10 +1,11 @@
 package com.example.springserver.domain.center.dto.request;
 
-import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
+import com.example.springserver.domain.center.entity.enums.Inmate;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class ElderRequestDto {
 
@@ -16,6 +17,7 @@ public class ElderRequestDto {
         private Integer gender;
         private LocalDate birth;
         private ElderRate rate; // 장기 요양 등급
+        private List<Inmate> inmateTypes;
         private String imgUrl;
         private Integer weight;
     }
@@ -27,6 +29,7 @@ public class ElderRequestDto {
         private Integer gender;
         private LocalDate birth;
         private ElderRate rate; // 장기 요양 등급
+        private List<Inmate> inmateTypes;
         private String imgUrl;
         private Integer weight;
     }
@@ -37,6 +40,7 @@ public class ElderRequestDto {
         private String name;
         private String centerName;
         private ElderRate rate; // 장기 요양 등급
+        private List<Inmate> inmateTypes;
         private String imgUrl;
         private Integer weight;
     }
