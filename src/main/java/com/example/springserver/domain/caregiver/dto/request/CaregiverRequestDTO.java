@@ -3,13 +3,12 @@ package com.example.springserver.domain.caregiver.dto.request;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
-import com.example.springserver.domain.caregiver.entity.enums.Week;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
-import java.time.Instant;
 import java.util.List;
 
 public class CaregiverRequestDTO {
@@ -128,9 +127,15 @@ public class CaregiverRequestDTO {
 
         private ScheduleAvailability cognitiveStimulation;
 
+        private String dayOfWeek;
+
+        private Long startTime;
+
+        private Long endTime;
+
         private List<LocationRequestDTO> locationRequestDTOList;
 
-        private List<WorkTimeRequestDTO> workTimeRequestDTOList;
+
     }
 
     @Getter
@@ -152,21 +157,6 @@ public class CaregiverRequestDTO {
 
     }
 
-    @Getter
-    public static class WorkTimeRequestDTO{
-
-        private Long workTimeId;
-
-        @NotNull
-        private Week dayOfWeek;
-
-        @NotNull
-        private int startTime;
-
-        @NotNull
-        private int endTime;
-
-    }
 
     @Getter
     public static class CertificateRequestDTO{

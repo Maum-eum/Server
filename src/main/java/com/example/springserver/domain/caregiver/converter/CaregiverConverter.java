@@ -117,7 +117,7 @@ public class CaregiverConverter {
                 .build();
     }
 
-    public static JobCondition toJobCondition(JobConditionRequestDTO request,Caregiver user, List<WorkTime> time, List<WorkLocation> location) {
+    public static JobCondition toJobCondition(JobConditionRequestDTO request,Caregiver user, List<WorkLocation> location) {
         return JobCondition.builder()
                 .bathingAssist(request.getBathingAssist())
                 .catheterOrStomaCare(request.getCatheterOrStomaCare())
@@ -139,8 +139,10 @@ public class CaregiverConverter {
                 .mobilityAssist(request.getMobilityAssist())
                 .wheelchairAssist(request.getWheelchairAssist())
                 .independentMobility(request.getIndependentMobility())
+                .dayOfWeek(Integer.parseInt(request.getDayOfWeek(),2))
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
                 .caregiver(user)
-                .workTimes(time)
                 .workLocations(location)
                 .build();
     }
