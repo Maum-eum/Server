@@ -29,6 +29,12 @@ public class ElderConverter {
                 .rate(request.getRate())
                 .inmateTypes(request.getInmateTypes())
                 .weight(request.getWeight())
+                .isNormal(request.isNormal())
+                .hasShortTermMemoryLoss(request.isHasShortTermMemoryLoss())
+                .wandersOutside(request.isWandersOutside())
+                .actsLikeChild(request.isActsLikeChild())
+                .hasDelusions(request.isHasDelusions())
+                .hasAggressiveBehavior(request.isHasAggressiveBehavior())
                 .build();
     }
 
@@ -42,7 +48,13 @@ public class ElderConverter {
                 .inmateTypes(dto.getInmateTypes())
                 .imgUrl(dto.getImgUrl())
                 .weight(dto.getWeight())
-                .isTemporary(isTemporary)
+                .isTemporarySave(isTemporary)
+                .isNormal(dto.isNormal())
+                .hasShortTermMemoryLoss(dto.isHasShortTermMemoryLoss())
+                .wandersOutside(dto.isWandersOutside())
+                .actsLikeChild(dto.isActsLikeChild())
+                .hasDelusions(dto.isHasDelusions())
+                .hasAggressiveBehavior(dto.isHasAggressiveBehavior())
                 .build();
     }
 
@@ -54,7 +66,13 @@ public class ElderConverter {
                 .inmateTypes(dto.getInmateTypes())
                 .imgUrl(dto.getImgUrl())
                 .weight(dto.getWeight())
-                .isTemporary(false) // 업데이트가 완료되면 임시 저장 상태 변경
+                .isTemporarySave(false) // 업데이트가 완료되면 임시 저장 상태 변경
+                .isNormal(dto.isNormal())
+                .hasShortTermMemoryLoss(dto.isHasShortTermMemoryLoss())
+                .wandersOutside(dto.isWandersOutside())
+                .actsLikeChild(dto.isActsLikeChild())
+                .hasDelusions(dto.isHasDelusions())
+                .hasAggressiveBehavior(dto.isHasAggressiveBehavior())
                 .build();
     }
 
@@ -76,6 +94,12 @@ public class ElderConverter {
                 .birth(elder.getBirth())
                 .img(elder.getImgUrl())
                 .weight(elder.getWeight())
+                .isNormal(elder.isNormal())
+                .hasShortTermMemoryLoss(elder.isHasShortTermMemoryLoss())
+                .wandersOutside(elder.isWandersOutside())
+                .actsLikeChild(elder.isActsLikeChild())
+                .hasDelusions(elder.isHasDelusions())
+                .hasAggressiveBehavior(elder.isHasAggressiveBehavior())
                 .build();
     }
 
@@ -87,6 +111,12 @@ public class ElderConverter {
                 .inmateTypes(elder.getInmateTypes())
                 .img(elder.getImgUrl())
                 .weight(elder.getWeight())
+                .isNormal(elder.isNormal())
+                .hasShortTermMemoryLoss(elder.isHasShortTermMemoryLoss())
+                .wandersOutside(elder.isWandersOutside())
+                .actsLikeChild(elder.isActsLikeChild())
+                .hasDelusions(elder.isHasDelusions())
+                .hasAggressiveBehavior(elder.isHasAggressiveBehavior())
                 .build();
     }
 

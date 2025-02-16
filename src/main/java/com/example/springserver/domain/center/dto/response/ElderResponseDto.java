@@ -35,6 +35,12 @@ public class ElderResponseDto {
         private ElderRate rate;
         private String img;
         private Integer weight;
+        private boolean isNormal; // 증상 보유 여부
+        private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
+        private boolean wandersOutside; // 집밖을 배회 여부
+        private boolean actsLikeChild; // 어린아이 같은 행동 여부
+        private boolean hasDelusions; // 망상 여부
+        private boolean hasAggressiveBehavior; // 공격적인 행동 여부
     }
 
     @Builder
@@ -49,6 +55,12 @@ public class ElderResponseDto {
         private List<Inmate> inmateTypes;
         private String img;
         private Integer weight;
+        private boolean isNormal; // 증상 보유 여부
+        private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
+        private boolean wandersOutside; // 집밖을 배회 여부
+        private boolean actsLikeChild; // 어린아이 같은 행동 여부
+        private boolean hasDelusions; // 망상 여부
+        private boolean hasAggressiveBehavior; // 공격적인 행동 여부
     }
 
     @Builder

@@ -1,6 +1,5 @@
 package com.example.springserver.domain.center.entity;
 
-import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
 import com.example.springserver.domain.center.converter.enums.InmateEnumListConverter;
 import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.global.common.entity.BaseEntity;
@@ -51,7 +50,21 @@ public class Elder extends BaseEntity {
 
     private Integer weight;
 
-    private boolean isTemporary;
+    private boolean isTemporarySave; // 임시 저장 여부
+
+    @Column(nullable = false)
+    private boolean isNormal; // 증상 보유 여부
+
+    private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
+
+    private boolean wandersOutside; // 집밖을 배회 여부
+
+    private boolean actsLikeChild; // 어린아이 같은 행동 여부
+
+    private boolean hasDelusions; // 망상 여부
+
+    private boolean hasAggressiveBehavior; // 공격적인 행동 여부
+
 
     @OneToMany(mappedBy = "elder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitCondition> recruitConditions = new ArrayList<>();
