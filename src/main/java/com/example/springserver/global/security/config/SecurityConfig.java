@@ -1,5 +1,6 @@
 package com.example.springserver.global.security.config;
 
+import com.example.springserver.domain.center.repository.AdminRepository;
 import com.example.springserver.global.security.jwt.JWTFilter;
 import com.example.springserver.global.security.jwt.JWTUtil;
 import com.example.springserver.global.security.jwt.LoginFilter;
@@ -19,9 +20,11 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final AdminRepository adminRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, AdminRepository adminRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
+        this.adminRepository = adminRepository;
         this.jwtUtil = jwtUtil;
     }
 
@@ -40,10 +43,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/admin/signup", "/", "/actuator/health", "/caregiver/signup", "/reissue", "/health/**", "/center/search/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/caregiver").hasRole("CAREGIVER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/caregiver/**").hasRole("CAREGIVER")
                         .anyRequest().authenticated())
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil, adminRepository), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationConfiguration.getAuthenticationManager(), jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

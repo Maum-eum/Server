@@ -37,6 +37,26 @@ public class AdminConverter {
                 .build();
     }
 
+    // 관리자 프로필 조회 응답
+    public static AdminResponseDTO.SearchAdminResult toSearchAdminResult(Admin admin, Boolean isLeader){
+
+        return AdminResponseDTO.SearchAdminResult.builder()
+                .username(admin.getUsername())
+                .name(admin.getName())
+                .connect(admin.getConnect())
+                .centerName(admin.getCenter().getCenterName())
+                .isLeader(isLeader)
+                .build();
+    }
+
+    // 관리자 계정 삭제 응답
+    public static AdminResponseDTO.DeleteAdminResult toDeleteAdminResult(Boolean isSuccess){
+
+        return AdminResponseDTO.DeleteAdminResult.builder()
+                .isSuccess(isSuccess)
+                .build();
+    }
+
     public static AdminResponseDto toResponseDto(Admin admin){
         return AdminResponseDTO.AdminResponseDto.builder()
                 .adminId(admin.getId())

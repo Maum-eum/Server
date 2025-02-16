@@ -44,7 +44,7 @@ public class JoinService {
         Boolean isCaregiverExist = caregiverRepository.existsByUsername(request.getUsername());
 
         if(isAdminExist || isCaregiverExist){
-            throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
+            throw new GlobalException(ErrorCode.USERNAME_IS_EXIST);
         }
 
         //기본이미지 적용
