@@ -11,7 +11,10 @@ import com.example.springserver.domain.caregiver.entity.WorkLocation;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
+import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.Match;
+import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import com.example.springserver.domain.center.repository.MatchRepository;
@@ -212,6 +215,61 @@ public class CareGiverService {
                 .build();
     }
 
+    public List<CaregiverResponseDTO.MatchedStatus> getCalenderList(CustomUserDetails user) {
+        Caregiver caregiver = getById(user);
+        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
+                .orElseThrow();
+
+        List<Match> allByJobConditionWithStatus = matchRepository.findAllByJobConditionWithStatus(
+                jobCondition, List.of(MatchStatus.MATCHED, MatchStatus.ENDED)
+        );
+
+        return allByJobConditionWithStatus.stream()
+                .map(match -> {
+                    Elder elder = match.getRequirementCondition().getElder();
+                    RecruitCondition rc = match.getRequirementCondition();
+                    List<RecruitTime> list = rc.getRecruitTimes();
+                    return CaregiverResponseDTO.MatchedStatus.builder()
+                            .elderId(elder.getElderId()) // ✔ 중복 제거
+                            .elderName(elder.getName()) // ✔ 중복 제거
+                            .mealAssistance(rc.isMealAssistance())
+                            .dailyLivingAssistance(rc.isDailyLivingAssistance())
+                            .toiletAssistance(rc.isToiletAssistance())
+                            .moveAssistance(rc.isMoveAssistance())
+                            .selfFeeding(rc.isSelfFeeding())
+                            .mealPreparation(rc.isMealPreparation())
+                            .cookingAssistance(rc.isCookingAssistance())
+                            .enteralNutritionSupport(rc.isEnteralNutritionSupport())
+                            .selfToileting(rc.isSelfToileting())
+                            .occasionalToiletingAssist(rc.isOccasionalToiletingAssist())
+                            .diaperCare(rc.isDiaperCare())
+                            .catheterOrStomaCare(rc.isCatheterOrStomaCare())
+                            .independentMobility(rc.isIndependentMobility())
+                            .mobilityAssist(rc.isMobilityAssist())
+                            .wheelchairAssist(rc.isWheelchairAssist())
+                            .immobile(rc.isImmobile())
+                            .cleaningLaundryAssist(rc.isCleaningLaundryAssist())
+                            .bathingAssist(rc.isBathingAssist())
+                            .hospitalAccompaniment(rc.isHospitalAccompaniment())
+                            .exerciseSupport(rc.isExerciseSupport())
+                            .emotionalSupport(rc.isEmotionalSupport())
+                            .cognitiveStimulation(rc.isCognitiveStimulation())
+                            .times(
+                                    list.stream()
+                                            .map(rt -> CaregiverResponseDTO.WorkTimes.builder()
+                                                    .dayOfWeek(rt.getDayOfWeek())
+                                                    .startTime(rt.getStartTime())
+                                                    .endTime(rt.getEndTime())
+                                                    .build()
+                                            )
+                                            .collect(Collectors.toList())
+                            )
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+
     private Caregiver getById(CustomUserDetails user) throws GlobalException {
         return caregiverRepository.findById(user.getId()).orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
@@ -287,5 +345,7 @@ public class CareGiverService {
     public String toStringDayOfWeek(Integer week){
         return Integer.toBinaryString(week);
     }
+
+
 
 }
