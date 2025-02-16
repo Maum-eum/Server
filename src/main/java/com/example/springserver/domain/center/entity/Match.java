@@ -3,6 +3,7 @@ package com.example.springserver.domain.center.entity;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.center.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
+import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "`match`")
 @Where(clause = "deleted_at IS NULL")
-public class Match {
+public class Match extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "match_id", nullable = false)
