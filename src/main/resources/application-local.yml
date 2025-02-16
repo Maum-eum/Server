@@ -20,7 +20,7 @@ spring:
     init:
       mode: always
 
-#      data-locations: classpath:/center.sql
+      data-locations: classpath:/data.sql, classpath:/center.sql
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=

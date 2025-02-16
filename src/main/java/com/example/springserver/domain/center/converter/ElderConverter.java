@@ -2,8 +2,8 @@ package com.example.springserver.domain.center.converter;
 
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResultDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.UpdateResultDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResponseDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.UpdateResponseDto;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
@@ -27,6 +27,7 @@ public class ElderConverter {
                 .birth(request.getBirth())
                 .gender(request.getGender())
                 .rate(request.getRate())
+                .inmateTypes(request.getInmateTypes())
                 .weight(request.getWeight())
                 .build();
     }
@@ -38,6 +39,7 @@ public class ElderConverter {
                 .gender(dto.getGender())
                 .birth(dto.getBirth())
                 .rate(dto.getRate())
+                .inmateTypes(dto.getInmateTypes())
                 .imgUrl(dto.getImgUrl())
                 .weight(dto.getWeight())
                 .isTemporary(isTemporary)
@@ -49,6 +51,7 @@ public class ElderConverter {
                 .center(center)
                 .name(dto.getName())
                 .rate(dto.getRate())
+                .inmateTypes(dto.getInmateTypes())
                 .imgUrl(dto.getImgUrl())
                 .weight(dto.getWeight())
                 .isTemporary(false) // 업데이트가 완료되면 임시 저장 상태 변경
@@ -69,24 +72,26 @@ public class ElderConverter {
                 .name(elder.getName())
                 .gender(elder.getGender())
                 .rate(elder.getRate())
+                .inmateTypes(elder.getInmateTypes())
                 .birth(elder.getBirth())
                 .img(elder.getImgUrl())
                 .weight(elder.getWeight())
                 .build();
     }
 
-    public static UpdateResultDto toUpdateResponseDto(Elder elder) {
-        return UpdateResultDto.builder()
+    public static UpdateResponseDto toUpdateResponseDto(Elder elder) {
+        return UpdateResponseDto.builder()
                 .elderId(elder.getElderId())
                 .name(elder.getName())
                 .rate(elder.getRate())
+                .inmateTypes(elder.getInmateTypes())
                 .img(elder.getImgUrl())
                 .weight(elder.getWeight())
                 .build();
     }
 
-    public static DeleteResultDto toDeleteResponseDto(Elder elder) {
-        return DeleteResultDto.builder()
+    public static DeleteResponseDto toDeleteResponseDto(Elder elder) {
+        return DeleteResponseDto.builder()
                 .elderId(elder.getElderId())
                 .name(elder.getName())
                 .build();
