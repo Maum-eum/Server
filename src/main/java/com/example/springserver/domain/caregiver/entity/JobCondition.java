@@ -1,6 +1,6 @@
 package com.example.springserver.domain.caregiver.entity;
 
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.JobConditionRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -144,7 +144,7 @@ public class JobCondition extends BaseEntity {
     @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<WorkLocation> workLocations = new ArrayList<>();
 
-    public void updateInfo(JobConditionRequestDTO req){
+    public void updateInfo(JobConditionReqDto req){
         this.flexibleSchedule = req.getFlexibleSchedule();
         this.desiredHourlyWage = req.getDesiredHourlyWage();
         this.selfFeeding = req.getSelfFeeding();

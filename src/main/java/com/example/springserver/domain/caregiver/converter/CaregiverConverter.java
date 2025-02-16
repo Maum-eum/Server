@@ -1,18 +1,17 @@
 package com.example.springserver.domain.caregiver.converter;
 
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.CertificateRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.ExperienceRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.JobConditionRequestDTO;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.*;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
 import com.example.springserver.domain.caregiver.entity.*;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto;
 
-import com.example.springserver.domain.location.entity.Location;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CaregiverConverter {
@@ -71,7 +70,7 @@ public class CaregiverConverter {
 
 
     //    Caregiver 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
-    public static Caregiver toCaregiver(CaregiverRequestDTO.SignUpCaregiverReq request, BCryptPasswordEncoder bCryptPasswordEncoder){
+    public static Caregiver toCaregiver(CaregiverRequestDto.SignUpCaregiverReqDto request, BCryptPasswordEncoder bCryptPasswordEncoder){
 
         return Caregiver.builder()
                 .username(request.getUsername())
@@ -121,7 +120,7 @@ public class CaregiverConverter {
                 .build();
     }
 
-    public static JobCondition toJobCondition(JobConditionRequestDTO request,Caregiver user, List<WorkLocation> location) {
+    public static JobCondition toJobCondition(JobConditionReqDto request, Caregiver user, List<WorkLocation> location) {
         return JobCondition.builder()
                 .bathingAssist(request.getBathingAssist())
                 .catheterOrStomaCare(request.getCatheterOrStomaCare())

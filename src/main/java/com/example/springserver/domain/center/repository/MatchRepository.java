@@ -1,7 +1,7 @@
 package com.example.springserver.domain.center.repository;
 
 import com.example.springserver.domain.caregiver.entity.JobCondition;
-import com.example.springserver.domain.center.entity.Match;
+import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.domain.center.entity.enums.MatchStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
