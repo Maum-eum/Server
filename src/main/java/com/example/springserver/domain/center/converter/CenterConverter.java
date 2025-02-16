@@ -3,6 +3,7 @@ package com.example.springserver.domain.center.converter;
 import com.example.springserver.domain.center.dto.response.CenterResponseDto.CenterSearchDto;
 import com.example.springserver.domain.center.entity.Center;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CenterConverter {
@@ -23,5 +24,11 @@ public class CenterConverter {
                         .collect(Collectors.toList()))
 
                 .build();
+    }
+
+    public static List<CenterSearchDto> toSearchListDto(List<Center> centerList) {
+        return centerList.stream()
+                .map(CenterConverter::toSearchDto)
+                .collect(Collectors.toList());
     }
 }
