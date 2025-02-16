@@ -1,11 +1,10 @@
 package com.example.springserver.domain.center.entity;
 
-import com.example.springserver.domain.center.converter.CareTypeListConverter;
+import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class RecruitCondition extends BaseEntity {
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
-    @Convert(converter = CareTypeListConverter.class)
+    @Convert(converter = CareTypeEnumListConverter.class)
     @Column(name = "care_types", nullable = false)
     private List<CareType> careTypes = new ArrayList<>();
 
