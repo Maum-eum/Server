@@ -92,19 +92,16 @@ public class CaregiverController {
 
     @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
     @GetMapping("/matching")
-    public List<MatchedStatus> responseToRecruit(@AuthenticationPrincipal CustomUserDetails user){
-        return careGiverService.getCalenderList(user);
+    public MatchedListRes responseToRecruit(@AuthenticationPrincipal CustomUserDetails user){
+        return CaregiverConverter.toMatchedListRes(careGiverService.getCalenderList(user));
     }
 
-//
-//    @Operation(summary = "요양보호사 정보수정", description = "Put")
-//    @PutMapping("/profile")
-//    public CareGiverInfoResponseDTO updateCaregiver(@RequestBody @Valid UpdateCaregiverReq request){
-//        Caregiver searched = careGiverService.updateUserInfo(request);
-//        return CaregiverConverter.infoResponseDto(searched);
-//    }
-//
-//
+
+    @Operation(summary = "요양보호사 근무요청리스트 조회", description = "Get")
+    @GetMapping("/requests")
+    public RequestsListRes getListOfRequests(@AuthenticationPrincipal CustomUserDetails user){
+        return CaregiverConverter.toRequestListRes(careGiverService.getRequests(user));
+    }
 
 
 }

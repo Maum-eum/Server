@@ -3,7 +3,10 @@ package com.example.springserver.domain.caregiver.dto.response;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
+import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.center.entity.RecruitTime;
+import com.example.springserver.domain.center.entity.enums.CareType;
+import com.example.springserver.domain.center.entity.enums.ElderRate;
 import com.example.springserver.domain.center.entity.enums.Week;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,7 +59,7 @@ public class CaregiverResponseDTO {
 
         private ScheduleAvailability flexibleSchedule;
 
-        private ScheduleAvailability desiredHourlyWage;
+        private Integer desiredHourlyWage;
 
         private ScheduleAvailability selfFeeding;
 
@@ -135,7 +138,7 @@ public class CaregiverResponseDTO {
 
         private ScheduleAvailability flexibleSchedule;
 
-        private ScheduleAvailability desiredHourlyWage;
+        private Integer desiredHourlyWage;
 
         private ScheduleAvailability selfFeeding;
 
@@ -219,15 +222,44 @@ public class CaregiverResponseDTO {
 
     @Getter
     @Builder
-    public static class MatchStatusListRes{
-        private List<MatchedStatus> matchStatuses;
+    public static class MatchedListRes{
+        List<MatchedStatus> list;
+    }
+
+    @Getter
+    @Builder
+    public static class RequestsListRes{
+        private List<WorkRequest> list;
+    }
+
+    @Getter
+    @Builder
+    public static class WorkRequest{
+        private Long elderId;
+
+        private Long recruitConditionId;
+
+        private Long centerId;
+
+        private String centerName;
+
+        private String imgUrl;
+
+        private Integer desiredHourlyWage;
+
+        private ElderRate rate;
+
+        private Long age;
+
+        private Sexual sexual;
+
+        private List<CareType> careTypes;
+
     }
 
     @Getter
     @Builder
     public static class MatchedStatus {
-
-        private Long adminId;
 
         private Long elderId;
 

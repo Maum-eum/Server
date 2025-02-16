@@ -65,6 +65,10 @@ public class CaregiverConverter {
                 .build();
     }
 
+    public static MatchedListRes toMatchedListRes(List<MatchedStatus> list) {
+        return MatchedListRes.builder().list(list).build();
+    }
+
 
     //    Caregiver 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
     public static Caregiver toCaregiver(CaregiverRequestDTO.SignUpCaregiverReq request, BCryptPasswordEncoder bCryptPasswordEncoder){
@@ -147,4 +151,9 @@ public class CaregiverConverter {
                 .build();
     }
 
+    public static RequestsListRes toRequestListRes(List<WorkRequest> list) {
+        return RequestsListRes.builder()
+                .list(list)
+                .build();
+    }
 }
