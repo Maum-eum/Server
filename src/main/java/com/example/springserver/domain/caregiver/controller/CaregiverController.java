@@ -1,6 +1,7 @@
 package com.example.springserver.domain.caregiver.controller;
 
 import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.service.CareGiverService;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.*;
 import static com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.*;
@@ -85,6 +88,12 @@ public class CaregiverController {
     public String responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
                                                       @RequestBody @Valid RecruitReq request){
         return careGiverService.responseToRecruit(user,request);
+    }
+
+    @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
+    @PutMapping("/matching")
+    public List<MatchedStatus> responseToRecruit(@AuthenticationPrincipal CustomUserDetails user){
+        return careGiverService.getCalenderList(user);
     }
 
 //
