@@ -48,9 +48,9 @@ dependencies {
     // Swagger
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
-    // Elastic Search
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-    implementation 'co.elastic.clients:elasticsearch-java'
+//    // Elastic Search
+//    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+//    implementation 'co.elastic.clients:elasticsearch-java'
 }
 
 tasks.named('test') {

@@ -1,16 +1,10 @@
 package com.example.springserver.domain.center.service;
 
 import com.example.springserver.domain.center.entity.Center;
-import com.example.springserver.domain.center.entity.CenterDocument;
 import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +23,10 @@ public class CenterService {
 //        PageRequest pageRequest = PageRequest.of(page, size);
 //        return centerSearchRepository.findByCenterNameContaining(keyword, pageRequest);
 //    }
+
+    public List<Center> searchCenterName(String keyword) {
+        return centerRepository.findByCenterNameContaining(keyword);
+    }
 
     public Center getCenter(String centerName) {
         return centerRepository.findByCenterName(centerName)
