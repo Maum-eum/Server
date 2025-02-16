@@ -7,12 +7,11 @@ import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseD
 import com.example.springserver.domain.caregiver.entity.*;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO;
 
-import com.example.springserver.domain.location.entity.Location;
+import com.example.springserver.domain.caregiver.entity.WorkLocation;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CaregiverConverter {
@@ -146,5 +145,4 @@ public class CaregiverConverter {
                 .workLocations(location)
                 .build();
     }
-
 }

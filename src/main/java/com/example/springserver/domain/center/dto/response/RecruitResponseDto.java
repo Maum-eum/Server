@@ -1,13 +1,13 @@
 package com.example.springserver.domain.center.dto.response;
 
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
+import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.location.entity.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.List;
 
 public class RecruitResponseDto {
@@ -23,6 +23,8 @@ public class RecruitResponseDto {
         private Long elderId;
 
         private List<CareType> careTypes; // 근무 종류
+
+        private Long recruitLocation;
 
         private boolean mealAssistance;
 
@@ -72,7 +74,7 @@ public class RecruitResponseDto {
 
         private boolean cognitiveStimulation; // 인지 자극 활동
 
-        private List<RequestTimeDto> recruitTimes;
+        private List<ResponseTimeDto> recruitTimes;
 
         private String detailRequiredService; // 추가 요청 사항
     }
@@ -81,27 +83,9 @@ public class RecruitResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TimeDto {
-        private String dayOfWeek;
-        private LocalTime startTime;
-        private LocalTime endTime;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class RecruitResponseTotalDto {
-        private ResponseDto recruitCondition;
-        private List<TimeDto> recruitTimes;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CreateRecruitResponseDto {
-        private ResponseDto recruitCondition;
-        private TimeDto recruitTime;
+    public static class ResponseTimeDto {
+        private Week dayOfWeek;
+        private Long startTime;
+        private Long endTime;
     }
 }

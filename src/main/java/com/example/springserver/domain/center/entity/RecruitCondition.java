@@ -1,8 +1,10 @@
 package com.example.springserver.domain.center.entity;
 
+import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
+import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +28,10 @@ public class RecruitCondition extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location recruitLocation;
 
     @Convert(converter = CareTypeEnumListConverter.class)
     @Column(name = "care_types", nullable = false)
@@ -92,8 +98,9 @@ public class RecruitCondition extends BaseEntity {
         }
     }
 
-    public void update(RequestDto requestDto) {
+    public void update(RequestDto requestDto, Location location) {
         this.careTypes = requestDto.getCareTypes();
+        this.recruitLocation = location;
         this.flexibleSchedule = requestDto.isFlexibleSchedule();
         this.desiredHourlyWage = requestDto.getDesiredHourlyWage();
         this.selfFeeding = requestDto.isSelfFeeding();
