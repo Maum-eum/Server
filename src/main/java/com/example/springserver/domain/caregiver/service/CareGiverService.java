@@ -3,18 +3,16 @@ package com.example.springserver.domain.caregiver.service;
 import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDTO.*;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.DetailJobConditionResponseDTO;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.JobConditionResponseDTO;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.*;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDTO.WorkTimes;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.WorkLocation;
+import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
-import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.entity.Match;
-import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.entity.RecruitTime;
+import com.example.springserver.domain.center.entity.*;
 import com.example.springserver.domain.center.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import com.example.springserver.domain.center.repository.MatchRepository;
@@ -28,9 +26,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -147,7 +149,8 @@ public class CareGiverService {
         return toDetailJobConditionResponseDto(byId,jobCondition);
     }
 
-    private void saveLocations(JobConditionRequestDTO request, JobCondition jobCondition) {
+    @Transactional
+    public void saveLocations(JobConditionRequestDTO request, JobCondition jobCondition) {
         final JobCondition finalJobCondition = jobCondition;
 
         List<WorkLocation> workLocations = request.getLocationRequestDTOList().stream()
@@ -163,6 +166,158 @@ public class CareGiverService {
 
         workLocationRepository.saveAll(workLocations);
         jobCondition.setWorkLocations(workLocations);
+    }
+
+    public List<MatchedStatus> getCalenderList(CustomUserDetails user) {
+        Caregiver caregiver = getById(user);
+        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+
+        List<Match> allByJobConditionWithStatus = matchRepository.findAllByJobConditionWithStatus(
+                jobCondition, List.of(MatchStatus.MATCHED, MatchStatus.ENDED)
+        );
+
+        return allByJobConditionWithStatus.stream()
+                .map(match -> {
+                    Elder elder = match.getRequirementCondition().getElder();
+                    RecruitCondition rc = match.getRequirementCondition();
+
+                    List<RecruitTime> recruitTimes = Optional.ofNullable(rc.getRecruitTimes())
+                            .orElse(Collections.emptyList());
+
+                    return MatchedStatus.builder()
+                            .elderId(elder.getElderId())
+                            .elderName(elder.getName())
+                            .mealAssistance(rc.isMealAssistance())
+                            .dailyLivingAssistance(rc.isDailyLivingAssistance())
+                            .toiletAssistance(rc.isToiletAssistance())
+                            .moveAssistance(rc.isMoveAssistance())
+                            .selfFeeding(rc.isSelfFeeding())
+                            .mealPreparation(rc.isMealPreparation())
+                            .cookingAssistance(rc.isCookingAssistance())
+                            .enteralNutritionSupport(rc.isEnteralNutritionSupport())
+                            .selfToileting(rc.isSelfToileting())
+                            .occasionalToiletingAssist(rc.isOccasionalToiletingAssist())
+                            .diaperCare(rc.isDiaperCare())
+                            .catheterOrStomaCare(rc.isCatheterOrStomaCare())
+                            .independentMobility(rc.isIndependentMobility())
+                            .mobilityAssist(rc.isMobilityAssist())
+                            .wheelchairAssist(rc.isWheelchairAssist())
+                            .immobile(rc.isImmobile())
+                            .cleaningLaundryAssist(rc.isCleaningLaundryAssist())
+                            .bathingAssist(rc.isBathingAssist())
+                            .hospitalAccompaniment(rc.isHospitalAccompaniment())
+                            .exerciseSupport(rc.isExerciseSupport())
+                            .emotionalSupport(rc.isEmotionalSupport())
+                            .cognitiveStimulation(rc.isCognitiveStimulation())
+                            .times(
+                                    recruitTimes.stream()
+                                            .map(rt -> WorkTimes.builder()
+                                                    .dayOfWeek(rt.getDayOfWeek())
+                                                    .startTime(rt.getStartTime())
+                                                    .endTime(rt.getEndTime())
+                                                    .build()
+                                            )
+                                            .collect(Collectors.toList())
+                            )
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public String responseToRecruit(CustomUserDetails user, RecruitReq request) {
+        Match originalMatch = matchRepository.findById(request.getMatchId())
+                .orElseThrow(() -> new GlobalException(ErrorCode.MATCH_NOT_FOUND));
+
+        Caregiver caregiver = getById(user);
+
+        if (request.getStatus() == RecruitStatus.ACCEPTED || request.getStatus() == RecruitStatus.TUNING) {
+            originalMatch.setStatus(MatchStatus.TUNING);
+            caregiver.setEmploymentStatus(false);
+        } else {
+            originalMatch.setStatus(MatchStatus.DECLINED);
+            originalMatch.setDeletedAt(LocalDateTime.now());
+        }
+
+        return "Status Updated";
+    }
+
+    public List<WorkRequest> getRequests(CustomUserDetails user) {
+        Caregiver cg = getById(user);
+        JobCondition jc = jobConditionRepository.findByCaregiver(cg)
+                .orElseThrow(()-> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+
+        List<Match> allByJobConditionWithStatus = matchRepository.findAllByJobConditionWithStatus(jc, List.of(MatchStatus.BEFORE,MatchStatus.TUNING));
+
+        return toWorkRequestList(allByJobConditionWithStatus);
+    }
+
+    private Caregiver getById(CustomUserDetails user) throws GlobalException {
+        return caregiverRepository.findById(user.getId()).orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private JobCondition getJobCondition(Caregiver user) {
+        return jobConditionRepository.findByCaregiver(user)
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+    }
+
+    private List<WorkRequest> toWorkRequestList(List<Match> allByJobConditionWithStatus) {
+        return allByJobConditionWithStatus.stream()
+                .map(match -> {
+                    Elder elder = match.getRequirementCondition().getElder();
+                    Center center = elder.getCenter();
+                    RecruitCondition rc = match.getRequirementCondition();
+                    return WorkRequest.builder()
+                            .elderId(elder.getElderId())
+                            .recruitConditionId(rc.getRecruitConditionId())
+                            .imgUrl(elder.getImgUrl())
+                            .desiredHourlyWage(rc.getDesiredHourlyWage())
+                            .rate(elder.getRate())
+                            .careTypes(rc.getCareTypes())
+                            .age(ChronoUnit.YEARS.between(elder.getBirth(), LocalDate.now()))
+                            .sexual((elder.getGender() == 1) ? Sexual.MALE : Sexual.FEMALE)
+                            .centerId(center.getCenterId())
+                            .centerName(center.getCenterName())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    private JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
+        return JobConditionResponseDTO.builder()
+                .jobConditionId(saved.getId())
+                .bathingAssist(saved.getBathingAssist())
+                .catheterOrStomaCare(saved.getCatheterOrStomaCare())
+                .diaperCare(saved.getDiaperCare())
+                .cleaningLaundryAssist(saved.getCleaningLaundryAssist())
+                .selfToileting(saved.getSelfToileting())
+                .selfFeeding(saved.getSelfFeeding())
+                .cognitiveStimulation(saved.getCognitiveStimulation())
+                .cookingAssistance(saved.getCookingAssistance())
+                .desiredHourlyWage(saved.getDesiredHourlyWage())
+                .emotionalSupport(saved.getEmotionalSupport())
+                .enteralNutritionSupport(saved.getEnteralNutritionSupport())
+                .exerciseSupport(saved.getExerciseSupport())
+                .hospitalAccompaniment(saved.getHospitalAccompaniment())
+                .flexibleSchedule(saved.getFlexibleSchedule())
+                .mealPreparation(saved.getMealPreparation())
+                .immobile(saved.getImmobile())
+                .occasionalToiletingAssist(saved.getOccasionalToiletingAssist())
+                .mobilityAssist(saved.getMobilityAssist())
+                .wheelchairAssist(saved.getWheelchairAssist())
+                .independentMobility(saved.getIndependentMobility())
+                .dayOfWeek(Integer.toBinaryString(saved.getDayOfWeek()))
+                .startTime(saved.getStartTime())
+                .endTime(saved.getEndTime())
+                .locationRequestDTOList(saved.getWorkLocations().stream()
+                        .map(dto -> CaregiverResponseDTO.LocationResponseDTO.builder()
+                                .workLocationId(dto.getId())
+                                .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
+                                .build()
+                        )
+                        .toList())
+                .build();
     }
 
     private DetailJobConditionResponseDTO toDetailJobConditionResponseDto(Caregiver caregiver , JobCondition saved) {
@@ -215,137 +370,17 @@ public class CareGiverService {
                 .build();
     }
 
-    public List<CaregiverResponseDTO.MatchedStatus> getCalenderList(CustomUserDetails user) {
-        Caregiver caregiver = getById(user);
-        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
-                .orElseThrow();
-
-        List<Match> allByJobConditionWithStatus = matchRepository.findAllByJobConditionWithStatus(
-                jobCondition, List.of(MatchStatus.MATCHED, MatchStatus.ENDED)
-        );
-
-        return allByJobConditionWithStatus.stream()
-                .map(match -> {
-                    Elder elder = match.getRequirementCondition().getElder();
-                    RecruitCondition rc = match.getRequirementCondition();
-                    List<RecruitTime> list = rc.getRecruitTimes();
-                    return CaregiverResponseDTO.MatchedStatus.builder()
-                            .elderId(elder.getElderId()) // ✔ 중복 제거
-                            .elderName(elder.getName()) // ✔ 중복 제거
-                            .mealAssistance(rc.isMealAssistance())
-                            .dailyLivingAssistance(rc.isDailyLivingAssistance())
-                            .toiletAssistance(rc.isToiletAssistance())
-                            .moveAssistance(rc.isMoveAssistance())
-                            .selfFeeding(rc.isSelfFeeding())
-                            .mealPreparation(rc.isMealPreparation())
-                            .cookingAssistance(rc.isCookingAssistance())
-                            .enteralNutritionSupport(rc.isEnteralNutritionSupport())
-                            .selfToileting(rc.isSelfToileting())
-                            .occasionalToiletingAssist(rc.isOccasionalToiletingAssist())
-                            .diaperCare(rc.isDiaperCare())
-                            .catheterOrStomaCare(rc.isCatheterOrStomaCare())
-                            .independentMobility(rc.isIndependentMobility())
-                            .mobilityAssist(rc.isMobilityAssist())
-                            .wheelchairAssist(rc.isWheelchairAssist())
-                            .immobile(rc.isImmobile())
-                            .cleaningLaundryAssist(rc.isCleaningLaundryAssist())
-                            .bathingAssist(rc.isBathingAssist())
-                            .hospitalAccompaniment(rc.isHospitalAccompaniment())
-                            .exerciseSupport(rc.isExerciseSupport())
-                            .emotionalSupport(rc.isEmotionalSupport())
-                            .cognitiveStimulation(rc.isCognitiveStimulation())
-                            .times(
-                                    list.stream()
-                                            .map(rt -> CaregiverResponseDTO.WorkTimes.builder()
-                                                    .dayOfWeek(rt.getDayOfWeek())
-                                                    .startTime(rt.getStartTime())
-                                                    .endTime(rt.getEndTime())
-                                                    .build()
-                                            )
-                                            .collect(Collectors.toList())
-                            )
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-
-    private Caregiver getById(CustomUserDetails user) throws GlobalException {
-        return caregiverRepository.findById(user.getId()).orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    private JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
-        return JobConditionResponseDTO.builder()
-                .jobConditionId(saved.getId())
-                .bathingAssist(saved.getBathingAssist())
-                .catheterOrStomaCare(saved.getCatheterOrStomaCare())
-                .diaperCare(saved.getDiaperCare())
-                .cleaningLaundryAssist(saved.getCleaningLaundryAssist())
-                .selfToileting(saved.getSelfToileting())
-                .selfFeeding(saved.getSelfFeeding())
-                .cognitiveStimulation(saved.getCognitiveStimulation())
-                .cookingAssistance(saved.getCookingAssistance())
-                .desiredHourlyWage(saved.getDesiredHourlyWage())
-                .emotionalSupport(saved.getEmotionalSupport())
-                .enteralNutritionSupport(saved.getEnteralNutritionSupport())
-                .exerciseSupport(saved.getExerciseSupport())
-                .hospitalAccompaniment(saved.getHospitalAccompaniment())
-                .flexibleSchedule(saved.getFlexibleSchedule())
-                .mealPreparation(saved.getMealPreparation())
-                .immobile(saved.getImmobile())
-                .occasionalToiletingAssist(saved.getOccasionalToiletingAssist())
-                .mobilityAssist(saved.getMobilityAssist())
-                .wheelchairAssist(saved.getWheelchairAssist())
-                .independentMobility(saved.getIndependentMobility())
-                .dayOfWeek(Integer.toBinaryString(saved.getDayOfWeek()))
-                .startTime(saved.getStartTime())
-                .endTime(saved.getEndTime())
-                .locationRequestDTOList(saved.getWorkLocations().stream()
-                        .map(dto -> CaregiverResponseDTO.LocationResponseDTO.builder()
-                                .workLocationId(dto.getId())
-                                .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
-                                .build()
-                        )
-                        .toList())
-                .build();
-    }
-
-
-
-    private JobCondition getJobCondition(Caregiver user) {
-        return jobConditionRepository.findByCaregiver(user)
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-    }
-
-    @Transactional
-    public String responseToRecruit(CustomUserDetails user, RecruitReq request) {
-        Match originalMatch = matchRepository.findById(request.getMatchId())
-                .orElseThrow(() -> new GlobalException(ErrorCode.MATCH_NOT_FOUND));
-
-        Caregiver caregiver = getById(user);
-
-        if (request.getStatus() == RecruitStatus.ACCEPTED || request.getStatus() == RecruitStatus.TUNING) {
-            originalMatch.setStatus(MatchStatus.TUNING);
-            caregiver.setEmploymentStatus(false);
-        } else {
-            originalMatch.setStatus(MatchStatus.DECLINED);
-            originalMatch.setDeletedAt(LocalDateTime.now());
-        }
-
-        return "Status Updated";
-    }
-
-    public Integer toIntegerDayOfWeek(String binaryString) {
+    private Integer toIntegerDayOfWeek(String binaryString) {
         if (!binaryString.matches("^[01]{7}$")) {
             throw new IllegalArgumentException("Invalid binary string. Must be exactly 7 digits of 0s and 1s.");
         }
         return Integer.parseInt(binaryString, 2);
     }
 
-    public String toStringDayOfWeek(Integer week){
+    private String toStringDayOfWeek(Integer week){
         return Integer.toBinaryString(week);
     }
 
 
-
+    
 }
