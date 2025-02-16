@@ -19,6 +19,7 @@ public enum ErrorCode {
     MEMBER_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "사용자가 이미 존재합니다.."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4003", "닉네임은 필수 입니다."),
     INVALID_MEMBER_ROLE(HttpStatus.BAD_REQUEST, "MEMBER4004", "사용자의 ROLE이 잘못 되었습니다."),
+    USERNAME_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 아이디가 이미 존재합니다."),
 
     // 토큰 관련 에러
     ACCESS_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "TOKEN4001", "액세스 토큰이 만료되었습니다."),
@@ -44,10 +45,14 @@ public enum ErrorCode {
     RECRUIT_MONTHLY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-MONTHLY-LABOR-TIME4002", "근로법 위반: 한달 최대 근무 시간(40시간)을 초과할 수 없습니다."),
     RECRUIT_LABOR_WAGE_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-LABOR-WAGE4002", "근로법 위반: 최저임금(10,030원) 미만의 급여입니다."),
 
-
     // 요양보호사 관련 에러
     JOB_CONDITION_NOT_FOUND(HttpStatus.NOT_FOUND,"JOB_CONDITION_NOTFOUND4001","보호사의 구직정보가 존재하지 않습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),
+
+    // 관리자 관련 에러
+    ADMIN_DELETE_FAILED(HttpStatus.BAD_REQUEST,"ADMIN_DELETE_FAILED4001","관리자 계정 삭제를 실패했습니다."),
+    ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN-NOTFOUND4001","관리자정보가 존재하지 않습니다."),
+
 
     // 시간 관련 에러
     TIME_LIMIT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "TIME_LIMIT_OUT4001","시간 범위 초과 입력입니다."),
