@@ -10,12 +10,15 @@ import com.example.springserver.domain.center.dto.request.ElderRequestDto.Create
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
+import com.example.springserver.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Service
@@ -26,16 +29,25 @@ public class ElderService {
 
     private final ElderRepository elderRepository;
     private final CenterRepository centerRepository;
+    private final S3Service s3Service;
 
     @Transactional
-    public Elder createElder(Long centerId, CreateRequestDto createDto, boolean isTemporary) {
-
+    public Elder createElder(Long centerId, CreateRequestDto createDto, boolean isTemporary, MultipartFile profileImg) {
+        log.info("isTemporary 값 확인: {}", isTemporary); // 로그 추가
         Center validCenter = getValidCenter(centerId);
 
-        // 어르신 정보 필수 입력 필드 검증 (일반 저장 / 임시 저장)
-        validateElderFields(isTemporary, createDto);
+        // 이미지 적용
+        String imgUrl;
+        if(profileImg == null) {
+            imgUrl = "http://localhost:8080/basicImg.jpeg";
+        } else {
+            imgUrl = s3Service.uploadFileImage(profileImg);
+        }
 
-        Elder createdElder = elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary, validCenter));
+        // 어르신 정보 필수 입력 필드 검증 (일반 저장 / 임시 저장)
+        validateElderFields(isTemporary, createDto, imgUrl);
+
+        Elder createdElder = elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary, validCenter, imgUrl));
         createdElder.changeCenter(validCenter);
 
         return createdElder;
@@ -120,7 +132,7 @@ public class ElderService {
                 .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER));
     }
 
-    private void validateElderFields(boolean isTemporary, CreateRequestDto createRequestDto) { // 필수 항목 입력 체크
+    private void validateElderFields(boolean isTemporary, CreateRequestDto createRequestDto, String imgUrl) { // 필수 항목 입력 체크
 
         // 임시 저장인 경우 3가지 필수 입력 항목 검증
         if (createRequestDto.getName() == null || createRequestDto.getGender() == null || createRequestDto.getBirth() == null) {
@@ -129,7 +141,7 @@ public class ElderService {
 
         // 정식 저장인 경우 나머지 필수 입력 항목 검증
         if (!isTemporary) {
-            if (createRequestDto.getRate() == null || createRequestDto.getImgUrl() == null || createRequestDto.getWeight() == null) {
+            if (createRequestDto.getRate() == null || Objects.equals(imgUrl, "http://localhost:8080/basicImg.jpeg") || createRequestDto.getWeight() == null) {
                 throw new ElderException(ErrorCode.INVALID_ELDER_DATA);
             }
         }
