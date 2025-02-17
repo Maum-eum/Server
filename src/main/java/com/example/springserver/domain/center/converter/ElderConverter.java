@@ -38,7 +38,7 @@ public class ElderConverter {
                 .build();
     }
 
-    public static Elder toSaveElder(CreateRequestDto dto, boolean isTemporary, Center center) {
+    public static Elder toSaveElder(CreateRequestDto dto, boolean isTemporary, Center center, String imgUrl) {
         return Elder.builder()
                 .center(center)
                 .name(dto.getName())
@@ -46,7 +46,7 @@ public class ElderConverter {
                 .birth(dto.getBirth())
                 .rate(dto.getRate())
                 .inmateTypes(dto.getInmateTypes())
-                .imgUrl(dto.getImgUrl())
+                .imgUrl(imgUrl)
                 .weight(dto.getWeight())
                 .isTemporarySave(isTemporary)
                 .isNormal(dto.isNormal())

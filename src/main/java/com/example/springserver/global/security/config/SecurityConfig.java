@@ -66,6 +66,8 @@ public class SecurityConfig {
         config.addAllowedOrigin("https://www.gyeotae.site");
         config.addAllowedOrigin("https://gyeotae.site");
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("https://api.gyeotae.site");
+        config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setExposedHeaders(Arrays.asList("Authorization", "Authorization-refresh"));
