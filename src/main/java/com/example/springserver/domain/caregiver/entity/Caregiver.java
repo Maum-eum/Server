@@ -14,8 +14,9 @@ import java.util.List;
 @Builder
 @DynamicUpdate
 @DynamicInsert
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="care_giver")
 public class Caregiver extends BaseEntity {
 
     @Id
@@ -54,6 +55,24 @@ public class Caregiver extends BaseEntity {
 
     @OneToMany(mappedBy = "caregiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificate> certificates;
+
+    public Caregiver(String username, String password, String name, String contact,
+                     Boolean car, Boolean education, String img, String intro,
+                     String address, Boolean employmentStatus, List<Experience> experiences,
+                     List<Certificate> certificates) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.contact = contact;
+        this.car = car;
+        this.education = education;
+        this.img = img;
+        this.intro = intro;
+        this.address = address;
+        this.employmentStatus = employmentStatus;
+        this.experiences = experiences;
+        this.certificates = certificates;
+    }
 
     public void setPassword(String password) {
         this.password = password;

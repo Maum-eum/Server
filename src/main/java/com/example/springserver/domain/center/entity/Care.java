@@ -2,7 +2,6 @@ package com.example.springserver.domain.center.entity;
 
 import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
 import com.example.springserver.domain.center.dto.request.CareRequestDto;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.common.entity.BaseEntity;
@@ -85,6 +84,43 @@ public class Care extends BaseEntity {
     private boolean emotionalSupport; // 정서적 지원
 
     private boolean cognitiveStimulation; // 인지 자극 활동
+
+    public Care(Elder elder, List<CareType> careTypes, Location careLocation,
+                            boolean flexibleSchedule, boolean mealAssistance,
+                            boolean toiletAssistance, boolean moveAssistance, boolean dailyLivingAssistance,
+                            Integer desiredHourlyWage, boolean selfFeeding, boolean mealPreparation,
+                            boolean cookingAssistance, boolean enteralNutritionSupport, boolean selfToileting,
+                            boolean occasionalToiletingAssist, boolean diaperCare, boolean catheterOrStomaCare,
+                            boolean independentMobility, boolean mobilityAssist, boolean wheelchairAssist, boolean immobile,
+                            boolean cleaningLaundryAssist, boolean bathingAssist, boolean hospitalAccompaniment,
+                            boolean exerciseSupport, boolean emotionalSupport, boolean cognitiveStimulation) {
+        this.elder = elder;
+        this.careLocation = careLocation;
+        this.careTypes = careTypes;
+        this.flexibleSchedule = flexibleSchedule;
+        this.mealAssistance = mealAssistance;
+        this.toiletAssistance = toiletAssistance;
+        this.moveAssistance = moveAssistance;
+        this.dailyLivingAssistance = dailyLivingAssistance;
+        this.desiredHourlyWage = desiredHourlyWage;
+        this.selfFeeding = selfFeeding;
+        this.mealPreparation = mealPreparation;
+        this.cookingAssistance = cookingAssistance;
+        this.enteralNutritionSupport = enteralNutritionSupport;
+        this.selfToileting = selfToileting;
+        this.occasionalToiletingAssist = occasionalToiletingAssist;
+        this.diaperCare = diaperCare;
+        this.catheterOrStomaCare =  catheterOrStomaCare;
+        this.independentMobility = independentMobility;
+        this.mobilityAssist = mobilityAssist;
+        this.wheelchairAssist  = wheelchairAssist;
+        this.cleaningLaundryAssist = cleaningLaundryAssist;
+        this.bathingAssist = bathingAssist;
+        this.hospitalAccompaniment = hospitalAccompaniment;
+        this.exerciseSupport = exerciseSupport;
+        this.emotionalSupport = emotionalSupport;
+        this.cognitiveStimulation = cognitiveStimulation;
+    }
 
     public void update(CareRequestDto.RequestDto requestDto, Location location) {
         this.careTypes = requestDto.getCareTypes();

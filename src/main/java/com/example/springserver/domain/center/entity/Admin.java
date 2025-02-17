@@ -15,6 +15,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name="admin")
 public class Admin extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +37,14 @@ public class Admin extends BaseEntity {
 
     @NotNull
     private String connect;
+
+    public Admin(String username, String password, String name, Center center, String connect) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.center = center;
+        this.connect = connect;
+    }
 
     /* 양방향 연관관계 편의 메서드 */
     public void changeCenter(Center center) {
