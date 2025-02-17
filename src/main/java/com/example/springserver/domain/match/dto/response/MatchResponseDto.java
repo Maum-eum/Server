@@ -7,6 +7,7 @@ import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
 import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,19 +19,44 @@ public class MatchResponseDto {
 
     @Getter
     @Builder
+    public static class MatchRecommendList{
+
+        private List<MatchedCaregiver> list;
+    }
+
+    @Getter
+    @Builder
+    public static class MatchedCaregiver{
+
+        private Long jobConditionId;
+
+        private Integer score;
+
+        private String imgUrl;
+
+        private String caregiverName;
+
+        private MatchStatus matchStatus;
+    }
+
+    @Getter
+    @Builder
     public static class MatchedListRes{
-        List<MatchedStatus> list;
+
+        private List<MatchedStatus> list;
     }
 
     @Getter
     @Builder
     public static class RequestsListRes{
+
         private List<WorkRequest> list;
     }
 
     @Getter
     @Builder
     public static class WorkRequest{
+
         private Long elderId;
 
         private Long recruitConditionId;
@@ -112,6 +138,7 @@ public class MatchResponseDto {
     @Getter
     @Builder
     public static class WorkTimes{
+
         private Week dayOfWeek;
 
         private Long startTime;

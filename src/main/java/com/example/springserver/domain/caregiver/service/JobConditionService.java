@@ -1,10 +1,8 @@
 package com.example.springserver.domain.caregiver.service;
 
 
-import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;

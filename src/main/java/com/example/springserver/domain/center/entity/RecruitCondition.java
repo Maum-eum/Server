@@ -1,6 +1,5 @@
 package com.example.springserver.domain.center.entity;
 
-import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
