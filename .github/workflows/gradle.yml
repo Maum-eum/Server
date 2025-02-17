@@ -40,6 +40,11 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
           JWT_SECRET: ${{secrets.JWT_SECRET}}
+          BUCKET_NAME: ${{secrets.BUCKET_NAME}}
+          S3_ACCESS_KEY: ${{secrets.S3_ACCESS_KEY}}
+          S3_SECRET_KEY: ${{secrets.S3_SECRET_KEY}}
+          S3_REGION: ${{secrets.S3_REGION}}
+          CLOUDFRONT_DOMAIN: ${{secrets.CLOUDFRONT_DOMAIN}}
         run: ./gradlew build -x test
 
       - name: Debug Build Output
@@ -101,6 +106,11 @@ jobs:
             SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} \
             SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
             JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            BUCKET_NAME=${{ secrets.BUCKET_NAME }} \
+            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }} \
+            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} \
+            S3_REGION=${{ secrets.S3_REGION }} \
+            CLOUDFRONT_DOMAIN=${{ secrets.CLOUDFRONT_DOMAIN }} \
             nohup java -jar $APP_JAR --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
 
             echo "Application started successfully!"
