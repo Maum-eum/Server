@@ -15,4 +15,8 @@ public interface RecruitCondRepository extends JpaRepository<RecruitCondition, L
 
     @Query("SELECT DISTINCT rc FROM RecruitCondition rc LEFT JOIN FETCH rc.recruitTimes WHERE rc.elder.elderId = :elderId")
     List<RecruitCondition> findWithRecruitTimesByElderId(@Param("elderId") Long elderId);
+
+    // Mock 데이터 생성용
+    @Query(value = "SELECT * FROM recruit_condition order by RAND() limit 1",nativeQuery = true)
+    Optional<RecruitCondition> findRandom();
 }
