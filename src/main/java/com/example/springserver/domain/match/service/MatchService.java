@@ -1,18 +1,18 @@
 package com.example.springserver.domain.match.service;
 
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.*;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.WorkTimes;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.service.CommonService;
 import com.example.springserver.domain.center.entity.*;
-import com.example.springserver.domain.center.entity.enums.MatchStatus;
+import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.center.repository.RecruitCondRepository;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto;
+import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import com.example.springserver.domain.center.repository.MatchRepository;
-import com.example.springserver.domain.match.dto.request.MatchRequestDto;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
@@ -22,13 +22,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,9 @@ public class MatchService {
 
     private final CommonService commonService;
     private final JobConditionRepository jobConditionRepository;
+    private final RecruitCondRepository recruitCondRepository;
     private final MatchRepository matchRepository;
+
 
     public List<MatchedStatus> getCalenderList(CustomUserDetails user) {
         Caregiver caregiver = commonService.getById(user);
@@ -114,23 +120,23 @@ public class MatchService {
         return "Status Updated";
     }
 
-    public List<WorkRequest> getRequests(CustomUserDetails user) {
+    public List<MatchResponseDto.WorkRequest> getRequests(CustomUserDetails user) {
         Caregiver cg = commonService.getById(user);
         JobCondition jc = jobConditionRepository.findByCaregiver(cg)
                 .orElseThrow(()-> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
 
-        List<Match> allByJobConditionWithStatus = matchRepository.findAllByJobConditionWithStatus(jc, List.of(MatchStatus.BEFORE,MatchStatus.TUNING));
+        List<Match> allByJobConditionWithStatus = matchRepository.findAllByJobConditionWithStatus(jc, List.of(MatchStatus.WAITING,MatchStatus.TUNING));
 
         return toWorkRequestList(allByJobConditionWithStatus);
     }
 
-    private List<WorkRequest> toWorkRequestList(List<Match> allByJobConditionWithStatus) {
+    private List<MatchResponseDto.WorkRequest> toWorkRequestList(List<Match> allByJobConditionWithStatus) {
         return allByJobConditionWithStatus.stream()
                 .map(match -> {
                     Elder elder = match.getRequirementCondition().getElder();
                     Center center = elder.getCenter();
                     RecruitCondition rc = match.getRequirementCondition();
-                    return WorkRequest.builder()
+                    return MatchResponseDto.WorkRequest.builder()
                             .elderId(elder.getElderId())
                             .recruitConditionId(rc.getRecruitConditionId())
                             .imgUrl(elder.getImgUrl())
@@ -146,6 +152,114 @@ public class MatchService {
                 .collect(Collectors.toList());
     }
 
+    public List<MatchedCaregiver> getRecommendList(Long request) {
 
+        List<JobCondition> recommendedList  = jobConditionRepository.findAllRecommendedListByElder(request);
+        RecruitCondition recruitCondition = recruitCondRepository.findById(request)
+                .orElseThrow(()-> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+
+        // 매칭 점수 계산
+        List<MatchedCaregiver> result = new ArrayList<>();
+        for (JobCondition jobCondition : recommendedList) {
+            int timeScore = calculateTimeScore(jobCondition,recruitCondition);
+            int conditionScore = calculateConditionScore(jobCondition,recruitCondition);
+
+            Caregiver caregiver = jobCondition.getCaregiver();
+            MatchStatus st = matchRepository.findAllByJobConditionAndRecruitCondition(recruitCondition.getRecruitConditionId(),
+                    jobCondition.getId());
+
+
+            // 최종 점수 계산 (persent)
+            int persent = (timeScore + conditionScore) / 2;
+
+            // 결과 리스트 추가
+            result.add(MatchedCaregiver.builder()
+                            .jobConditionId(caregiver.getId())
+                            .caregiverName(caregiver.getName())
+                            .imgUrl(caregiver.getImg())
+                            .matchStatus(st == null ? MatchStatus.NONE : st )
+                            .score(persent)
+                    .build());
+        }
+
+        // 점수가 높은 순으로 정렬
+        result.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+
+        return result;
+    }
+
+    private int calculateConditionScore(JobCondition jc,RecruitCondition rc) {
+        int totalScore = 100; // 기본 점수
+
+        // 체크할 필드 목록 (getter 메서드 이름을 기반으로 자동 체크)
+        List<String> conditionFields = List.of(
+                "SelfFeeding", "MealPreparation", "CookingAssistance", "EnteralNutritionSupport",
+                "SelfToileting", "OccasionalToiletingAssist", "DiaperCare", "CatheterOrStomaCare",
+                "IndependentMobility", "MobilityAssist", "WheelchairAssist", "Immobile",
+                "CleaningLaundryAssist", "BathingAssist", "HospitalAccompaniment",
+                "ExerciseSupport", "EmotionalSupport", "CognitiveStimulation"
+        );
+
+        try {
+            for (String field : conditionFields) {
+                Method jcMethod = JobCondition.class.getMethod("get" + field);
+                Method rcMethod = RecruitCondition.class.getMethod("is" + field);
+
+                ScheduleAvailability jcValue = (ScheduleAvailability) jcMethod.invoke(jc);
+                boolean rcValue = (boolean) rcMethod.invoke(rc);
+
+                if (jcValue == ScheduleAvailability.IMPOSSIBLE && rcValue) {
+                    totalScore -= 20;
+                } else if (jcValue == ScheduleAvailability.NEGOTIABLE) {
+                    totalScore -= 2;
+                }
+            }
+        } catch (Exception e) {
+            throw new GlobalException(ErrorCode.ERROR_AT_CALCULATE_LOGIC);
+        }
+        return Math.max(0, totalScore);
+    }
+
+    private int calculateTimeScore(JobCondition jc, RecruitCondition rc) {
+        List<RecruitTime> recruitTimes = rc.getRecruitTimes();
+        int jobDayOfWeek = jc.getDayOfWeek();
+
+        int maxScore = 0;
+
+        for (RecruitTime rt : recruitTimes) {
+            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
+
+            // 요일이 겹치는지 확인
+            if ((jobDayOfWeek & recruitDayBit) == 0) {
+                continue;
+            }
+
+            // 시간 겹치는 부분 계산
+            Long jobStart = jc.getStartTime();
+            Long jobEnd = jc.getEndTime();
+            Long recruitStart = rt.getStartTime();
+            Long recruitEnd = rt.getEndTime();
+
+            Long jobDuration = jobEnd - jobStart;
+            Long overlapDuration = Math.max(0, Math.min(jobEnd, recruitEnd) - Math.max(jobStart, recruitStart));
+
+            int score = (int) (100 - ((jobDuration - overlapDuration) * 4));
+            maxScore = Math.max(maxScore, score); // 최대 점수 저장
+        }
+
+        return maxScore; // 여러 RecruitTime 중 가장 높은 점수를 반환
+    }
+
+    private int getDayOfWeekBit(Week dayOfWeek) {
+        return switch (dayOfWeek) {
+            case SUN -> 1;
+            case MON -> 2;
+            case TUE -> 4;
+            case WED -> 8;
+            case THU -> 16;
+            case FRI -> 32;
+            case SAT -> 64;
+        };
+    }
 
 }

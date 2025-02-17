@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @Table(name = "job_condition")
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class JobCondition extends BaseEntity {
 
