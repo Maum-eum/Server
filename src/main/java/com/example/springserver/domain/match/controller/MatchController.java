@@ -5,6 +5,7 @@ import com.example.springserver.domain.match.converter.MatchConverter;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchCreateDto;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchRecommendList;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchedListRes;
 import com.example.springserver.domain.match.service.MatchService;
@@ -33,26 +34,36 @@ public class MatchController {
     @Operation(summary = "요양보호사 구인요청응답", description = "Put")
     @PutMapping("/response")
     public String responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
-                                                      @RequestBody @Valid RecruitReq request){
-        return matchService.responseToRecruit(user,request);
+                                    @RequestBody @Valid RecruitReq request) {
+        return matchService.responseToRecruit(user, request);
     }
 
     @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
     @GetMapping("/matching")
-    public MatchedListRes responseToRecruit(@AuthenticationPrincipal CustomUserDetails user){
+    public MatchedListRes responseToRecruit(@AuthenticationPrincipal CustomUserDetails user) {
         return MatchConverter.toMatchedListRes(matchService.getCalenderList(user));
     }
 
     @Operation(summary = "요양보호사 근무요청리스트 조회", description = "Get")
     @GetMapping("/requests")
-    public MatchResponseDto.RequestsListRes getListOfRequests(@AuthenticationPrincipal CustomUserDetails user){
+    public MatchResponseDto.RequestsListRes getListOfRequests(@AuthenticationPrincipal CustomUserDetails user) {
         return MatchConverter.toRequestListRes(matchService.getRequests(user));
     }
 
     @Operation(summary = "어르신별 추천된 요양보호사리스트 조회", description = "Get")
     @GetMapping("/recommends/{recruit_condition_id}")
     public MatchRecommendList getRecommendListByElder(@AuthenticationPrincipal CustomUserDetails user,
-                                                      @PathVariable("recruit_condition_id") Long request){
+                                                      @PathVariable("recruit_condition_id") Long request) {
         return MatchConverter.toRecommendList(matchService.getRecommendList(request));
     }
+
+    @Operation(summary = "요양보호사에게 근무요청", description = "Post")
+    @PostMapping("/recommends/{job_condition_id}/{recruit_condition_id}")
+    public MatchCreateDto createMatchRequest(@AuthenticationPrincipal CustomUserDetails user,
+                                                              @PathVariable("job_condition_id") Long jc,
+                                                              @PathVariable("job_condition_id") Long rc) {
+        return matchService.createMatch(user,jc,rc);
+    }
+
+
 }
