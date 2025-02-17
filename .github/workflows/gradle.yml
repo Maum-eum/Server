@@ -34,17 +34,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # ✅ Jasypt 복호화를 위한 환경변수 추가
       - name: Build without Tests
         env:
-          SPRING_DATASOURCE_URL: ${{ secrets.DB_NAME }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          JWT_SECRET: ${{secrets.JWT_SECRET}}
-          BUCKET_NAME: ${{secrets.BUCKET_NAME}}
-          S3_ACCESS_KEY: ${{secrets.S3_ACCESS_KEY}}
-          S3_SECRET_KEY: ${{secrets.S3_SECRET_KEY}}
-          S3_REGION: ${{secrets.S3_REGION}}
-          CLOUDFRONT_DOMAIN: ${{secrets.CLOUDFRONT_DOMAIN}}
+          JASYPT_SECRET_KEY: ${{ secrets.JASYPT_SECRET_KEY }}
         run: ./gradlew build -x test
 
       - name: Debug Build Output
@@ -102,15 +95,7 @@ jobs:
             fi
 
             echo "Starting new application with $APP_JAR..."
-            SPRING_DATASOURCE_URL=${{ secrets.DB_NAME }} \
-            SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} \
-            SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            BUCKET_NAME=${{ secrets.BUCKET_NAME }} \
-            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }} \
-            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} \
-            S3_REGION=${{ secrets.S3_REGION }} \
-            CLOUDFRONT_DOMAIN=${{ secrets.CLOUDFRONT_DOMAIN }} \
+            export JASYPT_SECRET_KEY=${{ secrets.JASYPT_SECRET_KEY }}
             nohup java -jar $APP_JAR --spring.profiles.active=prod > /home/ubuntu/app.log 2>&1 &
 
             echo "Application started successfully!"
