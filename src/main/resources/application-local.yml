@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: SpringServer
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/springdb
+    username: root
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연https://petstore.swagger.io/v2/swagger.json
+
+  sql:
+    init:
+      mode: always
+
+      data-locations: classpath:/data.sql, classpath:/center.sql
+
+  jwt:
+    secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
+
+  cloud:
+    aws:
+      s3:
+        bucket: ${BUCKET_NAME}
+      credentials:
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
+      region:
+        static: ${S3_REGION}
+      cloudfront:
+        domain: ${CLOUDFRONT_DOMAIN}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
+      max-request-size: 2MB
+
+springdoc:
+  show-login-endpoint: true
+
+logging:
+  level:
+    org.springframework.data.redis: DEBUG
+jasypt:
+  encryptor:
+    password: gyoe-tae-secret-key

@@ -1,7 +1,7 @@
 package com.example.springserver.domain.center.entity;
 
-import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
+import com.example.springserver.domain.center.dto.request.CareRequestDto;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.location.entity.Location;
@@ -18,20 +18,20 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "recruit_condition")
-public class RecruitCondition extends BaseEntity {
+@Table(name = "care")
+public class Care extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "recruit_condition_id", nullable = false)
-    private Long recruitConditionId;
+    @Column(name = "care_id", nullable = false)
+    private Long careId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", nullable = false)
-    private Location recruitLocation;
+    private Location careLocation;
 
     @Convert(converter = CareTypeEnumListConverter.class)
     @Column(name = "care_types", nullable = false)
@@ -39,9 +39,6 @@ public class RecruitCondition extends BaseEntity {
 
     @Column(nullable = false)
     private boolean flexibleSchedule; // 시간 협의 여부
-
-    @OneToMany(mappedBy = "recruitCondition", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecruitTime> recruitTimes = new ArrayList<>();
 
     private boolean mealAssistance;
 
@@ -89,19 +86,10 @@ public class RecruitCondition extends BaseEntity {
 
     private boolean cognitiveStimulation; // 인지 자극 활동
 
-    private String detailRequiredService;
-
-    public void addRecruitTime(RecruitTime recruitTime) {
-        if (!this.recruitTimes.contains(recruitTime)) {
-            this.recruitTimes.add(recruitTime);
-            recruitTime.setRecruitCondition(this); // 양방향 관계 설정
-        }
-    }
-
-    public void update(RequestDto requestDto, Location location) {
+    public void update(CareRequestDto.RequestDto requestDto, Location location) {
         this.careTypes = requestDto.getCareTypes();
-        this.recruitLocation = location;
         this.flexibleSchedule = requestDto.isFlexibleSchedule();
+        this.careLocation = location;
         this.desiredHourlyWage = requestDto.getDesiredHourlyWage();
         this.selfFeeding = requestDto.isSelfFeeding();
         this.mealPreparation = requestDto.isMealPreparation();
