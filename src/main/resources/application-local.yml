@@ -42,6 +42,8 @@ spring:
       enabled: true
       max-file-size: 2MB
       max-request-size: 2MB
+  profiles:
+    include: key
 
 springdoc:
   show-login-endpoint: true
