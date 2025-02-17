@@ -1,59 +1,63 @@
 package com.example.springserver.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.example.springserver.global.apiPayload.format.ErrorCode;
-import com.example.springserver.global.apiPayload.format.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.ByteArrayInputStream;
-import java.util.Base64;
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class S3Service {
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
     @Value("${spring.cloud.aws.cloudfront.domain}")
     private String cloudFrontDomain;
 
-    // Base64로 받은 데이터 디코딩해서 S3에 업로드 후 이미지url 반환
+    // Base64로 받은 데이터 디코딩해서 S3에 업로드 후 이미지 URL 반환
     public String uploadFileImage(MultipartFile imageFile) {
         try {
-            String extension = ".jpg";
-            String contentType = imageFile.getContentType();
-            if (contentType == null || !isValidImageType(contentType)) {
-                throw new GlobalException(ErrorCode.IMAGE_UPLOAD_FAILED);
-            } else if (contentType.equals("image/jpeg")) {
-                extension = ".jpg";
-            } else if (contentType.equals("image/png")) {
-                extension = ".png";
-            } else if (contentType.equals("image/webp")) {
-                extension = ".webp";
+            String extension = getFileExtension(imageFile.getContentType());
+            if (extension == null) {
+                throw new RuntimeException("Invalid image format.");
             }
 
             String fileName = "profile-images/" + UUID.randomUUID() + extension;
 
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(contentType);
-            metadata.setContentLength(imageFile.getSize());
+            // AWS S3 업로드 요청 생성
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .contentType(imageFile.getContentType())
+                    .build();
 
-            // S3에 업로드
-            amazonS3.putObject(bucketName, fileName, imageFile.getInputStream(), metadata);
+            // 파일 업로드 (InputStream 사용)
+            try (var inputStream = imageFile.getInputStream()) {
+                s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, imageFile.getSize()));
+            }
 
             // CloudFront URL 반환
             return cloudFrontDomain + "/" + fileName;
-        } catch (Exception e) {
-            throw new GlobalException(ErrorCode.IMAGE_UPLOAD_FAILED);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image to S3", e);
         }
     }
-    private boolean isValidImageType(String contentType) {
-        return contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/webp");
+
+    // 파일 확장자 결정
+    private String getFileExtension(String contentType) {
+        if (contentType == null) return null;
+        return switch (contentType) {
+            case "image/jpeg" -> ".jpg";
+            case "image/png" -> ".png";
+            case "image/webp" -> ".webp";
+            default -> null;
+        };
     }
 }
