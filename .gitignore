@@ -37,7 +37,7 @@ out/
 .vscode/
 
 ### Docker ###
-!**/src/main/resources/application-local.yml
-!**/src/main/resources/application-key.yml
 .env
 firebase-service-key.json
+application-local.yml
+application-key.yml
