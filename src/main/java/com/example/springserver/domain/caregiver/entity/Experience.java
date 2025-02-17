@@ -8,9 +8,9 @@ import lombok.*;
 @Getter
 @Entity
 @Builder
-@Table(name = "experience")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "experience")
 public class Experience extends BaseEntity {
     @Id
     @Column(name = "experience_id", nullable = false)
@@ -31,4 +31,10 @@ public class Experience extends BaseEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
+    public Experience(Caregiver caregiver, Integer duration, String title, String description) {
+        this.caregiver = caregiver;
+        this.duration = duration;
+        this.title = title;
+        this.description = description;
+    }
 }

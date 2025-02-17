@@ -8,10 +8,10 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "work_location")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Table(name = "work_location")
 public class WorkLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +28,8 @@ public class WorkLocation {
     @JoinColumn(name = "job_condition_id", nullable = false)
     private JobCondition jobCondition;
 
+    public WorkLocation(Location locationId, JobCondition jobCondition) {
+        this.locationId = locationId;
+        this.jobCondition = jobCondition;
+    }
 }

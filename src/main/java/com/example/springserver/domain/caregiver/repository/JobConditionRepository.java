@@ -75,4 +75,8 @@ public interface JobConditionRepository extends JpaRepository<JobCondition,Long>
             ) < 3 -- 5) IMPOSSIBLE이 3개 이상이면 필터링
       """, nativeQuery = true)
     List<JobCondition> findAllRecommendedListByElder(Long id);
+
+    // Mock 데이터 생성용
+    @Query(value = "SELECT * FROM job_condition order by RAND() limit 1",nativeQuery = true)
+    Optional<JobCondition> findRandom();
 }

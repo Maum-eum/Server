@@ -33,6 +33,13 @@ public class RecruitTime {
     @Column(nullable = false)
     private Long endTime;
 
+    public RecruitTime(RecruitCondition recruitCondition, Week dayOfWeek, Long startTime, Long endTime) {
+        this.recruitCondition = recruitCondition;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public void setRecruitCondition(RecruitCondition recruitCondition) {
         this.recruitCondition = recruitCondition;
     }
