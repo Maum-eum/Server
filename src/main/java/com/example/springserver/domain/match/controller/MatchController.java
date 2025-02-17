@@ -1,8 +1,12 @@
 package com.example.springserver.domain.match.controller;
 
 import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
+import com.example.springserver.domain.match.converter.MatchConverter;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchRecommendList;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchedListRes;
 import com.example.springserver.domain.match.service.MatchService;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,13 +40,20 @@ public class MatchController {
     @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
     @GetMapping("/matching")
     public MatchedListRes responseToRecruit(@AuthenticationPrincipal CustomUserDetails user){
-        return CaregiverConverter.toMatchedListRes(matchService.getCalenderList(user));
+        return MatchConverter.toMatchedListRes(matchService.getCalenderList(user));
     }
 
     @Operation(summary = "요양보호사 근무요청리스트 조회", description = "Get")
     @GetMapping("/requests")
-    public RequestsListRes getListOfRequests(@AuthenticationPrincipal CustomUserDetails user){
-        return CaregiverConverter.toRequestListRes(matchService.getRequests(user));
+    public MatchResponseDto.RequestsListRes getListOfRequests(@AuthenticationPrincipal CustomUserDetails user){
+        return MatchConverter.toRequestListRes(matchService.getRequests(user));
+    }
+
+    @Operation(summary = "어르신별 추천된 요양보호사리스트 조회", description = "Get")
+    @GetMapping("/recommends/{recruit_condition_id}")
+    public MatchRecommendList getRecommendListByElder(@AuthenticationPrincipal CustomUserDetails user,
+                                                      @PathVariable("recruit_condition_id") Long request){
+        return MatchConverter.toRecommendList(matchService.getRecommendList(request));
     }
 
 
