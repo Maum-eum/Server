@@ -44,3 +44,7 @@ spring:
 
 springdoc:
   show-login-endpoint: true
+
+jasypt:
+  encryptor:
+    key: ${JASYPT_SECRET_KEY}
