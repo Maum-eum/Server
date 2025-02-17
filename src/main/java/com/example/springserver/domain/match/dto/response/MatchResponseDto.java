@@ -146,4 +146,11 @@ public class MatchResponseDto {
         private Long endTime;
     }
 
+    @Getter
+    @Builder
+    public static class MatchCreateDto{
+
+        private String msg;
+    }
+
 }
