@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,9 +34,11 @@ public class JoinService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CertificateRepository certificateRepository;
     private final ExperienceRepository experienceRepository;
+    private final S3Service s3Service;
+
 
     @Transactional
-    public Caregiver signUpCaregiver(SignUpCaregiverReqDto request) {
+    public Caregiver signUpCaregiver(SignUpCaregiverReqDto request, MultipartFile profileImg) {
 
         List<CertificateRequestDTO> certificateRequestDTOList = request.getCertificateRequestDTOList();
         List<ExperienceRequestDTO> experienceRequestDTOList = request.getExperienceRequestDTOList();
@@ -47,12 +50,15 @@ public class JoinService {
             throw new GlobalException(ErrorCode.USERNAME_IS_EXIST);
         }
 
-        //기본이미지 적용
+        // 이미지 적용
+        String imgUrl;
+        if(profileImg == null) {
+            imgUrl = "http://localhost:8080/basicImg.jpeg";
+        } else {
+            imgUrl = s3Service.uploadFileImage(profileImg);
+        }
 
-        if(request.getImg()==null)
-            request.setCommonImg();
-
-        Caregiver saved = caregiverRepository.save(CaregiverConverter.toCaregiver(request, bCryptPasswordEncoder));
+        Caregiver saved = caregiverRepository.save(CaregiverConverter.toCaregiver(request, bCryptPasswordEncoder, imgUrl));
 
         //자격증저장
         if (certificateRequestDTOList!=null)
