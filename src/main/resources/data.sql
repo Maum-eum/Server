@@ -1,4 +1,4 @@
-INSERT INTO sido (sido_name) VALUES
+INSERT INTO Sido (sido_name) VALUES
 ('강원특별자치도'),
 ('경기도'),
 ('경상남도'),
@@ -18,7 +18,7 @@ INSERT INTO sido (sido_name) VALUES
 ('충청북도');
 
 
-INSERT INTO sigungu (sido_id, sigungu_name)
+INSERT INTO Sigungu (sido_id, sigungu_name)
 SELECT s.sido_id, v.sigungu_name
 FROM (
     SELECT '강릉시', '강원특별자치도' UNION ALL
@@ -274,10 +274,10 @@ FROM (
     SELECT '청주시흥덕구', '충청북도' UNION ALL
     SELECT '충주시', '충청북도'
 ) AS v(sigungu_name, sido_name)
-JOIN sido s ON s.sido_name = v.sido_name;
+JOIN Sido s ON s.sido_name = v.sido_name;
 
 
-INSERT INTO location (sigungu_id, dong_name, sido_name, sigungu_name)
+INSERT INTO Location (sigungu_id, dong_name, sido_name, sigungu_name)
 SELECT sg.sigungu_id, v.dong_name, v.sido_name, v.sigungu_name
 FROM (
     SELECT '강동면', '강원특별자치도', '강릉시' UNION ALL
@@ -5349,5 +5349,5 @@ FROM (
     SELECT '풍동', '충청북도', '충주시' UNION ALL
     SELECT '호암동', '충청북도', '충주시'
 ) AS v(dong_name, sido_name, sigungu_name)
-JOIN sigungu sg ON sg.sigungu_name = v.sigungu_name
-JOIN sido s ON s.sido_name = v.sido_name AND sg.sido_id = s.sido_id;
+JOIN Sigungu sg ON sg.sigungu_name = v.sigungu_name
+JOIN Sido s ON s.sido_name = v.sido_name AND sg.sido_id = s.sido_id;
