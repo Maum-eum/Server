@@ -55,6 +55,4 @@ public class MatchController {
                                                       @PathVariable("recruit_condition_id") Long request){
         return MatchConverter.toRecommendList(matchService.getRecommendList(request));
     }
-
-
 }

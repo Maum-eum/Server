@@ -1,7 +1,5 @@
 package com.example.springserver.domain.caregiver.entity;
 
-import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.UpdateCaregiverReqDto;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +8,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -86,47 +83,9 @@ public class Caregiver extends BaseEntity {
         this.address = address;
     }
 
-    public void setExperiences(List<Experience> experiences) {
-        this.experiences = experiences;
-    }
-
     public void setEmploymentStatus(Boolean status) {
         this.employmentStatus = status;
     }
-
-    public void setUpdate(Caregiver user, UpdateCaregiverReqDto request) {
-        this.car = request.getCar();
-        this.img = request.getImg();
-        this.education = request.getEducation();
-        this.address = request.getAddress();
-        this.contact = request.getContact();
-        this.intro = request.getIntro();
-
-        List<Certificate> newCertificates = request.getCertificateRequestDTOList().stream()
-                .map(dto -> CaregiverConverter.toCertificate(user, dto))
-                .collect(Collectors.toList());
-
-        newCertificates.forEach(cert -> {
-            if (!this.certificates.contains(cert)) {
-                this.certificates.add(cert);
-            }
-        });
-
-        this.certificates.removeIf(cert -> !newCertificates.contains(cert));
-
-        List<Experience> newExperiences = request.getExperienceRequestDTOList().stream()
-                .map(dto -> CaregiverConverter.toExperience(user, dto))
-                .collect(Collectors.toList());
-
-        newExperiences.forEach(exp -> {
-            if (!this.experiences.contains(exp)) {
-                this.experiences.add(exp);
-            }
-        });
-
-        this.experiences.removeIf(exp -> !newExperiences.contains(exp));
-    }
-
 
     public String getRole() {
         return "ROLE_CAREGIVER";
