@@ -2,8 +2,6 @@ package com.example.springserver.domain.caregiver.converter;
 
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequestDTO;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
-import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
 import com.example.springserver.domain.caregiver.entity.*;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto;
@@ -64,11 +62,6 @@ public class CaregiverConverter {
                 .build();
     }
 
-    public static MatchedListRes toMatchedListRes(List<MatchedStatus> list) {
-        return MatchedListRes.builder().list(list).build();
-    }
-
-
     //    Caregiver 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
     public static Caregiver toCaregiver(CaregiverRequestDto.SignUpCaregiverReqDto request, BCryptPasswordEncoder bCryptPasswordEncoder, String imgUrl){
 
@@ -86,14 +79,6 @@ public class CaregiverConverter {
                 .build();
     }
 
-
-    public static Experience toExperience( ExperienceRequestDTO request){
-        return Experience.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .duration(request.getDuration())
-                .build();
-    }
     public static Experience toExperience(Caregiver caregiver, ExperienceRequestDTO request){
         return Experience.builder()
                 .title(request.getTitle())
@@ -103,50 +88,12 @@ public class CaregiverConverter {
                 .build();
     }
 
-    public static Certificate toCertificate(CertificateRequestDTO request){
-        return Certificate.builder()
-                .certNum(request.getCertNum())
-                .certRate(request.getCertRate())
-                .certType(request.getCertType())
-                .build();
-    }
-
     public static Certificate toCertificate(Caregiver caregiver, CertificateRequestDTO request){
         return Certificate.builder()
                 .certNum(request.getCertNum())
                 .certRate(request.getCertRate())
                 .certType(request.getCertType())
                 .caregiver(caregiver)
-                .build();
-    }
-
-    public static JobCondition toJobCondition(JobConditionReqDto request, Caregiver user, List<WorkLocation> location) {
-        return JobCondition.builder()
-                .bathingAssist(request.getBathingAssist())
-                .catheterOrStomaCare(request.getCatheterOrStomaCare())
-                .diaperCare(request.getDiaperCare())
-                .cleaningLaundryAssist(request.getCleaningLaundryAssist())
-                .selfToileting(request.getSelfToileting())
-                .selfFeeding(request.getSelfFeeding())
-                .cognitiveStimulation(request.getCognitiveStimulation())
-                .cookingAssistance(request.getCookingAssistance())
-                .desiredHourlyWage(request.getDesiredHourlyWage())
-                .emotionalSupport(request.getEmotionalSupport())
-                .enteralNutritionSupport(request.getEnteralNutritionSupport())
-                .exerciseSupport(request.getExerciseSupport())
-                .hospitalAccompaniment(request.getHospitalAccompaniment())
-                .flexibleSchedule(request.getFlexibleSchedule())
-                .mealPreparation(request.getMealPreparation())
-                .immobile(request.getImmobile())
-                .occasionalToiletingAssist(request.getOccasionalToiletingAssist())
-                .mobilityAssist(request.getMobilityAssist())
-                .wheelchairAssist(request.getWheelchairAssist())
-                .independentMobility(request.getIndependentMobility())
-                .dayOfWeek(Integer.parseInt(request.getDayOfWeek(),2))
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .caregiver(user)
-                .workLocations(location)
                 .build();
     }
 

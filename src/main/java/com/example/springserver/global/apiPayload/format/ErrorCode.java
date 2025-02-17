@@ -79,7 +79,10 @@ public enum ErrorCode {
 
     // 페이징 에러
     PAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PAGE001", "페이지가 0 이하입니다."),
-    NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!");
+    NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!"),
+
+    // 매칭 에러
+    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" );
 
     private final HttpStatus status;
     private final String code;

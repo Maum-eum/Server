@@ -2,8 +2,7 @@ package com.example.springserver.domain.match.entity;
 
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.entity.enums.MatchStatus;
-import com.example.springserver.domain.center.entity.enums.RecruitStatus;
+import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
