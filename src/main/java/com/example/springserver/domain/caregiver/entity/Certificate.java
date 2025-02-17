@@ -10,10 +10,10 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "certificate")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name="certificate")
 public class Certificate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +38,11 @@ public class Certificate {
     @Enumerated(EnumType.STRING)
     @Column(name = "cert_rate")
     private Level certRate;
+
+    public Certificate(Caregiver caregiver, String certNum, CertType certType, Level certRate) {
+        this.caregiver = caregiver;
+        this.certNum = certNum;
+        this.certType = certType;
+        this.certRate = certRate;
+    }
 }

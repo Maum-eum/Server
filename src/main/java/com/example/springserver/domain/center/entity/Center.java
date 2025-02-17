@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name="center")
 public class Center extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
