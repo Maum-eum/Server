@@ -64,6 +64,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("https://www.gyeotae.site");
         config.addAllowedOrigin("https://gyeotae.site");
+        config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
