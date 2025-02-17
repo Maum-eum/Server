@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ENC(HZFr7eiifL2YGA7s9mteuSvDgRWmCrXHpClCyPyfhnymXv5Zo5vXsqdMUx11hyjAuW4Nchd6VkNRLCW/wAXwMR6FJSZMirmkyEBxbd9WOhE=)
+    username: ENC(LAdrT9uRSsMhF4WuzP6tzA==)
+    password: ENC(M0zfYfiiyjhn9wug2tDf5SKlNQ700nmt)
 
   jpa:
     hibernate:
@@ -16,25 +16,25 @@ spring:
 
     defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연
 
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:/center.sql
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:/center.sql
 
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ENC(fEW9/KVmH73bRYEzWACc3XE2lzVFPAzaMe3u4yTzEw3vgZk6jYl5B+rg8aDTp/nxUxujp+LjEu4=)
 
   cloud:
     aws:
       s3:
-        bucket: ${BUCKET_NAME}
+        bucket: ENC(TqagxcbY8dcPk7yURJJS7Bt/fpMtGSewYO4EL9zN4vk=)
       credentials:
-        access-key: ${S3_ACCESS_KEY}
-        secret-key: ${S3_SECRET_KEY}
+        access-key: ENC(y57+i+X1IooRBH0htxAJl/I4tZFRj5rx8bCvRXnSRFk=)
+        secret-key: ENC(WuXYKG9PuSVhWNNe1CJC1647zBo45Pf1NGLUanwuto92DPLrB6yYyhd/hIOt6HT1tObxgUHN/kQ=)
       region:
-        static: ${S3_REGION}
+        static: ENC(fMHjyzCwi3ATMG9kd2/YioF7Oi3gW5gf)
       cloudfront:
-        domain: ${CLOUDFRONT_DOMAIN}
+        domain: ENC(gWYrw5ePeq3a8oKIbKbjBo0NAX3LGsW30tEpvQQTx6fPTPyZcQ09QQ==)
 
   servlet:
     multipart:
