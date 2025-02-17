@@ -62,8 +62,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://www.gyeotae.site ");
-        config.addAllowedOrigin("https://gyeotae.site ");
+        config.addAllowedOrigin("https://www.gyeotae.site");
+        config.addAllowedOrigin("https://gyeotae.site");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
