@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import static com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.*;
@@ -31,9 +32,11 @@ public class CaregiverController {
     private final CareGiverService careGiverService;
 
     @Operation(summary = "회원가입", description = "Post")
-    @PostMapping("/signup")
-    public SignUpCaregiverResult signUpCaregiver(@RequestBody @Valid CaregiverRequestDto.SignUpCaregiverReqDto request){
-        Caregiver newCaregiver = joinService.signUpCaregiver(request);
+    @PostMapping(value = "/signup", consumes = "multipart/form-data")
+    public SignUpCaregiverResult signUpCaregiver(
+            @RequestPart("data") CaregiverRequestDto.SignUpCaregiverReqDto request,
+            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
+        Caregiver newCaregiver = joinService.signUpCaregiver(request, profileImg);
         return CaregiverConverter.toSignUpCaregiverResult(newCaregiver);
     }
 

@@ -70,7 +70,7 @@ public class CaregiverConverter {
 
 
     //    Caregiver 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
-    public static Caregiver toCaregiver(CaregiverRequestDto.SignUpCaregiverReqDto request, BCryptPasswordEncoder bCryptPasswordEncoder){
+    public static Caregiver toCaregiver(CaregiverRequestDto.SignUpCaregiverReqDto request, BCryptPasswordEncoder bCryptPasswordEncoder, String imgUrl){
 
         return Caregiver.builder()
                 .username(request.getUsername())
@@ -79,7 +79,7 @@ public class CaregiverConverter {
                 .contact(request.getContact())
                 .car(request.getCar())
                 .education(request.getEducation())
-                .img(request.getImg())
+                .img(imgUrl)
                 .intro(request.getIntro())
                 .address(request.getAddress())
                 .employmentStatus(request.getEmploymentStatus())

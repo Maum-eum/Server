@@ -25,6 +25,24 @@ spring:
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
 
+  cloud:
+    aws:
+      s3:
+        bucket: ${BUCKET_NAME}
+      credentials:
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
+      region:
+        static: ${S3_REGION}
+      cloudfront:
+        domain: ${CLOUDFRONT_DOMAIN}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
+      max-request-size: 2MB
+
 springdoc:
   show-login-endpoint: true
 

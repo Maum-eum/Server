@@ -37,6 +37,6 @@ out/
 .vscode/
 
 ### Docker ###
-
-application-local.yml
-application-key.yml
+!**/src/main/resources/application-local.yml
+!**/src/main/resources/application-key.yml
+.env
