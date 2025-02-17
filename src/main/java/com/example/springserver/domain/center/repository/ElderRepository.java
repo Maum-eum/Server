@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface ElderRepository extends JpaRepository<Elder, Long> {
 
-    List<Elder> findByIsTemporary(boolean isTemporary);
+    List<Elder> findByIsTemporarySave(boolean isTemporary);
 
-    Elder findByElderIdAndIsTemporary(Long elderId, boolean isTemporary);
+    Elder findByElderIdAndIsTemporarySave(Long elderId, boolean isTemporary);
 
     Optional<Elder> findByElderIdAndCenter_CenterId(Long elderId, Long centerId);
 }

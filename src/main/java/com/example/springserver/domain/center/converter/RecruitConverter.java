@@ -6,6 +6,7 @@ import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.RecruitTime;
+import com.example.springserver.domain.location.entity.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +14,17 @@ import java.util.stream.Collectors;
 
 public class RecruitConverter {
 
-    public static RecruitCondition toRecruitCondition(RequestDto requestDto, Elder elder) {
-         return RecruitCondition.builder()
+    public static RecruitCondition toRecruitCondition(RequestDto requestDto, Elder elder, Location location) {
+        return RecruitCondition.builder()
                 .elder(elder)
                 .careTypes(requestDto.getCareTypes())
                 .flexibleSchedule(requestDto.isFlexibleSchedule())
                 .recruitTimes(new ArrayList<>())
-                 .mealAssistance(requestDto.isMealAssistance())
-                 .toiletAssistance(requestDto.isToiletAssistance())
-                 .moveAssistance(requestDto.isMoveAssistance())
-                 .dailyLivingAssistance(requestDto.isDailyLivingAssistance())
+                .recruitLocation(location)
+                .mealAssistance(requestDto.isMealAssistance())
+                .toiletAssistance(requestDto.isToiletAssistance())
+                .moveAssistance(requestDto.isMoveAssistance())
+                .dailyLivingAssistance(requestDto.isDailyLivingAssistance())
                 .desiredHourlyWage(requestDto.getDesiredHourlyWage())
                 .selfFeeding(requestDto.isSelfFeeding())
                 .mealPreparation(requestDto.isMealPreparation())
@@ -42,7 +44,7 @@ public class RecruitConverter {
                 .exerciseSupport(requestDto.isExerciseSupport())
                 .emotionalSupport(requestDto.isEmotionalSupport())
                 .cognitiveStimulation(requestDto.isCognitiveStimulation())
-                 .detailRequiredService(requestDto.getDetailRequiredService())
+                .detailRequiredService(requestDto.getDetailRequiredService())
                 .build();
     }
 
@@ -60,12 +62,13 @@ public class RecruitConverter {
                 .recruitConditionId(recruitCondition.getRecruitConditionId())
                 .elderId(recruitCondition.getElder().getElderId())
                 .careTypes(recruitCondition.getCareTypes())
+                .recruitLocation(recruitCondition.getRecruitLocation().getLocationId())
                 .mealAssistance(recruitCondition.isMealAssistance())
                 .toiletAssistance(recruitCondition.isToiletAssistance())
                 .moveAssistance(recruitCondition.isMoveAssistance())
                 .dailyLivingAssistance(recruitCondition.isDailyLivingAssistance())
                 .flexibleSchedule(recruitCondition.isFlexibleSchedule())
-                .recruitTimes(toRecruitTimeListDto(recruitCondition.getRecruitTimes()))
+                .recruitTimes(toRecruitResponseTimeListDto(recruitCondition.getRecruitTimes()))
                 .desiredHourlyWage(recruitCondition.getDesiredHourlyWage())
                 .selfFeeding(recruitCondition.isSelfFeeding())
                 .mealPreparation(recruitCondition.isMealPreparation())
@@ -89,8 +92,9 @@ public class RecruitConverter {
                 .build();
     }
 
-    public static RequestTimeDto toTimeResponseDto(RecruitTime recruitTime) {
-        return RequestTimeDto.builder()
+    // 모집 시간 convert
+    public static ResponseTimeDto toTimeResponseDto(RecruitTime recruitTime) {
+        return ResponseTimeDto.builder()
                 .startTime(recruitTime.getStartTime())
                 .endTime(recruitTime.getEndTime())
                 .dayOfWeek(recruitTime.getDayOfWeek())
@@ -103,7 +107,7 @@ public class RecruitConverter {
                 .collect(Collectors.toList());
     }
 
-    public static List<RequestTimeDto> toRecruitTimeListDto(List<RecruitTime> recruitTimeList) {
+    public static List<ResponseTimeDto> toRecruitResponseTimeListDto(List<RecruitTime> recruitTimeList) {
         return recruitTimeList.stream()
                 .map(RecruitConverter::toTimeResponseDto)
                 .collect(Collectors.toList());

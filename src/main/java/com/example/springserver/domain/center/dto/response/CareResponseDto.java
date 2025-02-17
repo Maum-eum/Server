@@ -1,16 +1,16 @@
 package com.example.springserver.domain.center.dto.response;
 
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
-import com.example.springserver.domain.center.entity.enums.Week;
-import com.example.springserver.domain.location.entity.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.List;
 
-public class RecruitResponseDto {
+public class CareResponseDto {
 
     @Builder
     @Getter
@@ -24,7 +24,7 @@ public class RecruitResponseDto {
 
         private List<CareType> careTypes; // 근무 종류
 
-        private Long recruitLocation;
+        private Long careLocation;
 
         private boolean mealAssistance;
 
@@ -73,19 +73,5 @@ public class RecruitResponseDto {
         private boolean emotionalSupport; // 정서적 지원
 
         private boolean cognitiveStimulation; // 인지 자극 활동
-
-        private List<ResponseTimeDto> recruitTimes;
-
-        private String detailRequiredService; // 추가 요청 사항
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ResponseTimeDto {
-        private Week dayOfWeek;
-        private Long startTime;
-        private Long endTime;
     }
 }
