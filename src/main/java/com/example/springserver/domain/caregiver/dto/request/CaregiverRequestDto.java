@@ -5,6 +5,7 @@ import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import com.example.springserver.domain.center.entity.enums.Week;
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -35,8 +36,6 @@ public class CaregiverRequestDto {
         @NotNull
         private Boolean education;
 
-        private String img;
-
         private String intro;
 
         private String address;
@@ -50,10 +49,6 @@ public class CaregiverRequestDto {
         public SignUpCaregiverReqDto() {
             this.car = false; // 기본값 false
             this.education = false;   // 기본값 false
-        }
-
-        public void setCommonImg(){
-            this.img = "http://localhost:8080/basicImg.jpeg";
         }
     }
 
