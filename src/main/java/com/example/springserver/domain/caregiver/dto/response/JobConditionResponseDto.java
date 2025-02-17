@@ -155,6 +155,7 @@ public class JobConditionResponseDto {
 
     }
 
+    @Getter
     @Builder
     public static class CertificateResponseDTO{
 
