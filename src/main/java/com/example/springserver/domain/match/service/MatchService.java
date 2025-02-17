@@ -262,4 +262,17 @@ public class MatchService {
         };
     }
 
+    public MatchCreateDto createMatch(CustomUserDetails user, Long jcid, Long rcid) {
+        JobCondition jc = jobConditionRepository.findById(jcid)
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+        RecruitCondition rc = recruitCondRepository.findById(rcid)
+                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+        Match match = Match.builder()
+                .jobCondition(jc)
+                .requirementCondition(rc)
+                .status(MatchStatus.WAITING)
+                        .build();
+        matchRepository.save(match);
+        return MatchCreateDto.builder().msg("요청이 완료되었습니다.").build();
+    }
 }
