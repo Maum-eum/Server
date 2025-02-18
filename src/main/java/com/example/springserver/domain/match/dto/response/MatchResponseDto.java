@@ -1,11 +1,18 @@
 package com.example.springserver.domain.match.dto.response;
 
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
+import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
 import com.example.springserver.domain.center.entity.Elder;
+import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
@@ -19,12 +26,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MatchResponseDto {
+
+
+    @Getter
+    @Builder
+    public static class GeneralMatchResponse{
+        private String msg;
+    }
 
     @Getter
     @Builder
@@ -166,13 +181,13 @@ public class MatchResponseDto {
     @Builder
     public static class CareGiverInfo{
 
-        private CareGiverInfoDto careGiverInfo;
+        private CaregiverResponseDto.CareGiverInfoResponseDTO careGiverInfo;
 
-        private ElderInfoDto elderInfoDto;
+        private ElderResponseDto.ResponseDto elderInfoDto;
 
-        private JobCondRes jobCondRes;
+        private JobConditionResponseDto.JobConditionResponseDTO jobCondRes;
 
-        private RecruitCondRes recruitCondRes;
+        private RecruitResponseDto.ResponseDto recruitCondRes;
 
     }
 
@@ -190,6 +205,19 @@ public class MatchResponseDto {
         private String intro;
         private String address;
         private Boolean employmentStatus;
+
+        public static CareGiverInfoDto from(Caregiver caregiver) {
+            return CareGiverInfoDto.builder()
+                    .name(caregiver.getName())
+                    .contact(caregiver.getContact())
+                    .car(caregiver.getCar())
+                    .education(caregiver.getEducation())
+                    .img(caregiver.getImg())
+                    .intro(caregiver.getIntro())
+                    .address(caregiver.getAddress())
+                    .employmentStatus(caregiver.getEmploymentStatus())
+                    .build();
+        }
     }
 
     @Getter
@@ -214,6 +242,25 @@ public class MatchResponseDto {
         private boolean hasDelusions; // 망상 여부
         private boolean hasAggressiveBehavior; // 공격적인 행동 여부
 
+        public static ElderInfoDto from(Elder elder) {
+            return ElderInfoDto.builder()
+                    .elderId(elder.getElderId())
+                    .name(elder.getName())
+                    .centerName(elder.getCenter() != null ? elder.getCenter().getCenterName() : null) // Center가 null이면 NPE 방지
+                    .gender(elder.getGender())
+                    .birth(elder.getBirth())
+                    .inmateTypes(elder.getInmateTypes()) // 필요시 강제 초기화 가능
+                    .rate(elder.getRate()) // 필요시 강제 초기화 가능
+                    .img(elder.getImgUrl())
+                    .weight(elder.getWeight())
+                    .isNormal(elder.isNormal())
+                    .hasShortTermMemoryLoss(elder.isHasShortTermMemoryLoss())
+                    .wandersOutside(elder.isWandersOutside())
+                    .actsLikeChild(elder.isActsLikeChild())
+                    .hasDelusions(elder.isHasDelusions())
+                    .hasAggressiveBehavior(elder.isHasAggressiveBehavior())
+                    .build();
+        }
     }
 
     @Getter
@@ -245,6 +292,35 @@ public class MatchResponseDto {
         private Integer dayOfWeek;
         private Long startTime;
         private Long endTime;
+
+        public static JobCondRes from(JobCondition jobCondition) {
+            return JobCondRes.builder()
+                    .id(jobCondition.getId())
+                    .flexibleSchedule(jobCondition.getFlexibleSchedule())
+                    .desiredHourlyWage(jobCondition.getDesiredHourlyWage())
+                    .selfFeeding(jobCondition.getSelfFeeding())
+                    .mealPreparation(jobCondition.getMealPreparation())
+                    .cookingAssistance(jobCondition.getCookingAssistance())
+                    .enteralNutritionSupport(jobCondition.getEnteralNutritionSupport())
+                    .selfToileting(jobCondition.getSelfToileting())
+                    .occasionalToiletingAssist(jobCondition.getOccasionalToiletingAssist())
+                    .diaperCare(jobCondition.getDiaperCare())
+                    .catheterOrStomaCare(jobCondition.getCatheterOrStomaCare())
+                    .independentMobility(jobCondition.getIndependentMobility())
+                    .mobilityAssist(jobCondition.getMobilityAssist())
+                    .wheelchairAssist(jobCondition.getWheelchairAssist())
+                    .immobile(jobCondition.getImmobile())
+                    .cleaningLaundryAssist(jobCondition.getCleaningLaundryAssist())
+                    .bathingAssist(jobCondition.getBathingAssist())
+                    .hospitalAccompaniment(jobCondition.getHospitalAccompaniment())
+                    .exerciseSupport(jobCondition.getExerciseSupport())
+                    .emotionalSupport(jobCondition.getEmotionalSupport())
+                    .cognitiveStimulation(jobCondition.getCognitiveStimulation())
+                    .dayOfWeek(jobCondition.getDayOfWeek())
+                    .startTime(jobCondition.getStartTime())
+                    .endTime(jobCondition.getEndTime())
+                    .build();
+        }
     }
 
     @Getter
@@ -281,6 +357,51 @@ public class MatchResponseDto {
         private boolean emotionalSupport; // 정서적 지원
         private boolean cognitiveStimulation; // 인지 자극 활동
         private String detailRequiredService;
+
+        public static RecruitCondRes from(RecruitCondition recruitCondition) {
+            if (recruitCondition == null) {
+                return null;
+            }
+
+            // 🔹 Hibernate Lazy Loading 문제 방지
+            Hibernate.initialize(recruitCondition.getRecruitLocation());
+            Hibernate.initialize(recruitCondition.getCareTypes());
+            Hibernate.initialize(recruitCondition.getRecruitTimes());
+
+            return RecruitCondRes.builder()
+                    .recruitConditionId(recruitCondition.getRecruitConditionId())
+                    .recruitLocation(recruitCondition.getRecruitLocation())
+                    .careTypes(new ArrayList<>(recruitCondition.getCareTypes()))
+                    .recruitTimes(new ArrayList<>(recruitCondition.getRecruitTimes()))
+                    .flexibleSchedule(recruitCondition.isFlexibleSchedule())
+                    .mealAssistance(recruitCondition.isMealAssistance())
+                    .toiletAssistance(recruitCondition.isToiletAssistance())
+                    .moveAssistance(recruitCondition.isMoveAssistance())
+                    .dailyLivingAssistance(recruitCondition.isDailyLivingAssistance())
+                    .desiredHourlyWage(recruitCondition.getDesiredHourlyWage())
+                    .selfFeeding(recruitCondition.isSelfFeeding())
+                    .mealPreparation(recruitCondition.isMealPreparation())
+                    .cookingAssistance(recruitCondition.isCookingAssistance())
+                    .enteralNutritionSupport(recruitCondition.isEnteralNutritionSupport())
+                    .selfToileting(recruitCondition.isSelfToileting())
+                    .occasionalToiletingAssist(recruitCondition.isOccasionalToiletingAssist())
+                    .diaperCare(recruitCondition.isDiaperCare())
+                    .catheterOrStomaCare(recruitCondition.isCatheterOrStomaCare())
+                    .independentMobility(recruitCondition.isIndependentMobility())
+                    .mobilityAssist(recruitCondition.isMobilityAssist())
+                    .wheelchairAssist(recruitCondition.isWheelchairAssist())
+                    .immobile(recruitCondition.isImmobile())
+                    .cleaningLaundryAssist(recruitCondition.isCleaningLaundryAssist())
+                    .bathingAssist(recruitCondition.isBathingAssist())
+                    .hospitalAccompaniment(recruitCondition.isHospitalAccompaniment())
+                    .exerciseSupport(recruitCondition.isExerciseSupport())
+                    .emotionalSupport(recruitCondition.isEmotionalSupport())
+                    .cognitiveStimulation(recruitCondition.isCognitiveStimulation())
+                    .detailRequiredService(recruitCondition.getDetailRequiredService())
+                    .build();
+        }
     }
+
+
 
 }

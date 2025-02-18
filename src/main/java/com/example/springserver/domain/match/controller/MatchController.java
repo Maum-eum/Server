@@ -5,10 +5,7 @@ import com.example.springserver.domain.match.converter.MatchConverter;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
-import com.example.springserver.domain.match.dto.response.MatchResponseDto.CareGiverInfo;
-import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchCreateDto;
-import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchRecommendList;
-import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchedListRes;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
 import com.example.springserver.domain.match.service.MatchService;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +31,9 @@ public class MatchController {
 
     @Operation(summary = "요양보호사 구인요청응답", description = "Put")
     @PutMapping("/response")
-    public String responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
+    public GeneralMatchResponse responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
                                     @RequestBody @Valid RecruitReq request) {
-        return matchService.responseToRecruit(user, request);
+        return GeneralMatchResponse.builder().msg(matchService.responseToRecruit(user, request)).build();
     }
 
     @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
@@ -76,10 +73,10 @@ public class MatchController {
 
     @Operation(summary = "관리자 매칭 조율및수락/거절 API", description = "Put")
     @PutMapping("/recommends/{status}/{job_condition_id}/{recruit_condition_id}")
-    public String answerToMatchRes(@AuthenticationPrincipal CustomUserDetails user,
-                                   @PathVariable("status") boolean status,
-                                       @PathVariable("job_condition_id") Long jc,
-                                       @PathVariable("recruit_condition_id") Long rc) {
-        return matchService.answerToMatchRes(status,jc,rc);
+    public GeneralMatchResponse answerToMatchRes(@AuthenticationPrincipal CustomUserDetails user,
+                                                                  @PathVariable("status") boolean status,
+                                                                  @PathVariable("job_condition_id") Long jc,
+                                                                  @PathVariable("recruit_condition_id") Long rc) {
+        return GeneralMatchResponse.builder().msg(matchService.answerToMatchRes(status,jc,rc)).build();
     }
 }
