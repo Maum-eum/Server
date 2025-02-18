@@ -18,4 +18,6 @@ public interface ElderRepository extends JpaRepository<Elder, Long> {
     // Mock 데이터 생성용
     @Query(value = "SELECT * FROM elder order by RAND() limit 1",nativeQuery = true)
     Optional<Elder> findRandom();
+
+    boolean existsByElderIdAndCenter_CenterId(Long elderId, Long centerId);
 }
