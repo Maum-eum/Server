@@ -56,7 +56,7 @@ public class CaregiverRequestDto {
     public static class UpdateCaregiverReqDto {
 
         @NotEmpty
-        private String username;
+        private String name;
 
         @NotEmpty
         private String contact;
