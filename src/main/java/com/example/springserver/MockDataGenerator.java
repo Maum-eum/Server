@@ -1,9 +1,28 @@
 package com.example.springserver;
 
+import com.example.springserver.domain.caregiver.entity.*;
+import com.example.springserver.domain.caregiver.entity.enums.CertType;
+import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
+import com.example.springserver.domain.caregiver.repository.*;
+import com.example.springserver.domain.center.entity.*;
+import com.example.springserver.domain.center.entity.enums.CareType;
+import com.example.springserver.domain.center.entity.enums.ElderRate;
+import com.example.springserver.domain.center.entity.enums.Inmate;
+import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.center.repository.*;
+import com.example.springserver.domain.location.entity.Location;
+import com.example.springserver.repository.location.LocationRepository;
+import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.IntStream;
 
 @Transactional
 @Component
@@ -52,7 +71,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //        }
 //
 //        // 3. 요양보호사 데이터 생성
-//        for (int i = 0; i < 10; i++) {
+//        for (int i = 0; i < 100; i++) {
 //            careGiver();
 //        }
 //
@@ -63,7 +82,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //        }
 //
 //        // 5. 구직 조건, 근무지 데이터 생성
-//        for (int i = 0; i < 10; i++) {
+//        for (int i = 0; i < 100; i++) {
 //            jobCondition(i+1);
 //            workLocation();
 //        }

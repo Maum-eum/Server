@@ -12,7 +12,7 @@ public interface JobConditionRepository extends JpaRepository<JobCondition,Long>
     Optional<JobCondition> findByCaregiver(Caregiver caregiver);
 
     @Query(value = """
-        SELECT jc.* 
+        SELECT DISTINCT jc.*
         FROM job_condition jc
         JOIN work_location wl ON jc.job_condition_id = wl.job_condition_id
         JOIN recruit_condition rc ON rc.location_id = wl.location_id
