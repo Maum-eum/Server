@@ -1,13 +1,11 @@
 package com.example.springserver.domain.center.dto.response;
 
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.List;
 
 public class CareResponseDto {
@@ -33,8 +31,6 @@ public class CareResponseDto {
         private boolean moveAssistance;
 
         private boolean dailyLivingAssistance;
-
-        private boolean flexibleSchedule; // 시간 협의 여부
 
         private int desiredHourlyWage; // 희망 급여
 
@@ -73,5 +69,7 @@ public class CareResponseDto {
         private boolean emotionalSupport; // 정서적 지원
 
         private boolean cognitiveStimulation; // 인지 자극 활동
+
+        private String detailRequiredService;
     }
 }

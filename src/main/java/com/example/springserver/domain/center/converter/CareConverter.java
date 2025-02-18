@@ -15,7 +15,6 @@ public class CareConverter {
         return Care.builder()
                 .elder(elder)
                 .careTypes(requestDto.getCareTypes())
-                .flexibleSchedule(requestDto.isFlexibleSchedule())
                 .careLocation(location)
                 .mealAssistance(requestDto.isMealAssistance())
                 .toiletAssistance(requestDto.isToiletAssistance())
@@ -40,6 +39,7 @@ public class CareConverter {
                 .exerciseSupport(requestDto.isExerciseSupport())
                 .emotionalSupport(requestDto.isEmotionalSupport())
                 .cognitiveStimulation(requestDto.isCognitiveStimulation())
+                .detailRequiredService(requestDto.getDetailRequiredService())
                 .build();
     }
 
@@ -53,7 +53,6 @@ public class CareConverter {
                 .toiletAssistance(care.isToiletAssistance())
                 .moveAssistance(care.isMoveAssistance())
                 .dailyLivingAssistance(care.isDailyLivingAssistance())
-                .flexibleSchedule(care.isFlexibleSchedule())
                 .desiredHourlyWage(care.getDesiredHourlyWage())
                 .selfFeeding(care.isSelfFeeding())
                 .mealPreparation(care.isMealPreparation())
@@ -73,6 +72,7 @@ public class CareConverter {
                 .exerciseSupport(care.isExerciseSupport())
                 .emotionalSupport(care.isEmotionalSupport())
                 .cognitiveStimulation(care.isCognitiveStimulation())
+                .detailRequiredService(care.getDetailRequiredService())
                 .build();
     }
 

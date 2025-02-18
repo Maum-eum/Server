@@ -3,8 +3,10 @@ package com.example.springserver.domain.center.service;
 import com.example.springserver.domain.center.dto.response.CareResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.repository.CareRepository;
+import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.location.entity.Location;
+import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ElderException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.CareException;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CareService {
 
     private final CareRepository careRepository;
+    private final CenterRepository centerRepository;
     private final LocationRepository locationRepository;
     private final ElderRepository elderRepository;
 
@@ -87,7 +90,17 @@ public class CareService {
     }
 
     private void isValidCenter(Long elderId, Long centerId) {
-        elderRepository.findByElderIdAndCenter_CenterId(elderId, centerId)
-                .orElseThrow(() -> new ElderException(ErrorCode.CENTER_NOT_FOUND));
+        // 센터 검증
+        if (!centerRepository.existsById(centerId)) {
+            throw new CenterException(ErrorCode.CENTER_NOT_FOUND);
+        }
+        // 어르신 검증
+        if (!elderRepository.existsById(elderId)) {
+            throw new ElderException(ErrorCode.ELDER_NOT_FOUND);
+        }
+        // 센터 - 어르신 관계 검증
+        if (!elderRepository.existsByElderIdAndCenter_CenterId(elderId, centerId)) {
+            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+        }
     }
 }
