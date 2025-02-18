@@ -65,6 +65,8 @@ dependencies {
     // Test
     implementation 'net.datafaker:datafaker:2.4.2'
 
+    // ModelMapper
+    implementation 'org.modelmapper:modelmapper:3.1.0'
 
 //    // Elastic Search
 //    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
