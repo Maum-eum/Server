@@ -29,7 +29,7 @@ public class CaregiverResponseDto {
     @Getter
     public static class CareGiverInfoResponseDTO{
 
-        private String name;
+        private String username;
 
         private String contact;
 
