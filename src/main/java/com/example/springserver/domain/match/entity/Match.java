@@ -1,6 +1,7 @@
 package com.example.springserver.domain.match.entity;
 
 import com.example.springserver.domain.caregiver.entity.JobCondition;
+import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.global.common.entity.BaseEntity;
@@ -44,5 +45,7 @@ public class Match extends BaseEntity {
 
     @Version
     private Integer version;
-
+    public Center getCenter() {
+        return this.requirementCondition.getElder().getCenter();
+    }
 }

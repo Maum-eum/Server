@@ -21,10 +21,18 @@ import com.example.springserver.domain.center.repository.RecruitCondRepository;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
+import com.example.springserver.domain.center.entity.Center;
+import com.example.springserver.domain.center.entity.Elder;
+import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
+import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.MatchRepository;
+import com.example.springserver.domain.center.repository.RecruitCondRepository;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.Match;
+import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -407,5 +415,10 @@ public class MatchService {
                 throw new GlobalException(ErrorCode.MONEY_NOT_MATCHED);
         }
         return "매칭 상태 변경 완료";
+    }
+
+    public List<Match> getCenterMatchingList(Long centerId) {
+
+        return matchRepository.findByCenterId(centerId);
     }
 }

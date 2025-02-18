@@ -13,6 +13,10 @@ import com.example.springserver.domain.center.dto.response.ElderResponseDto;
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
+import com.example.springserver.domain.caregiver.entity.enums.Sexual;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
@@ -20,8 +24,6 @@ import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +31,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -402,6 +405,18 @@ public class MatchResponseDto {
         }
     }
 
+    @Getter
+    @Builder
+    public static class MatchDto {
 
+        private MatchStatus status;
 
+        private ResponseDto requirementCondition;
+
+        private JobConditionResponseDTO jobCondition;
+
+        private LocalDateTime deletedAt;
+
+        private Integer version;
+    }
 }

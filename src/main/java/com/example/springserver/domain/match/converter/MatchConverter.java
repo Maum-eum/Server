@@ -5,12 +5,17 @@ import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.Inmate;
+import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
+import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
+import com.example.springserver.domain.match.entity.Match;
+import lombok.RequiredArgsConstructor;
 
-import com.example.springserver.domain.match.dto.response.MatchResponseDto.RequestsListRes;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class MatchConverter {
 
     // 날짜를 포맷하는 메서드
@@ -81,4 +86,25 @@ public class MatchConverter {
                 .occasionalToiletingAssist(recruitCondition.isOccasionalToiletingAssist());
     }
 
+    // entity -> dto 변환
+    public static MatchDto toMatchDto(Match match) {
+        return MatchDto.builder()
+                .status(match.getStatus())
+                .requirementCondition(
+                        RecruitConverter.toConditionResponseDto(match.getRequirementCondition())
+                        ) // recruitCondition -> dto 변환 필요
+                .jobCondition(
+                        JobConditionConverter.toJobConditionResponseDto(match.getJobCondition())
+                        )
+                .deletedAt(match.getDeletedAt())
+                .version(match.getVersion())
+                .build();
+    }
+
+    // entity List -> dto list로 변환
+    public static List<MatchDto> toMatchDtoList(List<Match> matchList) {
+        return matchList.stream()
+                .map(MatchConverter::toMatchDto)
+                .collect(Collectors.toList());
+    }
 }
