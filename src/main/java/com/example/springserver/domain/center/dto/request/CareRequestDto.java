@@ -22,8 +22,6 @@ public class CareRequestDto {
 
         private boolean dailyLivingAssistance;
 
-        private boolean flexibleSchedule; // 시간 협의 여부
-
         private int desiredHourlyWage; // 희망 급여
 
         private boolean selfFeeding; // 스스로 식사 가능
@@ -61,5 +59,7 @@ public class CareRequestDto {
         private boolean emotionalSupport; // 정서적 지원
 
         private boolean cognitiveStimulation; // 인지 자극 활동
+
+        private String detailRequiredService;
     }
 }
