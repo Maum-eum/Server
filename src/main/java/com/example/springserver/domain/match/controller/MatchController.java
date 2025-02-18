@@ -1,14 +1,14 @@
 package com.example.springserver.domain.match.controller;
 
-import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.match.converter.MatchConverter;
-import com.example.springserver.domain.match.dto.request.MatchRequestDto;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.CareGiverInfo;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchCreateDto;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchRecommendList;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.MatchedListRes;
+import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.domain.match.service.MatchService;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,9 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
-import static com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.*;
-import static com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
+import java.util.List;
 
 @RestController
 @Validated
@@ -34,9 +32,9 @@ public class MatchController {
 
     @Operation(summary = "요양보호사 구인요청응답", description = "Put")
     @PutMapping("/response")
-    public String responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
+    public GeneralMatchResponse responseToRecruit(@AuthenticationPrincipal CustomUserDetails user,
                                     @RequestBody @Valid RecruitReq request) {
-        return matchService.responseToRecruit(user, request);
+        return GeneralMatchResponse.builder().msg(matchService.responseToRecruit(user, request)).build();
     }
 
     @Operation(summary = "요양보호사 매칭현황리스트 조회", description = "Get")
@@ -76,10 +74,18 @@ public class MatchController {
 
     @Operation(summary = "관리자 매칭 조율및수락/거절 API", description = "Put")
     @PutMapping("/recommends/{status}/{job_condition_id}/{recruit_condition_id}")
-    public String answerToMatchRes(@AuthenticationPrincipal CustomUserDetails user,
-                                   @PathVariable("status") boolean status,
-                                       @PathVariable("job_condition_id") Long jc,
-                                       @PathVariable("recruit_condition_id") Long rc) {
-        return matchService.answerToMatchRes(status,jc,rc);
+    public GeneralMatchResponse answerToMatchRes(@AuthenticationPrincipal CustomUserDetails user,
+                                                                  @PathVariable("status") boolean status,
+                                                                  @PathVariable("job_condition_id") Long jc,
+                                                                  @PathVariable("recruit_condition_id") Long rc) {
+        return GeneralMatchResponse.builder().msg(matchService.answerToMatchRes(status,jc,rc)).build();
+    }
+
+    @Operation(summary = "센터 별 매칭 상태 조회")
+    @GetMapping("/{center_id}")
+    public List<MatchResponseDto.MatchDto> getCenterMachingList(@PathVariable("center_id") Long centerId) {
+
+        List<Match> centerMatchingList = matchService.getCenterMatchingList(centerId);
+        return MatchConverter.toMatchDtoList(centerMatchingList);
     }
 }

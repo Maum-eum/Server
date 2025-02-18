@@ -62,7 +62,7 @@ public class JobConditionResponseDto {
 
         private Long endTime;
 
-        private List<LocationResponseDTO> locationRequestDtoList;
+        private List<LocationResponseDTO> locationResponseDtoList;
     }
 
     @Getter

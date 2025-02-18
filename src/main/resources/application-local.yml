@@ -16,11 +16,11 @@ spring:
 
     defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연https://petstore.swagger.io/v2/swagger.json
 
-  sql:
-    init:
-      mode: always
-
-      data-locations: classpath:/data.sql, classpath:/center.sql
+#  sql:
+#    init:
+#      mode: always
+#
+#      data-locations: classpath:/data.sql, classpath:/center.sql
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=

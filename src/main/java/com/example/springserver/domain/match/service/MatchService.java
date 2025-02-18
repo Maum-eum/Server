@@ -1,5 +1,7 @@
 package com.example.springserver.domain.match.service;
 
+import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
+import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
@@ -7,21 +9,38 @@ import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.service.CommonService;
+import com.example.springserver.domain.center.converter.ElderConverter;
+import com.example.springserver.domain.center.converter.RecruitConverter;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
 import com.example.springserver.domain.center.entity.*;
+import com.example.springserver.domain.center.entity.enums.CareType;
+import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.center.repository.RecruitCondRepository;
+import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
+import com.example.springserver.domain.center.entity.Center;
+import com.example.springserver.domain.center.entity.Elder;
+import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
+import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.MatchRepository;
+import com.example.springserver.domain.center.repository.RecruitCondRepository;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.Match;
+import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
+import com.example.springserver.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +48,7 @@ import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
@@ -47,6 +63,11 @@ public class MatchService {
     private final CaregiverRepository caregiverRepository;
     private final RecruitCondRepository recruitCondRepository;
     private final MatchRepository matchRepository;
+    private final ElderRepository elderRepository;
+    private final LocationService locationService;
+
+
+    @Autowired
     private ModelMapper modelMapper;
 
 
@@ -145,6 +166,7 @@ public class MatchService {
                             .elderId(elder.getElderId())
                             .recruitConditionId(rc.getRecruitConditionId())
                             .imgUrl(elder.getImgUrl())
+                            .status(match.getStatus())
                             .desiredHourlyWage(rc.getDesiredHourlyWage())
                             .rate(elder.getRate())
                             .careTypes(rc.getCareTypes())
@@ -267,6 +289,7 @@ public class MatchService {
         };
     }
 
+    @Transactional
     public MatchCreateDto createMatch(CustomUserDetails user, Long jcid, Long rcid) {
         JobCondition jc = jobConditionRepository.findById(jcid)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
@@ -283,19 +306,18 @@ public class MatchService {
 
     public CareGiverInfo getRecommendResult(CustomUserDetails user, Long jc, Long rc) {
         JobCondition jobCondition = jobConditionRepository.findById(jc)
-                .orElseThrow(() ->new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
         RecruitCondition recruitCondition = recruitCondRepository.findById(rc)
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
         Caregiver caregiver = caregiverRepository.findById(jobCondition.getId())
-                .orElseThrow(()-> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Elder elder = recruitCondition.getElder();
 
-        return CareGiverInfo
-                .builder()
-                .careGiverInfo(modelMapper.map(caregiver, CareGiverInfoDto.class))
-                .elderInfoDto(modelMapper.map(elder, ElderInfoDto.class))
-                .jobCondRes(modelMapper.map(jobCondition, MatchResponseDto.JobCondRes.class))
-                .recruitCondRes(modelMapper.map(recruitCondition, MatchResponseDto.RecruitCondRes.class))
+        return CareGiverInfo.builder()
+                .careGiverInfo(CaregiverConverter.infoResponseDto(caregiver))
+                .elderInfoDto(ElderConverter.toResponseDto(elder))
+                .jobCondRes(JobConditionConverter.tojobConditionResponseDTO(jobCondition))
+                .recruitCondRes(RecruitConverter.toConditionResponseDto(recruitCondition))
                 .build();
     }
 
@@ -310,11 +332,16 @@ public class MatchService {
             byJcAndRC.setStatus(MatchStatus.DECLINED);
             byJcAndRC.setDeletedAt(LocalDateTime.now());
         }else {
-            if(jobCondition.getDesiredHourlyWage() == recruitCondition.getDesiredHourlyWage())
+            if(Objects.equals(jobCondition.getDesiredHourlyWage(),recruitCondition.getDesiredHourlyWage()))
                 byJcAndRC.setStatus(MatchStatus.MATCHED);
             else
                 throw new GlobalException(ErrorCode.MONEY_NOT_MATCHED);
         }
         return "매칭 상태 변경 완료";
+    }
+
+    public List<Match> getCenterMatchingList(Long centerId) {
+
+        return matchRepository.findByCenterId(centerId);
     }
 }

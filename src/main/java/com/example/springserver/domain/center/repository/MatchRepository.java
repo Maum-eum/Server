@@ -1,7 +1,6 @@
 package com.example.springserver.domain.center.repository;
 
 import com.example.springserver.domain.caregiver.entity.JobCondition;
-import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +38,7 @@ public interface MatchRepository extends JpaRepository<Match,Long> {
             "LIMIT 1",
             nativeQuery = true)
     Match findByJcAndRC(@Param("jc") Long jc, @Param("rc") Long rc);
+
+    @Query("SELECT m FROM Match m WHERE m.requirementCondition.elder.center.centerId = :centerId")
+    List<Match> findByCenterId(@Param("centerId") Long centerId);
 }

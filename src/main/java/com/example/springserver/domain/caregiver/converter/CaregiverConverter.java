@@ -29,7 +29,7 @@ public class CaregiverConverter {
 
     public static CareGiverInfoResponseDTO infoResponseDto(Caregiver caregiver){
         return CareGiverInfoResponseDTO.builder()
-                .name(caregiver.getName())
+                .username(caregiver.getName())
                 .contact(caregiver.getContact())
                 .car(caregiver.getCar())
                 .education(caregiver.getEducation())
