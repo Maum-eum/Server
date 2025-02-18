@@ -1,18 +1,38 @@
 package com.example.springserver;
 
+import com.example.springserver.domain.caregiver.entity.*;
+import com.example.springserver.domain.caregiver.entity.enums.CertType;
+import com.example.springserver.domain.caregiver.entity.enums.Level;
+import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
+import com.example.springserver.domain.caregiver.repository.*;
+import com.example.springserver.domain.center.entity.*;
+import com.example.springserver.domain.center.entity.enums.CareType;
+import com.example.springserver.domain.center.entity.enums.ElderRate;
+import com.example.springserver.domain.center.entity.enums.Inmate;
+import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.center.repository.*;
+import com.example.springserver.domain.location.entity.Location;
+import com.example.springserver.repository.location.LocationRepository;
+import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.IntStream;
+
 @Transactional
 @Component
 public class MockDataGenerator implements ApplicationRunner {
-//
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
 //        System.out.println("Mock 데이터 생성 메서드 실행...");
 //        createMockData();
+//        System.out.println("Mock 데이터 생성 메서드 끝...");
     }
 //
 //    /* 애플리케이션 실행 시점에 Mock 데이터 생성 */
@@ -52,7 +72,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //        }
 //
 //        // 3. 요양보호사 데이터 생성
-//        for (int i = 0; i < 50; i++) { // 요양보호사 60건
+//        for (int i = 0; i < 1500; i++) { // 요양보호사 60건
 //            careGiver();
 //        }
 //
@@ -63,7 +83,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //        }
 //
 //        // 5. 구직 조건, 근무지 데이터 생성
-//        for (int i = 0; i < 50; i++) { // 구직 조건 50건
+//        for (int i = 0; i < 1500; i++) { // 구직 조건 50건
 //            jobCondition(i+1);
 //            workLocation();
 //        }
@@ -138,7 +158,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //    void recruitCondition(int i) {
 //        Elder elder = elderRepository.findById(Long.valueOf(i))
 //                .orElseThrow(() -> new RuntimeException("===== elder 중복 ====="));
-//        Location recruitLocation = locationRepository.findByLocationId(faker.random().nextLong(1000, 3000));
+//        Location recruitLocation = locationRepository.findByLocationId(faker.random().nextLong(1,50));
 //        List<CareType> careTypes = Collections.singletonList(faker.options().option(CareType.class));
 //        boolean flexibleSchedule = faker.bool().bool(); // 시간 협의 여부
 //        List<RecruitTime> recruitTimes = new ArrayList<>();
@@ -179,7 +199,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //        Elder elder = elderRepository.findById(Long.valueOf(i))
 //                .orElseThrow(() -> new RuntimeException("===== elder 중복 ====="));
 //        List<CareType> careTypes = Collections.singletonList(faker.options().option(CareType.class));
-//        Location careLocation = locationRepository.findByLocationId(faker.random().nextLong(1000, 3000));
+//        Location careLocation = locationRepository.findByLocationId(faker.random().nextLong(1,1000));
 //        boolean flexibleSchedule = faker.bool().bool(); // 시간 협의 여부
 //        boolean mealAssistance = faker.bool().bool();
 //        boolean toiletAssistance = faker.bool().bool();
@@ -278,7 +298,7 @@ public class MockDataGenerator implements ApplicationRunner {
 //    }
 //
 //    void workLocation() {
-//        Location locationId = locationRepository.findByLocationId((long) faker.number().numberBetween(1000, 3000));
+//        Location locationId = locationRepository.findByLocationId((long) faker.number().numberBetween(1, 10));
 //        JobCondition jobCondition = jobConditionRepository.findRandom().get();
 //
 //        WorkLocation workLocation = new WorkLocation(locationId, jobCondition);

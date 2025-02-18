@@ -24,7 +24,7 @@ public interface MatchRepository extends JpaRepository<Match,Long> {
             @Param("statuses") List<MatchStatus> statuses
     );
 
-    @Query(value = "SELECT match.status FROM match " +
+    @Query(value = "SELECT `match`.status FROM `match` " +
             "WHERE requirement_condition_id = :rc " +
             "AND job_condition_id = :jc " +
             "AND `match`.status IN ('WAITING', 'TUNING')" +
