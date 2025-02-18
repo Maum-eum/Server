@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .httpBasic(auth -> auth.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("match/**","location/**","/login", "/admin/signup", "/", "/actuator/health", "/caregiver/signup", "/reissue", "/health/**", "/center/search/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/fcm/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/caregiver/**").hasRole("CAREGIVER")
                         .anyRequest().authenticated())

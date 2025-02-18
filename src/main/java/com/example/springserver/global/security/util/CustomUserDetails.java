@@ -18,6 +18,7 @@ public class CustomUserDetails implements UserDetails {
     @Getter
     private final String name;
     private final String password;
+    @Getter
     private final String role;
     @Getter
     private final Center center;
@@ -77,6 +78,7 @@ public class CustomUserDetails implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
 
 //    @Override
 //    public boolean isEnabled() {
