@@ -90,7 +90,7 @@ public class ElderController {
     @PutMapping(value = "/{elder_id}", consumes = "multipart/form-data")
     public RequestDto updateElder(@PathVariable Long center_id, @PathVariable Long elder_id,
                                   @RequestPart("data") RequestDto updateRequestDto,
-                                  @RequestParam(value = "inmateTypes", required = false) List<String> inmateTypes,
+                                  @RequestPart(value = "inmateTypes", required = false) List<String> inmateTypes,
                                   @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
         List<Inmate> inmateEnumList = StringTypeToEnumType(inmateTypes);
         updateRequestDto.setInmateTypes(inmateEnumList);
