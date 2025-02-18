@@ -9,9 +9,11 @@ import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
+import com.example.springserver.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ import java.util.List;
 public class CareGiverService {
 
     private final CaregiverRepository caregiverRepository;
+    private final S3Service s3Service;
 
     public Caregiver getUserInfo(CustomUserDetails user) {
         Long userId = user.getId();
@@ -30,15 +33,24 @@ public class CareGiverService {
 
     @Transactional
     public Caregiver updateUserInfo(CustomUserDetails user,
-                                    UpdateCaregiverReqDto request) {
+                                    UpdateCaregiverReqDto request,
+                                    MultipartFile profileImg) {
         Caregiver caregiver = getById(user);
+
+        // 이미지 적용
+        String imgUrl;
+        if(profileImg == null) {
+            imgUrl = request.getImg();
+        } else {
+            imgUrl = s3Service.uploadFileImage(profileImg);
+        }
 
         updateCertificates(caregiver, request.getCertificateRequestDTOList());
         updateExperiences(caregiver, request.getExperienceRequestDTOList());
 
         caregiver.setCar(request.getCar());
         caregiver.setAddress(request.getAddress());
-        caregiver.setImg(request.getImg());
+        caregiver.setImg(imgUrl);
         caregiver.setEducation(request.getEducation());
         caregiver.setContact(request.getContact());
         caregiver.setIntro(request.getIntro());
