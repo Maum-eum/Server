@@ -114,6 +114,10 @@ public class MatchResponseDto {
 
         private Long elderId;
 
+        private Long centerId;
+
+        private Long recruitId;
+
         private String elderName;
 
         private boolean mealAssistance;

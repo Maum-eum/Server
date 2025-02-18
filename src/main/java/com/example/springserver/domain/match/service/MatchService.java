@@ -84,11 +84,14 @@ public class MatchService {
                 .map(match -> {
                     Elder elder = match.getRequirementCondition().getElder();
                     RecruitCondition rc = match.getRequirementCondition();
+                    Center center = match.getCenter();
 
                     List<RecruitTime> recruitTimes = Optional.ofNullable(rc.getRecruitTimes())
                             .orElse(Collections.emptyList());
 
                     return MatchedStatus.builder()
+                            .centerId(center.getCenterId())
+                            .recruitId(rc.getRecruitConditionId())
                             .elderId(elder.getElderId())
                             .elderName(elder.getName())
                             .mealAssistance(rc.isMealAssistance())
