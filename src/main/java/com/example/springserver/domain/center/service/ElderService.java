@@ -100,8 +100,15 @@ public class ElderService {
         updateChangedElderInfo(elder::setGender, updateRequestDto.getGender());
         updateChangedElderInfo(elder::setBirth, updateRequestDto.getBirth());
         updateChangedElderInfo(elder::setRate, updateRequestDto.getRate());
+        updateChangedElderInfo(elder::setInmateTypes, updateRequestDto.getInmateTypes());
         updateChangedElderInfo(elder::setImgUrl, updateRequestDto.getImgUrl());
         updateChangedElderInfo(elder::setWeight, updateRequestDto.getWeight());
+        updateChangedElderInfo(elder::setActsLikeChild, updateRequestDto.isActsLikeChild());
+        updateChangedElderInfo(elder::setHasAggressiveBehavior, updateRequestDto.isHasAggressiveBehavior());
+        updateChangedElderInfo(elder::setHasDelusions, updateRequestDto.isHasDelusions());
+        updateChangedElderInfo(elder::setWandersOutside, updateRequestDto.isWandersOutside());
+        updateChangedElderInfo(elder::setHasShortTermMemoryLoss, updateRequestDto.isHasShortTermMemoryLoss());
+        updateChangedElderInfo(elder::setNormal, updateRequestDto.isNormal());
         updateChangedElderInfo(elder::setImgUrl, imgUrl);
 
         if (updateRequestDto.getCenterName() != null) {
