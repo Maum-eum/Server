@@ -32,4 +32,11 @@ public interface MatchRepository extends JpaRepository<Match,Long> {
             nativeQuery = true)
     MatchStatus findAllByJobConditionAndRecruitCondition(@Param("rc") Long rc, @Param("jc") Long jc);
 
+    @Query(value = "SELECT * FROM `match` " +
+            "WHERE requirement_condition_id = :rc " +
+            "AND job_condition_id = :jc " +
+            "AND `match`.status IN ('TUNING')" +
+            "LIMIT 1",
+            nativeQuery = true)
+    Match findByJcAndRC(@Param("jc") Long jc, @Param("rc") Long rc);
 }
