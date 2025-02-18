@@ -20,6 +20,7 @@ public class ElderRequestDto {
         private List<Inmate> inmateTypes;
         private String imgUrl;
         private Integer weight;
+        private boolean isTemporarySave; // 임시 저장 여부
         private boolean isNormal; // 증상 보유 여부
         private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
         private boolean wandersOutside; // 집밖을 배회 여부
@@ -37,6 +38,7 @@ public class ElderRequestDto {
         private ElderRate rate; // 장기 요양 등급
         private List<Inmate> inmateTypes;
         private Integer weight;
+        private boolean isTemporarySave; // 임시 저장 여부
         private boolean isNormal; // 증상 보유 여부
         private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
         private boolean wandersOutside; // 집밖을 배회 여부
@@ -54,6 +56,7 @@ public class ElderRequestDto {
         private List<Inmate> inmateTypes;
         private String imgUrl;
         private Integer weight;
+        private boolean isTemporarySave; // 임시 저장 여부
         private boolean isNormal; // 증상 보유 여부
         private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
         private boolean wandersOutside; // 집밖을 배회 여부

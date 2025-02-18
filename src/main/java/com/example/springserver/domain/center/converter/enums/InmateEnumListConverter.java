@@ -1,6 +1,5 @@
 package com.example.springserver.domain.center.converter.enums;
 
-import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.Inmate;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -22,6 +21,7 @@ public class InmateEnumListConverter implements AttributeConverter<List<Inmate>,
     public List<Inmate> convertToEntityAttribute(String dbData) {
         return (dbData == null || dbData.isBlank())
                 ? List.of() : Arrays.stream(dbData.split(","))
+                .map(String::trim) // 공백 제거
                 .map(Inmate::valueOf)
                 .collect(Collectors.toList());
     }
