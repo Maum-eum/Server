@@ -102,6 +102,8 @@ public class MatchResponseDto {
 
         private Sexual sexual;
 
+        private MatchStatus status;
+
         private List<CareType> careTypes;
 
     }

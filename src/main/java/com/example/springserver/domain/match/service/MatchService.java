@@ -166,6 +166,7 @@ public class MatchService {
                             .elderId(elder.getElderId())
                             .recruitConditionId(rc.getRecruitConditionId())
                             .imgUrl(elder.getImgUrl())
+                            .status(match.getStatus())
                             .desiredHourlyWage(rc.getDesiredHourlyWage())
                             .rate(elder.getRate())
                             .careTypes(rc.getCareTypes())
