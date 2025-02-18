@@ -29,7 +29,7 @@ public class Care extends BaseEntity {
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", nullable = false)
     private Location careLocation;
 

@@ -151,7 +151,7 @@ public class JobCondition extends BaseEntity {
                         ScheduleAvailability wheelchairAssist, ScheduleAvailability immobile, ScheduleAvailability cleaningLaundryAssist,
                         ScheduleAvailability bathingAssist, ScheduleAvailability hospitalAccompaniment, ScheduleAvailability exerciseSupport,
                         ScheduleAvailability emotionalSupport, ScheduleAvailability cognitiveStimulation,
-                        Integer dayOfWeek, Long startTime, Long endTime, Caregiver caregiver, List<WorkLocation> workLocations) {
+                        Integer dayOfWeek, Long startTime, Long endTime, Caregiver caregiver) {
         this.flexibleSchedule = flexibleSchedule;
         this.desiredHourlyWage = desiredHourlyWage;
         this.selfFeeding = selfFeeding;
@@ -176,7 +176,6 @@ public class JobCondition extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.caregiver = caregiver;
-        this.workLocations = workLocations;
     }
 
     public void updateInfo(JobConditionReqDto req){
@@ -200,5 +199,12 @@ public class JobCondition extends BaseEntity {
         this.exerciseSupport = req.getExerciseSupport();
         this.emotionalSupport = req.getEmotionalSupport();
         this.cognitiveStimulation = req.getCognitiveStimulation();
+    }
+
+    public void addWokLocation(WorkLocation wokLocation) {
+        if (!this.workLocations.contains(wokLocation)) {
+            this.workLocations.add(wokLocation);
+            wokLocation.setJobCondition(this); // 양방향 관계 설정
+        }
     }
 }

@@ -28,7 +28,7 @@ public class RecruitCondition extends BaseEntity {
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", nullable = false)
     private Location recruitLocation;
 
@@ -91,7 +91,7 @@ public class RecruitCondition extends BaseEntity {
     private String detailRequiredService;
 
     public RecruitCondition(Elder elder, Location recruitLocation, List<CareType> careTypes,
-                            boolean flexibleSchedule, List<RecruitTime> recruitTimes, boolean mealAssistance,
+                            boolean flexibleSchedule, boolean mealAssistance,
                             boolean toiletAssistance, boolean moveAssistance, boolean dailyLivingAssistance,
                             Integer desiredHourlyWage, boolean selfFeeding, boolean mealPreparation,
                             boolean cookingAssistance, boolean enteralNutritionSupport, boolean selfToileting,
@@ -104,7 +104,6 @@ public class RecruitCondition extends BaseEntity {
         this.recruitLocation = recruitLocation;
         this.careTypes = careTypes;
         this.flexibleSchedule = flexibleSchedule;
-        this.recruitTimes = recruitTimes;
         this.mealAssistance = mealAssistance;
         this.toiletAssistance = toiletAssistance;
         this.moveAssistance = moveAssistance;
