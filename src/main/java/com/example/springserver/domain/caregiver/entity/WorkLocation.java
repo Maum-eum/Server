@@ -32,4 +32,13 @@ public class WorkLocation {
         this.locationId = locationId;
         this.jobCondition = jobCondition;
     }
+
+    public WorkLocation(JobCondition jobCondition, Location locationId) {
+        this.jobCondition = jobCondition;
+        this.locationId = locationId;
+    }
+
+    public void setJobCondition(JobCondition jobCondition) {
+        this.jobCondition = jobCondition;
+    }
 }
