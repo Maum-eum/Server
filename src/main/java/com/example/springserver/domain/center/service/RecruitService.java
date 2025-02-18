@@ -4,9 +4,11 @@ import com.example.springserver.domain.center.dto.request.RecruitRequestDto.Requ
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitTime;
+import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.center.repository.RecruitTimeRepository;
 import com.example.springserver.domain.location.entity.Location;
+import com.example.springserver.global.apiPayload.format.CenterException;
 import com.example.springserver.global.apiPayload.format.ElderException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.RecruitException;
@@ -34,6 +36,7 @@ public class RecruitService {
     private final RecruitCondRepository recruitCondRepository;
     private final RecruitTimeRepository recruitTimeRepository;
     private final LocationRepository locationRepository;
+    private final CenterRepository centerRepository;
     private final ElderRepository elderRepository;
 
     private final RecruitLaborLawValidator recruitLaborLawValidator;
@@ -116,8 +119,18 @@ public class RecruitService {
     }
 
     private void isValidCenter(Long elderId, Long centerId) {
-        elderRepository.findByElderIdAndCenter_CenterId(elderId, centerId)
-                .orElseThrow(() -> new ElderException(ErrorCode.CENTER_NOT_FOUND));
+        // 센터 검증
+        if (!centerRepository.existsById(centerId)) {
+            throw new CenterException(ErrorCode.CENTER_NOT_FOUND);
+        }
+        // 어르신 검증
+        if (!elderRepository.existsById(elderId)) {
+            throw new ElderException(ErrorCode.ELDER_NOT_FOUND);
+        }
+        // 센터 - 어르신 관계 검증
+        if (!elderRepository.existsByElderIdAndCenter_CenterId(elderId, centerId)) {
+            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+        }
     }
 
     private void isValidRecruitCondition(RequestDto createRecruitDto) {

@@ -36,9 +36,6 @@ public class Care extends BaseEntity {
     @Column(name = "care_types", nullable = false)
     private List<CareType> careTypes = new ArrayList<>();
 
-    @Column(nullable = false)
-    private boolean flexibleSchedule; // 시간 협의 여부
-
     private boolean mealAssistance;
 
     private boolean toiletAssistance;
@@ -84,20 +81,19 @@ public class Care extends BaseEntity {
     private boolean emotionalSupport; // 정서적 지원
 
     private boolean cognitiveStimulation; // 인지 자극 활동
+    private String detailRequiredService;
 
-    public Care(Elder elder, List<CareType> careTypes, Location careLocation,
-                            boolean flexibleSchedule, boolean mealAssistance,
+    public Care(Elder elder, List<CareType> careTypes, Location careLocation, boolean mealAssistance,
                             boolean toiletAssistance, boolean moveAssistance, boolean dailyLivingAssistance,
                             Integer desiredHourlyWage, boolean selfFeeding, boolean mealPreparation,
                             boolean cookingAssistance, boolean enteralNutritionSupport, boolean selfToileting,
                             boolean occasionalToiletingAssist, boolean diaperCare, boolean catheterOrStomaCare,
                             boolean independentMobility, boolean mobilityAssist, boolean wheelchairAssist, boolean immobile,
                             boolean cleaningLaundryAssist, boolean bathingAssist, boolean hospitalAccompaniment,
-                            boolean exerciseSupport, boolean emotionalSupport, boolean cognitiveStimulation) {
+                            boolean exerciseSupport, boolean emotionalSupport, boolean cognitiveStimulation, String detailRequiredService) {
         this.elder = elder;
         this.careLocation = careLocation;
         this.careTypes = careTypes;
-        this.flexibleSchedule = flexibleSchedule;
         this.mealAssistance = mealAssistance;
         this.toiletAssistance = toiletAssistance;
         this.moveAssistance = moveAssistance;
@@ -110,21 +106,21 @@ public class Care extends BaseEntity {
         this.selfToileting = selfToileting;
         this.occasionalToiletingAssist = occasionalToiletingAssist;
         this.diaperCare = diaperCare;
-        this.catheterOrStomaCare =  catheterOrStomaCare;
+        this.catheterOrStomaCare = catheterOrStomaCare;
         this.independentMobility = independentMobility;
         this.mobilityAssist = mobilityAssist;
-        this.wheelchairAssist  = wheelchairAssist;
+        this.wheelchairAssist = wheelchairAssist;
         this.cleaningLaundryAssist = cleaningLaundryAssist;
         this.bathingAssist = bathingAssist;
         this.hospitalAccompaniment = hospitalAccompaniment;
         this.exerciseSupport = exerciseSupport;
         this.emotionalSupport = emotionalSupport;
         this.cognitiveStimulation = cognitiveStimulation;
+        this.detailRequiredService = detailRequiredService; // 추가 요청 사항
     }
 
     public void update(CareRequestDto.RequestDto requestDto, Location location) {
         this.careTypes = requestDto.getCareTypes();
-        this.flexibleSchedule = requestDto.isFlexibleSchedule();
         this.careLocation = location;
         this.desiredHourlyWage = requestDto.getDesiredHourlyWage();
         this.selfFeeding = requestDto.isSelfFeeding();
