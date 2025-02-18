@@ -1,15 +1,15 @@
 package com.example.springserver.domain.center.service;
 
+import com.example.springserver.domain.center.converter.ElderConverter;
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.Center;
-import com.example.springserver.global.apiPayload.format.CenterException;
-import com.example.springserver.global.apiPayload.format.ElderException;
-import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
-import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
+import com.example.springserver.global.apiPayload.format.CenterException;
+import com.example.springserver.global.apiPayload.format.ElderException;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,10 +65,18 @@ public class ElderService {
     }
 
     @Transactional
-    public void updateElder(Long centerId, Long elderId, RequestDto updateRequestDto) {
+    public void updateElder(Long centerId, Long elderId, RequestDto updateRequestDto, MultipartFile profileImg) {
         Elder validElder = getValidElder(elderId, centerId);
 
-        updateSelectedElderInfo(validElder, updateRequestDto);
+        // 이미지 적용
+        String imgUrl;
+        if(profileImg == null) {
+            imgUrl = "http://localhost:8080/basicImg.jpeg";
+        } else {
+            imgUrl = s3Service.uploadFileImage(profileImg);
+        }
+
+        updateSelectedElderInfo(validElder, updateRequestDto, imgUrl);
     }
 
     @Transactional
@@ -85,7 +93,7 @@ public class ElderService {
         return validElder;
     }
 
-    private void updateSelectedElderInfo(Elder elder, RequestDto updateRequestDto) {
+    private void updateSelectedElderInfo(Elder elder, RequestDto updateRequestDto, String imgUrl) {
 
         // 변경 요청이 들어온 필드만 수정
         updateChangedElderInfo(elder::setName, updateRequestDto.getName());
@@ -94,6 +102,7 @@ public class ElderService {
         updateChangedElderInfo(elder::setRate, updateRequestDto.getRate());
         updateChangedElderInfo(elder::setImgUrl, updateRequestDto.getImgUrl());
         updateChangedElderInfo(elder::setWeight, updateRequestDto.getWeight());
+        updateChangedElderInfo(elder::setImgUrl, imgUrl);
 
         if (updateRequestDto.getCenterName() != null) {
             updateElderCenter(elder, updateRequestDto);
