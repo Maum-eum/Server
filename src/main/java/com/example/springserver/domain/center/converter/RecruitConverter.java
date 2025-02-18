@@ -1,10 +1,11 @@
 package com.example.springserver.domain.center.converter;
 
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto.*;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseTimeDto;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.location.entity.Location;
 
