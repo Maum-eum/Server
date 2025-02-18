@@ -1,19 +1,21 @@
 package com.example.springserver.domain.center.controller;
 
 import com.example.springserver.domain.center.converter.ElderConverter;
-import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResponseDto;
-import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.service.ElderService;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.CreateDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResponseDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.ResponseDto;
+import com.example.springserver.domain.center.entity.Elder;
+import com.example.springserver.domain.center.entity.enums.Inmate;
+import com.example.springserver.domain.center.service.ElderService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,8 +29,12 @@ public class ElderController {
     @PostMapping(consumes = "multipart/form-data")
     public CreateDto createElder(@PathVariable Long center_id,
                                  @RequestPart("data") CreateRequestDto createRequestDto,
+                                 @RequestParam(value = "inmateTypes", required = false) List<String> inmateTypes,
                                  @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
 
+        List<Inmate> inmateEnumList = StringTypeToEnumType(inmateTypes);
+        // CreateRequestDto에 inmateTypes 설정
+        createRequestDto.setInmateTypes(inmateEnumList);
         Elder createdElder = elderService.createElder(center_id, createRequestDto, false, profileImg);
         return ElderConverter.toCreateDto(createdElder);
     }
@@ -54,8 +60,10 @@ public class ElderController {
     @PostMapping(value = "/temp", consumes = "multipart/form-data")
     public CreateDto tempCreateElder(@PathVariable Long center_id,
                                      @RequestPart("data") CreateRequestDto createRequestDto,
+                                     @RequestParam(value = "inmateTypes", required = false) List<String> inmateTypes,
                                      @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
-
+        List<Inmate> inmateEnumList = StringTypeToEnumType(inmateTypes);
+        createRequestDto.setInmateTypes(inmateEnumList);
         Elder createdElder = elderService.createElder(center_id, createRequestDto, true, profileImg);
         return ElderConverter.toCreateDto(createdElder);
     }
@@ -78,9 +86,14 @@ public class ElderController {
 
     // 센터 내 어르신 수정
     @Operation(summary = "센터 내 어르신 수정")
-    @PutMapping("/{elder_id}")
-    public RequestDto updateElder(@PathVariable Long center_id, @PathVariable Long elder_id, @RequestBody RequestDto updateRequestDto) {
-        elderService.updateElder(center_id, elder_id, updateRequestDto);
+    @PutMapping(value = "/{elder_id}", consumes = "multipart/form-data")
+    public RequestDto updateElder(@PathVariable Long center_id, @PathVariable Long elder_id,
+                                  @RequestPart("data") RequestDto updateRequestDto,
+                                  @RequestParam(value = "inmateTypes", required = false) List<String> inmateTypes,
+                                  @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+        List<Inmate> inmateEnumList = StringTypeToEnumType(inmateTypes);
+        updateRequestDto.setInmateTypes(inmateEnumList);
+        elderService.updateElder(center_id, elder_id, updateRequestDto, profileImg);
         return updateRequestDto;
     }
 
@@ -90,5 +103,14 @@ public class ElderController {
     public DeleteResponseDto deleteElder(@PathVariable Long center_id, @PathVariable Long elder_id) {
         Elder deletedElder = elderService.deleteElder(center_id, elder_id);
         return ElderConverter.toDeleteResponseDto(deletedElder);
+    }
+
+    public List<Inmate> StringTypeToEnumType(List<String> inmateTypes) {
+
+        // inmateTypes 값을 List<Inmate>로 변환
+        return inmateTypes.stream()
+                .map(String::trim) // 공백 제거
+                .map(Inmate::valueOf) // Inmate Enum으로 변환
+                .collect(Collectors.toList());
     }
 }

@@ -3,6 +3,7 @@ package com.example.springserver.domain.center.dto.request;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
 import com.example.springserver.domain.center.entity.enums.Inmate;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 public class ElderRequestDto {
 
     @Getter
+    @Setter
     public static class RequestDto { // 공통 필드
 
         private String name;
@@ -30,6 +32,7 @@ public class ElderRequestDto {
     }
 
     @Getter
+    @Setter
     public static class CreateRequestDto {
 
         private String name;
