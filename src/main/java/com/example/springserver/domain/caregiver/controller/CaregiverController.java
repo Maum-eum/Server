@@ -48,10 +48,11 @@ public class CaregiverController {
     }
 
     @Operation(summary = "요양보호사 정보수정", description = "Put")
-    @PutMapping("/profile")
+    @PutMapping(value = "/profile", consumes = "multipart/form-data")
     public CareGiverInfoResponseDTO updateCaregiver(@AuthenticationPrincipal CustomUserDetails user,
-                                                    @RequestBody @Valid CaregiverRequestDto.UpdateCaregiverReqDto request){
-        Caregiver searched = careGiverService.updateUserInfo(user,request);
+                                                    @RequestPart("data") @Valid CaregiverRequestDto.UpdateCaregiverReqDto request,
+                                                    @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
+        Caregiver searched = careGiverService.updateUserInfo(user,request, profileImg);
         return CaregiverConverter.infoResponseDto(searched);
     }
 
