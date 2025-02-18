@@ -82,7 +82,8 @@ public enum ErrorCode {
     NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!"),
 
     // 매칭 에러
-    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" );
+    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" ), MONEY_NOT_MATCHED(HttpStatus.BAD_REQUEST,"MATCH002" ,"시급이 일치하지 않습니다.");
+
 
     private final HttpStatus status;
     private final String code;

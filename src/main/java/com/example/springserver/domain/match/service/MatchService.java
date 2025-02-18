@@ -4,10 +4,12 @@ import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
+import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.service.CommonService;
 import com.example.springserver.domain.center.entity.*;
 import com.example.springserver.domain.center.entity.enums.Week;
+import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.center.repository.RecruitCondRepository;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
@@ -19,6 +21,7 @@ import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,8 +44,10 @@ public class MatchService {
 
     private final CommonService commonService;
     private final JobConditionRepository jobConditionRepository;
+    private final CaregiverRepository caregiverRepository;
     private final RecruitCondRepository recruitCondRepository;
     private final MatchRepository matchRepository;
+    private ModelMapper modelMapper;
 
 
     public List<MatchedStatus> getCalenderList(CustomUserDetails user) {
@@ -274,5 +279,42 @@ public class MatchService {
                         .build();
         matchRepository.save(match);
         return MatchCreateDto.builder().msg("요청이 완료되었습니다.").build();
+    }
+
+    public CareGiverInfo getRecommendResult(CustomUserDetails user, Long jc, Long rc) {
+        JobCondition jobCondition = jobConditionRepository.findById(jc)
+                .orElseThrow(() ->new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+        RecruitCondition recruitCondition = recruitCondRepository.findById(rc)
+                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+        Caregiver caregiver = caregiverRepository.findById(jobCondition.getId())
+                .orElseThrow(()-> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+        Elder elder = recruitCondition.getElder();
+
+        return CareGiverInfo
+                .builder()
+                .careGiverInfo(modelMapper.map(caregiver, CareGiverInfoDto.class))
+                .elderInfoDto(modelMapper.map(elder, ElderInfoDto.class))
+                .jobCondRes(modelMapper.map(jobCondition, MatchResponseDto.JobCondRes.class))
+                .recruitCondRes(modelMapper.map(recruitCondition, MatchResponseDto.RecruitCondRes.class))
+                .build();
+    }
+
+    @Transactional
+    public String answerToMatchRes(boolean status,Long jc, Long rc) {
+        Match byJcAndRC = matchRepository.findByJcAndRC(jc, rc);
+        JobCondition jobCondition = jobConditionRepository.findById(jc)
+                .orElseThrow(() ->new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+        RecruitCondition recruitCondition = recruitCondRepository.findById(rc)
+                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+        if(!status) {
+            byJcAndRC.setStatus(MatchStatus.DECLINED);
+            byJcAndRC.setDeletedAt(LocalDateTime.now());
+        }else {
+            if(jobCondition.getDesiredHourlyWage() == recruitCondition.getDesiredHourlyWage())
+                byJcAndRC.setStatus(MatchStatus.MATCHED);
+            else
+                throw new GlobalException(ErrorCode.MONEY_NOT_MATCHED);
+        }
+        return "매칭 상태 변경 완료";
     }
 }
