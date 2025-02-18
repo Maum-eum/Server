@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.disable())
                 .httpBasic(auth -> auth.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("location/**","/login", "/admin/signup", "/", "/actuator/health", "/caregiver/signup", "/reissue", "/health/**", "/center/search/**").permitAll()
+                        .requestMatchers("match/**","location/**","/login", "/admin/signup", "/", "/actuator/health", "/caregiver/signup", "/reissue", "/health/**", "/center/search/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/caregiver/**").hasRole("CAREGIVER")

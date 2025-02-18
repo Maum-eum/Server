@@ -19,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "care")
 public class Care extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "care_id", nullable = false)
@@ -81,6 +82,7 @@ public class Care extends BaseEntity {
     private boolean emotionalSupport; // 정서적 지원
 
     private boolean cognitiveStimulation; // 인지 자극 활동
+
     private String detailRequiredService;
 
     public Care(Elder elder, List<CareType> careTypes, Location careLocation, boolean mealAssistance,
