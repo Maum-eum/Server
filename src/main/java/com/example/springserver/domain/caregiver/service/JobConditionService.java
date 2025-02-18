@@ -135,12 +135,12 @@ public class JobConditionService {
         return toJobConditionResponseDto(jobCondition);
     }
 
-    private JobCondition getJobCondition(Caregiver user) {
+    public JobCondition getJobCondition(Caregiver user) {
         return jobConditionRepository.findByCaregiver(user)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
     }
 
-    private JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
+    public JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
         return JobConditionResponseDTO.builder()
                 .jobConditionId(saved.getId())
                 .bathingAssist(saved.getBathingAssist())
@@ -166,7 +166,7 @@ public class JobConditionService {
                 .dayOfWeek(Integer.toBinaryString(saved.getDayOfWeek()))
                 .startTime(saved.getStartTime())
                 .endTime(saved.getEndTime())
-                .locationRequestDtoList(saved.getWorkLocations().stream()
+                .locationResponseDtoList(saved.getWorkLocations().stream()
                         .map(dto -> JobConditionResponseDto.LocationResponseDTO.builder()
                                 .workLocationId(dto.getId())
                                 .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
