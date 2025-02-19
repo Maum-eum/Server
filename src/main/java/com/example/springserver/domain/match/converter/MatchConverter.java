@@ -1,12 +1,14 @@
 package com.example.springserver.domain.match.converter;
 
+import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
+import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
+import com.example.springserver.domain.center.converter.ElderConverter;
+import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.Inmate;
-import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
-import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
 import com.example.springserver.domain.match.entity.Match;
@@ -96,6 +98,8 @@ public class MatchConverter {
                 .jobCondition(
                         JobConditionConverter.toJobConditionResponseDto(match.getJobCondition())
                         )
+                .elderInfoDto(ElderConverter.toMatchElderDto(match.getRequirementCondition().getElder())) // elder -> dto 변환 필요
+                .careGiverInfoDto(CaregiverConverter.toMatchCaregiverDto(match.getJobCondition().getCaregiver())) // careGiver -> dto 변환 필요
                 .deletedAt(match.getDeletedAt())
                 .version(match.getVersion())
                 .build();

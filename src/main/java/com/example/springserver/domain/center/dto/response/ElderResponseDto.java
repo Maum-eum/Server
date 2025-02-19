@@ -75,4 +75,14 @@ public class ElderResponseDto {
         private String name;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MatchElderResponseDto {
+        private Long elderId;
+        private String name;
+        private String imgUrl;
+    }
+
 }

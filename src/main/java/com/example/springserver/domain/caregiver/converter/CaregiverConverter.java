@@ -102,4 +102,12 @@ public class CaregiverConverter {
                 .list(list)
                 .build();
     }
+
+    public static MatchCaregiverResponseDto toMatchCaregiverDto(Caregiver caregiver) {
+        return MatchCaregiverResponseDto.builder()
+                .careGiverId(caregiver.getId())
+                .useranme(caregiver.getName())
+                .img(caregiver.getImg())
+                .build();
+    }
 }

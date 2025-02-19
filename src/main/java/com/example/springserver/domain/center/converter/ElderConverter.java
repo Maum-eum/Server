@@ -1,15 +1,12 @@
 package com.example.springserver.domain.center.converter;
 
+import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResponseDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.UpdateResponseDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.*;
 import com.example.springserver.domain.center.entity.Care;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.CreateDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.ResponseDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -139,5 +136,13 @@ public class ElderConverter {
         return elderList.stream()
                 .map(ElderConverter::toResponseDto)  // ElderEntity를 ResponseDto로 변환
                 .collect(Collectors.toList());
+    }
+
+    public static MatchElderResponseDto toMatchElderDto(Elder elder) {
+        return MatchElderResponseDto.builder()
+                .elderId(elder.getElderId())
+                .name(elder.getName())
+                .imgUrl(elder.getImgUrl())
+                .build();
     }
 }
