@@ -45,7 +45,7 @@ public class CareConverter {
 
     public static ResponseDto toConditionResponseDto(Care care) {
         return ResponseDto.builder()
-                .recruitConditionId(care.getCareId())
+                .careId(care.getCareId())
                 .elderId(care.getElder().getElderId())
                 .careTypes(care.getCareTypes())
                 .careLocation(care.getCareLocation().getLocationId())

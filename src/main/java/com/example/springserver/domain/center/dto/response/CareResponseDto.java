@@ -16,7 +16,7 @@ public class CareResponseDto {
     @AllArgsConstructor
     public static class ResponseDto {
 
-        private Long recruitConditionId;
+        private Long careId;
 
         private Long elderId;
 

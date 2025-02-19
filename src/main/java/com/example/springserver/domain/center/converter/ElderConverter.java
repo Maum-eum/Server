@@ -4,6 +4,7 @@ import com.example.springserver.domain.center.dto.request.ElderRequestDto.Reques
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.UpdateRequestDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.DeleteResponseDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.UpdateResponseDto;
+import com.example.springserver.domain.center.entity.Care;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.dto.request.ElderRequestDto.CreateRequestDto;
@@ -13,6 +14,7 @@ import com.example.springserver.domain.center.dto.response.ElderResponseDto.Resp
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ElderConverter {
@@ -86,6 +88,9 @@ public class ElderConverter {
     // ElderEntity를 ResponseDto로 변환
     public static ResponseDto toResponseDto(Elder elder) {
         return ResponseDto.builder()
+                .careId(Optional.ofNullable(elder.getCareInfo())
+                        .map(Care::getCareId) // careInfo가 존재하면 careId 반환
+                        .orElse(null)) // 없으면 null 반환
                 .elderId(elder.getElderId())
                 .name(elder.getName())
                 .gender(elder.getGender())
@@ -103,6 +108,7 @@ public class ElderConverter {
                 .hasAggressiveBehavior(elder.isHasAggressiveBehavior())
                 .build();
     }
+
 
     public static UpdateResponseDto toUpdateResponseDto(Elder elder) {
         return UpdateResponseDto.builder()

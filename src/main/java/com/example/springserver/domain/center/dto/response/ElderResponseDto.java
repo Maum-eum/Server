@@ -35,6 +35,7 @@ public class ElderResponseDto {
         private ElderRate rate;
         private String img;
         private Integer weight;
+        private Long careId;
         private boolean isTemporarySave; // 임시 저장 여부
         private boolean isNormal; // 증상 보유 여부
         private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
