@@ -24,7 +24,7 @@ public class RecruitCondition extends BaseEntity {
     @Column(name = "recruit_condition_id", nullable = false)
     private Long recruitConditionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
