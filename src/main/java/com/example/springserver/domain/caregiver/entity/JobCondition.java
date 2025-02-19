@@ -3,6 +3,7 @@ package com.example.springserver.domain.caregiver.entity;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.global.common.entity.BaseEntity;
+import com.example.springserver.global.utils.FormatUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -199,6 +200,9 @@ public class JobCondition extends BaseEntity {
         this.exerciseSupport = req.getExerciseSupport();
         this.emotionalSupport = req.getEmotionalSupport();
         this.cognitiveStimulation = req.getCognitiveStimulation();
+        this.dayOfWeek = FormatUtils.toIntegerDayOfWeek(req.getDayOfWeek());
+        this.startTime = req.getStartTime();
+        this.endTime = req.getEndTime();
     }
 
     public void addWokLocation(WorkLocation wokLocation) {
