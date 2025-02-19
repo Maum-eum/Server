@@ -2,11 +2,9 @@ package com.example.springserver.domain.caregiver.dto.response;
 
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
-import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
-import com.example.springserver.domain.center.entity.enums.Week;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -117,6 +115,11 @@ public class CaregiverResponseDto {
 
     }
 
-
-
+    @Getter
+    @Builder
+    public static class MatchCaregiverResponseDto{
+        Long careGiverId;
+        String useranme;
+        String img;
+    }
 }

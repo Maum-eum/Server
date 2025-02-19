@@ -1,22 +1,19 @@
 package com.example.springserver.domain.match.dto.response;
 
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.MatchCaregiverResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
-import com.example.springserver.domain.caregiver.entity.enums.CertType;
-import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
-import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto;
+import com.example.springserver.domain.center.dto.response.ElderResponseDto.MatchElderResponseDto;
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
-import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
-import com.example.springserver.domain.caregiver.entity.enums.Sexual;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
@@ -422,6 +419,10 @@ public class MatchResponseDto {
         private ResponseDto requirementCondition;
 
         private JobConditionResponseDTO jobCondition;
+
+        private MatchElderResponseDto elderInfoDto;
+
+        private MatchCaregiverResponseDto careGiverInfoDto;
 
         private LocalDateTime deletedAt;
 
