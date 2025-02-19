@@ -112,6 +112,8 @@ public class ElderService {
         updateChangedElderInfo(elder::setHasShortTermMemoryLoss, updateRequestDto.isHasShortTermMemoryLoss());
         updateChangedElderInfo(elder::setNormal, updateRequestDto.isNormal());
         updateChangedElderInfo(elder::setImgUrl, imgUrl);
+        updateChangedElderInfo(elder::setTemporarySave, updateRequestDto.isTemporarySave());
+
 
         if (updateRequestDto.getCenterName() != null) {
             updateElderCenter(elder, updateRequestDto);
