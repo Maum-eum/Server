@@ -26,6 +26,8 @@ public class RecruitResponseDto {
 
         private Long recruitLocation;
 
+        private String address;
+
         private boolean mealAssistance;
 
         private boolean toiletAssistance;

@@ -87,6 +87,9 @@ public class JoinService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.CENTER_NOT_FOUND));
 
         // Admin 객체 converter를 통해 생성
+        if(!centerData.getCertification().equals(request.getCenterCertification()))
+            throw new GlobalException(ErrorCode.CENTER_CERTIFICATION_FAIL);
+
         Admin newAdmin = AdminConverter.toAdmin(request, bCryptPasswordEncoder, centerData);
 
         // 양방향 연관관계 매핑

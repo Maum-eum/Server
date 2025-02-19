@@ -31,6 +31,7 @@ public enum ErrorCode {
 
     // 센터 관련 에러
     CENTER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CENTER4001", "센터가 존재하지 않습니다."),
+    CENTER_CERTIFICATION_FAIL(HttpStatus.BAD_REQUEST,"CENTER4002" ,"센터인증에 실패했습니다."),
 
     // 어르신 관련 에러
     ELDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ELDER4001", "어르신 정보가 존재하지 않습니다."),

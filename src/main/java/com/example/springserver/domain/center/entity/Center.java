@@ -43,4 +43,6 @@ public class Center extends BaseEntity {
     private String endTime;
 
     private String address;
+
+    private String certification;
 }

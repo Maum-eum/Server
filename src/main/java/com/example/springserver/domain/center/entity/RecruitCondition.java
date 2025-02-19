@@ -39,6 +39,8 @@ public class RecruitCondition extends BaseEntity {
     @Column(nullable = false)
     private boolean flexibleSchedule; // 시간 협의 여부
 
+    private String address;
+
     @OneToMany(mappedBy = "recruitCondition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitTime> recruitTimes = new ArrayList<>();
 

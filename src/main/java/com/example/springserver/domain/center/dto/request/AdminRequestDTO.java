@@ -23,6 +23,9 @@ public class AdminRequestDTO {
 
         @NotEmpty
         private String centerName;
+
+        @NotEmpty
+        private String centerCertification;
     }
 
     @Getter

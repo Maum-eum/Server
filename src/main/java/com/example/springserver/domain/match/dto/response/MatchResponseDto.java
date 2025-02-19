@@ -339,6 +339,7 @@ public class MatchResponseDto {
     public static class RecruitCondRes{
         private Long recruitConditionId;
         private Location recruitLocation;
+        private String address;
         private List<CareType> careTypes = new ArrayList<>();
         private boolean flexibleSchedule; // 시간 협의 여부
         private List<RecruitTime> recruitTimes = new ArrayList<>();
@@ -379,6 +380,7 @@ public class MatchResponseDto {
 
             return RecruitCondRes.builder()
                     .recruitConditionId(recruitCondition.getRecruitConditionId())
+                    .address(recruitCondition.getAddress())
                     .recruitLocation(recruitCondition.getRecruitLocation())
                     .careTypes(new ArrayList<>(recruitCondition.getCareTypes()))
                     .recruitTimes(new ArrayList<>(recruitCondition.getRecruitTimes()))
