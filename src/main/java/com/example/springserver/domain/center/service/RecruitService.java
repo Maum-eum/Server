@@ -9,10 +9,7 @@ import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.repository.*;
 import com.example.springserver.domain.location.entity.Location;
-import com.example.springserver.global.apiPayload.format.CenterException;
-import com.example.springserver.global.apiPayload.format.ElderException;
-import com.example.springserver.global.apiPayload.format.ErrorCode;
-import com.example.springserver.global.apiPayload.format.RecruitException;
+import com.example.springserver.global.apiPayload.format.*;
 import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
 import com.example.springserver.repository.location.LocationRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +81,8 @@ public class RecruitService {
     }
 
     private RecruitCondition saveOrUpdateRecruitCondition(Long recruitConditionId, Elder elder, RequestDto requestDto) {
-        Location location = locationRepository.findByLocationId(requestDto.getRecruitLocation());
+        Location location = locationRepository.findByLocationId(requestDto.getRecruitLocation())
+                .orElseThrow(()-> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
         RecruitCondition recruitCondition;
 
         if (recruitConditionId == null) { // create
