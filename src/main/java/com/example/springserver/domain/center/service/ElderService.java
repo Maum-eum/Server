@@ -32,8 +32,8 @@ public class ElderService {
     private final S3Service s3Service;
 
     @Transactional
-    public Elder createElder(Long centerId, CreateRequestDto createDto, boolean isTemporary, MultipartFile profileImg) {
-        log.info("isTemporary 값 확인: {}", isTemporary); // 로그 추가
+    public Elder createElder(Long centerId, CreateRequestDto createDto, MultipartFile profileImg) {
+        log.info("isTemporary 값 확인: {}", createDto.isTemporarySave()); // 로그 추가
         Center validCenter = getValidCenter(centerId);
 
         // 이미지 적용
@@ -45,23 +45,25 @@ public class ElderService {
         }
 
         // 어르신 정보 필수 입력 필드 검증 (일반 저장 / 임시 저장)
-        validateElderFields(isTemporary, createDto, imgUrl);
+        validateElderFields(createDto.isTemporarySave(), createDto, imgUrl);
 
-        Elder createdElder = elderRepository.save(ElderConverter.toSaveElder(createDto, isTemporary, validCenter, imgUrl));
+        Elder createdElder = elderRepository.save(ElderConverter.toSaveElder(createDto, validCenter, imgUrl));
         createdElder.changeCenter(validCenter);
 
         return createdElder;
     }
 
     @Transactional
-    public List<Elder> getElderList(Long centerId, boolean isTemporary) {
+    public List<Elder> getElderList(Long centerId) {
         getValidCenter(centerId);
-        return elderRepository.findByIsTemporarySave(isTemporary);
+        return elderRepository.findByCenter_CenterId(centerId);
+//        return elderRepository.findByIsTemporarySave(isTemporary);
     }
 
-    public Elder getElderDetail(Long centerId, Long elderId, boolean isTemporary) {
-        getValidElder(elderId, centerId);
-        return elderRepository.findByElderIdAndIsTemporarySave(elderId, isTemporary);
+    public Elder getElderDetail(Long centerId, Long elderId) {
+        // 임시 저장 여부와 관계 없이 어르신 상세 정보 가져오도록
+        return getValidElder(elderId, centerId);
+//        return elderRepository.findByElderIdAndIsTemporarySave(elderId, isTemporary);
     }
 
     @Transactional

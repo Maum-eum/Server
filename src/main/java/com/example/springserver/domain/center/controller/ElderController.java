@@ -36,7 +36,7 @@ public class ElderController {
         List<Inmate> inmateEnumList = StringTypeToEnumType(inmateTypes);
         // CreateRequestDto에 inmateTypes 설정
         createRequestDto.setInmateTypes(inmateEnumList);
-        Elder createdElder = elderService.createElder(center_id, createRequestDto, false, profileImg);
+        Elder createdElder = elderService.createElder(center_id, createRequestDto, profileImg);
         return ElderConverter.toCreateDto(createdElder);
     }
 
@@ -44,7 +44,7 @@ public class ElderController {
     @Operation(summary = "센터 내 어르신 목록 조회")
     @GetMapping
     public List<ResponseDto> getElderList(@PathVariable Long center_id) {
-        List<Elder> elderList = elderService.getElderList(center_id, false);
+        List<Elder> elderList = elderService.getElderList(center_id);
         return ElderConverter.toListDto(elderList);
     }
 
@@ -52,7 +52,7 @@ public class ElderController {
     @Operation(summary = "센터 내 어르신 상세 조회")
     @GetMapping("/{elder_id}")
     public ResponseDto getElderDetail(@PathVariable Long center_id, @PathVariable Long elder_id) {
-        Elder elderDetail = elderService.getElderDetail(center_id, elder_id, false);
+        Elder elderDetail = elderService.getElderDetail(center_id, elder_id);
         return ElderConverter.toResponseDto(elderDetail);
     }
 
@@ -65,7 +65,7 @@ public class ElderController {
                                      @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
         List<Inmate> inmateEnumList = StringTypeToEnumType(inmateTypes);
         createRequestDto.setInmateTypes(inmateEnumList);
-        Elder createdElder = elderService.createElder(center_id, createRequestDto, true, profileImg);
+        Elder createdElder = elderService.createElder(center_id, createRequestDto, profileImg);
         return ElderConverter.toCreateDto(createdElder);
     }
 
@@ -73,7 +73,7 @@ public class ElderController {
     @Operation(summary = "임시 저장된 어르신 목록 조회")
     @GetMapping("/temp")
     public List<ResponseDto> getTempElders(@PathVariable Long center_id) {
-        List<Elder> tempElders = elderService.getElderList(center_id, true);
+        List<Elder> tempElders = elderService.getElderList(center_id);
         return ElderConverter.toListDto(tempElders);
     }
 
@@ -81,7 +81,7 @@ public class ElderController {
     @Operation(summary = "임시 저장된 어르신 상세 조회")
     @GetMapping("/temp/{elder_id}")
     public ResponseDto getTempElders(@PathVariable Long center_id, @PathVariable Long elder_id) {
-        Elder elderDetail = elderService.getElderDetail(center_id, elder_id, true);
+        Elder elderDetail = elderService.getElderDetail(center_id, elder_id);
         return ElderConverter.toResponseDto(elderDetail);
     }
 
