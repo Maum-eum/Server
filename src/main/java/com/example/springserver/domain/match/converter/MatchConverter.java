@@ -91,6 +91,7 @@ public class MatchConverter {
     // entity -> dto 변환
     public static MatchDto toMatchDto(Match match) {
         return MatchDto.builder()
+                .matchId(match.getId())
                 .status(match.getStatus())
                 .requirementCondition(
                         RecruitConverter.toConditionResponseDto(match.getRequirementCondition())
