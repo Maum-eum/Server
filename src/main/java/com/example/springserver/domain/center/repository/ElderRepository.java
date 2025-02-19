@@ -13,6 +13,8 @@ public interface ElderRepository extends JpaRepository<Elder, Long> {
 
     Elder findByElderIdAndIsTemporarySave(Long elderId, boolean isTemporary);
 
+    List<Elder> findByCenter_CenterId(Long centerId);
+
     Optional<Elder> findByElderIdAndCenter_CenterId(Long elderId, Long centerId);
 
     // Mock 데이터 생성용
