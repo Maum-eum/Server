@@ -414,6 +414,8 @@ public class MatchResponseDto {
     @Builder
     public static class MatchDto {
 
+        private Long matchId;
+
         private MatchStatus status;
 
         private ResponseDto requirementCondition;
