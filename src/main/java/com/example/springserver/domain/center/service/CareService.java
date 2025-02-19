@@ -6,10 +6,7 @@ import com.example.springserver.domain.center.repository.CareRepository;
 import com.example.springserver.domain.center.repository.CenterRepository;
 import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.location.entity.Location;
-import com.example.springserver.global.apiPayload.format.CenterException;
-import com.example.springserver.global.apiPayload.format.ElderException;
-import com.example.springserver.global.apiPayload.format.ErrorCode;
-import com.example.springserver.global.apiPayload.format.CareException;
+import com.example.springserver.global.apiPayload.format.*;
 import com.example.springserver.domain.center.converter.CareConverter;
 import com.example.springserver.domain.center.entity.Care;
 import com.example.springserver.domain.center.dto.request.CareRequestDto.RequestDto;
@@ -69,7 +66,8 @@ public class CareService {
     }
 
     private Care saveOrUpdateCareInfo(Long careId, Elder elder, RequestDto requestDto) {
-        Location location = locationRepository.findByLocationId(requestDto.getCareLocation());
+        Location location = locationRepository.findByLocationId(requestDto.getCareLocation())
+                .orElseThrow(()->new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
         Care care;
 
         if (careId == null) { // create
