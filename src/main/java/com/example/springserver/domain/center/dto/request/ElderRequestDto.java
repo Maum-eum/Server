@@ -13,7 +13,7 @@ public class ElderRequestDto {
 
     @Getter
     @Setter
-    public static class RequestDto { // 공통 필드
+    public static class  RequestDto { // 공통 필드
 
         private String name;
         private String centerName;
