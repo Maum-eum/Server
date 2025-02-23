@@ -1,140 +1,227 @@
-# SecurityWithRedis
+# Dancy - 춤 연습 보조 SNS 서비스
 
-## 프로젝트 설명
+<div align="center">
+  <br />
+  <img src="image/Logo.png" width="70%"/>
+  <br />
+</div>
 
-> **SecurityWithRedis**는 Spring Boot 기반의 API 서버 템플릿으로, **Spring Security**와 **Redis**를 활용하여 **JWT 인증** 시스템에서 **refresh token**을 **Redis에 저장**하고 관리하는 방법을 제공합니다. 기본적으로 **MySQL**을 사용하여 사용자 정보를 저장하며, **refresh token**만 Redis에 저장하여 관리합니다. 또한, 본 템플릿은 **다중 토큰 처리**, **Swagger 설정**, **API 응답 통일**, **Exception 처리**, **Validation**, **JPA** 등을 기본으로 제공합니다.
+## 목차
 
-## 주요 기능
-- **다중 토큰 처리**: JWT를 이용한 다중 인증 처리
-- **Swagger**: API 문서화를 위한 Swagger 설정
-- **API 응답 통일**: 모든 API 응답의 구조를 통일하여 효율적인 API 관리
-- **Exception 처리**: 공통 예외 처리 및 사용자 정의 예외 처리
-- **Validation**: 입력 값 검증을 위한 다양한 검증 기능
-- **JPA**: MySQL 데이터베이스 연동을 위한 JPA 설정
-- **Redis 기반 refresh token 관리**: refresh token을 Redis에 저장하고 관리하여 효율적인 인증 시스템을 구현
+- [서비스 개요](#서비스-개요)
+- [팀원소개](#팀원소개)
+- [기술스택](#기술스택)
+- [시스템 아키텍처](#시스템-아키텍처)
+- [기능소개](#기능소개)
+- [프로젝트 산출물](#프로젝트-산출물)
 
-## 데이터베이스 구조
+## 서비스 개요
 
-이 프로젝트는 **MySQL** 데이터베이스를 사용하며, 사용자 정보는 MySQL에 저장됩니다. **Refresh Token**은 **Redis**에 저장됩니다.
+```
+'재가노인복지센터의 사회복지사를 위한'
+요양보호사와 노인의 최적 매칭을 통해 재가노인복지센터의 구인난을 해결하고
+맞춤형 돌봄 서비스를 제공하는 매칭 플랫폼 ![alt text](image/1.png)
+```
 
-### 1. UserEntity
+## 팀원소개
 
-`UserEntity`는 시스템 사용자 정보를 저장하는 엔티티로, 주로 회원가입 및 사용자 인증에 사용됩니다. 이 엔티티는 다음과 같은 필드를 가집니다:
+<div align="middle">
+<table>
+    <tr>
+        <td height="140px" align="center"> <a href="https://github.com/dalcheonroadhead">
+            <img src="image/전수민.jpg" width="120px" /> <br><br> 🎨 전수민 <br>(PM) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/GEISHAz">
+            <img src="image/정민호.jpg" width="120px" /> <br><br> 👑 정민호 <br>(Back-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/connorcoco">
+            <img src="image/박성현.png" width="120px" /> <br><br> 🎮 박성현 <br>(Back-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/Hszoo">
+            <img src="image/홍성주.jpg" width="120px" /> <br><br> 🐰 홍성주 <br>(Back-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/ByeongJo-Park">
+            <img src="image/박병조.jpg" width="120px" /> <br><br> ⚽ 박병조 <br>(Front-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/Anjihee">
+            <img src="image/안지희.png" width="120px" /> <br><br> 💎 안지희 <br>(Front-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/Jsub22">
+            <img src="image/정수빈.png" width="120px" /> <br><br> 🥨 정수빈 <br>(Front-End) </a> <br></td>
+    </tr>
+</table>
+</div>
 
-- **id**: 사용자 고유 ID (자동 생성, 기본 키)
-- **username**: 사용자의 이메일 주소를 저장합니다.
-- **password**: 사용자의 비밀번호
-- **role**: 사용자의 권한 (기본값: `ROLE_USER`)
-- **accountStatus**: 사용자의 계정 상태 (기본값: `ACTIVE`)
-- **nickname**: 사용자의 닉네임
-- **gender**: 사용자의 성별
+## 기술스택
 
-`UserEntity`는 **BaseEntity**를 상속받아 공통 필드(예: 생성일자, 수정일자 등)를 사용하며, **JPA**를 통해 자동으로 테이블과 매핑됩니다.
+### 프론트엔드
 
-### 2. Refresh Token (Redis)
+<div align="middle">
 
-**refresh token**은 Redis에 저장되어, 사용자가 로그인할 때 발급된 refresh token을 관리하고, 토큰 만료 시 새로 발급받을 수 있게 해줍니다.
+<img src="https://img.shields.io/badge/TypeScript-FFE249?style=for-the-badge&logo=javascript&logoColor=white">
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white">
+<img src="https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white">
+<img src="https://img.shields.io/badge/styledcomponents-DB7093?style=for-the-badge&logo=styledcomponents&logoColor=white">
+<img src="https://img.shields.io/badge/TailWind-19B4B9?style=for-the-badge&logo=tailwindcss&logoColor=white">
+<img src="https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+<img src="https://img.shields.io/badge/recoil-000000?style=for-the-badge&logo=recoil&logoColor=white">
+<img src="https://img.shields.io/badge/yarn-3B9DC8?style=for-the-badge&logo=yarn&logoColor=white">
 
-### Redis 연동
+**Language |** Typescript (Node: )
 
-- **로그인 시**: 사용자가 로그인하면 **refresh token**이 생성되고, 이를 Redis에 저장합니다.
-- **로그아웃 시**: 사용자가 로그아웃 요청을 보낼 때, **refresh token**을 Redis에서 삭제합니다.
-- **토큰 재발행 시**: 사용자가 refresh token을 제공하면, Redis에서 해당 token을 검증하고, 유효하면 새로운 **access token**을 발급하며 **refresh token**은 새로 Redis에 저장합니다.
-- **만료된 refresh token**: 일정 시간이 지난 후, Redis에서 자동으로 refresh token이 삭제됩니다.
+**Framework |** React (version: )
 
-## API 설명
+**Library |** Axios (1.6.7), Styled Components (6.1.8), Recoil (0.7.7), Yarn (1.22.21), EventSourcePolyfill (1.0.31)
 
-### 1. 유저 API
+<br>
+<br>
 
-- **유저 API**는 유저와 관련된 기능을 제공합니다.
+</div>
 
-#### 회원가입 API
+### 백엔드
 
-- **경로**: `/auth/join`
-- **메서드**: `POST`
-- **설명**: 사용자 회원가입을 처리하는 API입니다. 클라이언트에서 전달받은 `username`, `password`, `nickname`, `gender` 값을 기반으로 새 사용자를 등록합니다.
-- **요청 본문**: `username`, `password`, `nickname`, `gender` 필드를 포함한 JSON 형식의 데이터
-- **응답**: 성공적인 회원가입 후, 생성된 사용자의 정보를 포함한 응답을 반환합니다.
+<div align="middle">
 
----
+<img src="https://img.shields.io/badge/java-3a75b0?style=for-the-badge&logo=java&logoColor=black"> 
+<img src="https://img.shields.io/badge/spring boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
+<img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
+<img src="https://img.shields.io/badge/JPA Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white">
+<img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+<img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens">
+<img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white">
+<img src="https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white">
+<img src="https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white">
+<img src="https://img.shields.io/badge/JASYPT-000000?style=for-the-badge">
+">
 
-### 2. 로그인 API
+**Language |** Java 17
 
-- **로그인 API**는 사용자의 로그인 처리를 담당하며, 로그인 성공 시 **JWT (JSON Web Token)** 을 발급하여 클라이언트에게 반환합니다.
-- 로그인 요청은 `/auth/login` 경로로 전달되며, 사용자의 `username`과 `password`를 받아 인증을 처리합니다.
+**Framework |** Spring Boot 3.3.6
 
-#### 로그인 필터
+**Data(RDBMS) |** Spring Data JPA
 
-- **경로**: `/auth/login`
-- **메서드**: `POST`
-- **설명**: 사용자가 로그인 시 제공한 `username`과 `password`를 인증하는 API입니다. 인증에 성공하면 **access token**과 **refresh token**을 발급하여 응답합니다.
-- **요청 본문**: `username`과 `password`를 포함한 로그인 정보
-- **응답**: 인증 성공 시 `access token`을 헤더로, `refresh token`을 쿠키에 담아 응답합니다.
+**Build Tool |** Gradle 8.5.0
 
-이 API는 **Spring Security**의 `UsernamePasswordAuthenticationFilter`를 확장한 `LoginFilter`에서 처리됩니다. 인증이 성공하면 JWT 토큰을 생성하여 응답합니다. 만약 인증 실패 시, 401 상태 코드와 함께 실패 응답을 반환합니다.
+</div>
 
-### 3. 로그아웃 API
+<br>
+<br>
 
-- **경로**: `/logout`
-- **메서드**: `POST`
-- **설명**: 이 API는 사용자가 로그아웃 요청을 보낼 때, 클라이언트에서 전달된 **refresh token**을 검증하고, 만약 유효한 토큰이라면 해당 토큰을 **DB에서 삭제**하고, 클라이언트의 쿠키에서도 삭제하여 로그아웃을 처리합니다.
-- **요청 본문**: `refresh token`이 포함된 **쿠키**를 전송해야 합니다.
-- **응답**: 
-  - 로그아웃이 정상적으로 처리된 경우 `HTTP 200 OK` 상태 코드가 반환됩니다.
-  - 오류가 발생한 경우 적절한 상태 코드(`400 Bad Request`)와 함께 오류 응답이 반환됩니다.
----
+### 인프라
 
-### 3. 토큰 재발행 API
+<div align="middle">
 
-- **토큰 재발행 API**는 **refresh token**을 사용하여 **access token**을 재발급하는 기능을 제공합니다. 사용자가 refresh token을 제공하면, 새로운 access token을 발급해줍니다.
+<img src="https://img.shields.io/badge/github-111111?style=for-the-badge&logo=github&logoColor=white">
+<img src="https://img.shields.io/badge/AWS EC2-FF9123?style=for-the-badge&logo=amazonec2&logoColor=white">
+<img src="https://img.shields.io/badge/AWS RDS-4479A1?style=for-the-badge&logo=amazonrds&logoColor=white">
+<img src="https://img.shields.io/badge/AWS S3-%23DD0031?style=for-the-badge&logo=amazons3&logoColor=white">
+<img src="https://img.shields.io/badge/AWS ELASTIC-00953B?style=for-the-badge&logo=amazone&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+<img src="https://img.shields.io/badge/nginx-00953B?style=for-the-badge&logo=nginx&logoColor=white">
+<img src="https://img.shields.io/badge/FCM-FF9123?style=for-the-badge&logo=firebase&logoColor=white">
 
-#### 토큰 재발행 API
+**DB |** MySQL 8.0
 
-- **경로**: `/reissue`
-- **메서드**: `POST`
-- **설명**: 클라이언트가 보유한 **refresh token**을 통해 새로운 **access token**을 발급하는 API입니다. 이를 통해 유효기간이 만료된 access token을 갱신할 수 있습니다.
-- **요청 본문**: `refresh token`이 담긴 쿠키를 포함한 요청
-- **응답**: 새로운 **access token**을 포함한 응답
+**Server |** Github, Nginx
 
-이 API는 `ReissueService`를 통해 토큰 재발행 로직을 처리합니다. 클라이언트가 보유한 refresh token을 사용하여 새로운 access token을 발급해줍니다.
+</div>
 
----
+<br>
+<br>
 
-## 사용 방법
+## 시스템 아키텍처
 
-### 1. 새로운 레포지토리 생성
-1. **새로운 레포지토리**를 생성합니다.
-   - **주의**: **ReadMe** 파일을 생성하지 말고 빈 레포지토리로 생성합니다. (후속 작업을 위해)
+<div align="middle">
+  <br />
+  <img src="image/시스템아키텍쳐.png" width="100%"/>
+  <br />
+</div>
 
-### 2. `start-new-project.sh` 실행
-1. 현재 레포지토리에서 `start-new-project.sh` 파일을 **다운로드**합니다.
-2. 다운로드한 파일을 **로컬의 원하는 폴더**에 넣습니다.
-3. 그 폴더의 경로에서 **Git Bash**를 실행합니다.
-4. 아래 명령어를 실행하여 새 프로젝트를 시작합니다.
+<br>
+<br>
 
-   ```bash
-   ./start-new-project.sh TestProject https://github.com/your-username/testproject.git
-   ```
-- `TestProject` 자리에는 원하는 **프로젝트 이름**을 넣습니다.
-- `https://github.com/your-username/testproject.git` 자리에는 **본인의 레포지토리 URL**을 넣습니다.
+## 기능소개
 
-### 3. 프로젝트 푸시 후 IntelliJ에서 열기
-1. 위 과정이 성공적으로 실행되면, 본인의 레포지토리에 해당 프로젝트가 **푸시**된 상태입니다.
-2. 본인의 프로젝트를 **IntelliJ**에서 엽니다.
+🧡 메인 페이지
 
-### 4. IntelliJ 설정
-1. **`settings.gradle`** 파일에서 `rootProject.name`의 값을 **프로젝트 이름**으로 변경합니다.
-2. 변경 후, IntelliJ의 **코끼리** 아이콘을 눌러서 프로젝트를 **리프레시**합니다.
-3. **`main/java/com/example/securitywithredis`** 디렉토리에서 우클릭 후, **Refactor → Rename**을 선택하여 폴더 이름을 프로젝트 이름에 맞게 변경합니다.
-4. **`resources`** 폴더 내의 파일에서도 **프로젝트 이름**에 맞게 변경해주면 좋습니다.
+<img src = "image/메인페이지.gif" width="600">
 
+- 메인페이지에서 요양보호사 및 관리자로 회원가입 및 로그인이 가능합니다.
 
-## 📌관련 이슈
-- [refreshToken redis에 저장하기](https://github.com/connorcoco/SecurityWithRedis/issues/1)
+<br>
+<br>
 
+💛 요양보호사 메인 페이지
 
-## 📌연관 레포지토리
+<img src = "image/CREATE.gif" width="600">
 
-### [Spring Security + Mysql를 이용한 Refresh Token 관리](https://github.com/connorcoco/SecurityServer)
-  기존의 SecurityServer 리포지토리는 MySQL을 사용하여 사용자 정보를 저장하고, refresh token도 MySQL에 저장하는 방식이었습니다. 이 프로젝트는 **SecurityWithRedis**에서 refresh token을 Redis에 저장하는 방법으로 개선되었습니다.
+- 요양보호사는 메인페이지에서 근무요청을 확인할 수 있습니다.
+- 요양보호사는 메인페이지에서 근무상태를 변경 및 정보 수정 및 일정확인이 가능합니다.
 
+<br>
+<br>
+
+💚 관리자 메인 및 대시보드 페이지
+
+<img src = "image/.gif" width="600">
+
+- 관리자는 메인페이지를 통해 센터의 매칭상황 및 통계를 확인할 수 있습니다.
+- 어르신 등록 및 구인조건 등록또한 가능합니다.
+  <br>
+  <br>
+
+💙 구직 및 구인 등록 페이지
+
+<img src = "image/.gif" width="600">
+
+- 요양보호사는 구직조건을 작성함으로써 원하는 근무환경을 적을 수 있습니다.
+- 관리자는 어르신별 구인조건을 작성함으로써 필요한 근무환경을 세팅할 수 있습니다.
+  <br>
+  <br>
+
+🤎 요양보호사 추천 페이지
+
+<img src = "image/.gif" width="600">
+
+- 요양보호사의 구직 조건과 관리자의 구인조건을 비교하여 요양보호사를 추천합니다.
+- 시간, 장소, 근무조건등을 비교하여 최적의 매칭추천을 제공합니다.
+
+<br>
+<br>
+
+💜 근무 요청 페이지
+
+<img src = "image/.gif" width="600">
+
+- 추천된 요양보호사에 대하여 근무요청을 보낼 수 있습니다.
+  <br>
+  <br>
+
+🖤 근무 요청 응답페이지
+
+<img src = "image/.gif" width="600">
+
+- 요청받은 근무요청에 대해 수락/조율/거절 응답을 보낼 수 있습니다.
+  <br>
+  <br>
+
+## 프로젝트 산출물
+
+- API 명세서
+
+> https://solar-spot-733.notion.site/API-3afd7f311614419384622eda0cd66e6a?pvs=73
+
+<br>
+<br>
+
+- ERD
+<div align="middle">
+  <br />
+  <img src="image/ERD.png" width="100%"/>
+  <br />
+</div>
+<br>
+<br>
+
+<br>
+<br>
+
+- Git 컨벤션
+  <br>
+
+![커밋컨벤션](/image/gitConvention2.png)
+<br>
