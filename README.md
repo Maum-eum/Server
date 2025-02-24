@@ -1,5 +1,4 @@
-# Dancy - 춤 연습 보조 SNS 서비스
-
+# 곁에 - 요양보호사와 어르신 매칭 서비스
 <div align="center">
   <br />
   <img src="image/Logo.png" width="70%"/>
