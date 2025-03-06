@@ -204,7 +204,7 @@ public class MatchService {
 
             // 결과 리스트 추가
             result.add(MatchedCaregiver.builder()
-                            .jobConditionId(caregiver.getId())
+                            .jobConditionId(jobCondition.getId())
                             .caregiverName(caregiver.getName())
                             .imgUrl(caregiver.getImg())
                             .matchStatus(st == null ? MatchStatus.NONE : st )
