@@ -16,11 +16,12 @@ spring:
 
     defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연https://petstore.swagger.io/v2/swagger.json
 
-#  sql:
-#    init:
-#      mode: always
-#
-#      data-locations: classpath:/data.sql, classpath:/center.sql
+
+  #  sql:
+  #    init:
+  #      mode: always
+  #
+  #      data-locations: classpath:/data.sql, classpath:/center.sql
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
@@ -42,8 +43,6 @@ spring:
       enabled: true
       max-file-size: 2MB
       max-request-size: 2MB
-  profiles:
-    include: key
 
 springdoc:
   show-login-endpoint: true
@@ -51,6 +50,19 @@ springdoc:
 logging:
   level:
     org.springframework.data.redis: DEBUG
+
 jasypt:
   encryptor:
-    password: gyoe-tae-secret-key
+    key: wjstnalsWKdWkd
+
+firebase:
+  type: ENC(nUf+AQLKIoVbrUXAPj6o8KmigffUAGfX)
+  project_id: ENC(woWrwlYWBpl9Gdw/vSyP60c/jFLp0sID)
+  private_key_id: ENC(qunsiUGDvEeLAf5rWXZ5J6icAgdyvViszHj1RldYLJKdgKQAzsbXZe4APcZIKf3h0wlqKLzDfpo=)
+  private_key: ENC(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)
+  client_email: ENC(EvAyxZgB8XtiiClc6bQKwAxYq20wY/f1z+0wXuYHTjj558r7I5n5Z6nk99RnnVFsQaRYHTgRbceipOsKHpc+mZ34tBojyZJX)
+  client_id:  ENC(L/kuG/uook+pt8Bi3aSupfjInTq+PLK3jgnf1foOGuI=)
+  auth_uri: ENC(XGT3iYOVqBNkvIQcNalSD8h6hIa116fym5IkWE/DMXlE/34DlJpy6uSd/s87i0Y4//NwBJYTNdk=)
+  token_uri: ENC(0ozLVrhtKIRmk1rMq1vbOro8POwuYngnc/OX1EtznGAwUl2uMUtuzg3/1szetKGt)
+  auth_provider_x509_cert_url: ENC(tXhDWjbD4m7ALX1ZTb5+VlvlaQXUbq0jdAu7OWOpr9EhEuXM6vNV/O6v5qhNY/1leWal3O4SFxY=)
+  universe_domain: ENC(esswM69UFJcUe7LYn339mPn6tFKUvvU1

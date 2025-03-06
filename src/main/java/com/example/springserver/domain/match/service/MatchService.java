@@ -252,32 +252,47 @@ public class MatchService {
 
     private int calculateTimeScore(JobCondition jc, RecruitCondition rc) {
         List<RecruitTime> recruitTimes = rc.getRecruitTimes();
-        int jobDayOfWeek = jc.getDayOfWeek();
+        int totalScore = 0;
+        int matchedDays = 0;
 
-        int maxScore = 0;
+        // JobCondition의 근무 시간을 비트마스크로 변환
+        int jobTimeMask = getTimeMask(jc.getStartTime(), jc.getEndTime());
+        int jobDayMask = jc.getDayOfWeek(); // ✅ 요양보호사의 근무 가능 요일 비트마스크
 
         for (RecruitTime rt : recruitTimes) {
-            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
+            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek()); // ✅ 어르신의 필요 근무 요일 비트
 
-            // 요일이 겹치는지 확인
-            if ((jobDayOfWeek & recruitDayBit) == 0) {
+            // ✅ 요일이 겹치지 않으면 건너뛴다.
+            if ((jobDayMask & recruitDayBit) == 0) {
                 continue;
             }
 
-            // 시간 겹치는 부분 계산
-            Long jobStart = jc.getStartTime();
-            Long jobEnd = jc.getEndTime();
-            Long recruitStart = rt.getStartTime();
-            Long recruitEnd = rt.getEndTime();
+            matchedDays++; // ✅ 요일이 겹치는 경우 카운트 증가
 
-            Long jobDuration = jobEnd - jobStart;
-            Long overlapDuration = Math.max(0, Math.min(jobEnd, recruitEnd) - Math.max(jobStart, recruitStart));
+            // ✅ 요일이 일치할 때만 시간 비교 수행
+            int recruitTimeMask = getTimeMask(rt.getStartTime(), rt.getEndTime());
 
-            int score = (int) (100 - ((jobDuration - overlapDuration) * 4));
-            maxScore = Math.max(maxScore, score); // 최대 점수 저장
+            // 겹치는 시간 계산 (비트 연산)
+            int overlappedTimeMask = jobTimeMask & recruitTimeMask;
+            int overlapDuration = Integer.bitCount(overlappedTimeMask);
+            int jobDuration = Integer.bitCount(jobTimeMask);
+
+            // 비율 기반 점수 계산
+            int score = (int) ((overlapDuration / (double) jobDuration) * 100);
+
+            totalScore += score; // ✅ 요일별 점수를 누적
         }
 
-        return maxScore; // 여러 RecruitTime 중 가장 높은 점수를 반환
+        // ✅ 평균 점수 반환 (요일이 여러 개일 경우)
+        return (matchedDays > 0) ? (totalScore / matchedDays) : 0;
+    }
+
+    private int getTimeMask(long startTime, long endTime) {
+        int mask = 0;
+        for (int i = (int)startTime; i < (int)endTime; i++) {
+            mask |= (1 << i);
+        }
+        return mask;
     }
 
     private int getDayOfWeekBit(Week dayOfWeek) {
