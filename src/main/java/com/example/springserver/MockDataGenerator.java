@@ -82,7 +82,7 @@ public class MockDataGenerator implements ApplicationRunner {
         }
 
         // 5. 구직 조건, 근무지 데이터 생성
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             jobCondition(i+1);
             workLocation();
         }

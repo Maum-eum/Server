@@ -1,5 +1,6 @@
 package com.example.springserver.domain.center.entity;
 
+import com.example.springserver.domain.center.converter.WeekConverter;
 import com.example.springserver.domain.center.entity.enums.Week;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,8 +23,8 @@ public class RecruitTime {
     @JoinColumn(name = "recruit_condition_id")
     private RecruitCondition recruitCondition;
 
-    @ColumnDefault("'MON'")
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = WeekConverter.class)
+    @ColumnDefault("2")
     @Column(nullable = false)
     private Week dayOfWeek;
 

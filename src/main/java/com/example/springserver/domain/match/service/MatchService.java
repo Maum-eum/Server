@@ -257,33 +257,31 @@ public class MatchService {
 
         // JobCondition의 근무 시간을 비트마스크로 변환
         int jobTimeMask = getTimeMask(jc.getStartTime(), jc.getEndTime());
-        int jobDayMask = jc.getDayOfWeek(); // ✅ 요양보호사의 근무 가능 요일 비트마스크
+        int jobDayMask = jc.getDayOfWeek();
 
         for (RecruitTime rt : recruitTimes) {
-            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek()); // ✅ 어르신의 필요 근무 요일 비트
+            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
 
-            // ✅ 요일이 겹치지 않으면 건너뛴다.
+
             if ((jobDayMask & recruitDayBit) == 0) {
                 continue;
             }
 
-            matchedDays++; // ✅ 요일이 겹치는 경우 카운트 증가
+            matchedDays++;
 
-            // ✅ 요일이 일치할 때만 시간 비교 수행
             int recruitTimeMask = getTimeMask(rt.getStartTime(), rt.getEndTime());
 
             // 겹치는 시간 계산 (비트 연산)
             int overlappedTimeMask = jobTimeMask & recruitTimeMask;
             int overlapDuration = Integer.bitCount(overlappedTimeMask);
-            int jobDuration = Integer.bitCount(jobTimeMask);
+            int jobDuration = Integer.bitCount(recruitTimeMask);
 
             // 비율 기반 점수 계산
             int score = (int) ((overlapDuration / (double) jobDuration) * 100);
 
-            totalScore += score; // ✅ 요일별 점수를 누적
+            totalScore += score;
         }
 
-        // ✅ 평균 점수 반환 (요일이 여러 개일 경우)
         return (matchedDays > 0) ? (totalScore / matchedDays) : 0;
     }
 
