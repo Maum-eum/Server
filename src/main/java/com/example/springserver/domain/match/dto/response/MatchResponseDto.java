@@ -81,6 +81,8 @@ public class MatchResponseDto {
     @Builder
     public static class WorkRequest{
 
+        private Long matchId;
+
         private Long elderId;
 
         private Long recruitConditionId;
@@ -108,6 +110,8 @@ public class MatchResponseDto {
     @Getter
     @Builder
     public static class MatchedStatus {
+
+        private Long matchId;
 
         private Long elderId;
 
@@ -186,6 +190,8 @@ public class MatchResponseDto {
     @Getter
     @Builder
     public static class CareGiverInfo{
+
+        private String adminContact;
 
         private CaregiverResponseDto.CareGiverInfoResponseDTO careGiverInfo;
 

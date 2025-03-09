@@ -16,8 +16,7 @@ import com.example.springserver.domain.center.entity.*;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.domain.center.entity.enums.Week;
-import com.example.springserver.domain.center.repository.ElderRepository;
-import com.example.springserver.domain.center.repository.RecruitCondRepository;
+import com.example.springserver.domain.center.repository.*;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
@@ -27,7 +26,6 @@ import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
 import com.example.springserver.domain.center.entity.enums.Week;
-import com.example.springserver.domain.center.repository.MatchRepository;
 import com.example.springserver.domain.center.repository.RecruitCondRepository;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
@@ -63,6 +61,7 @@ public class MatchService {
     private final CaregiverRepository caregiverRepository;
     private final RecruitCondRepository recruitCondRepository;
     private final MatchRepository matchRepository;
+    private final AdminRepository adminRepository;
     private final ElderRepository elderRepository;
     private final LocationService locationService;
 
@@ -90,6 +89,7 @@ public class MatchService {
                             .orElse(Collections.emptyList());
 
                     return MatchedStatus.builder()
+                            .matchId(match.getId())
                             .centerId(center.getCenterId())
                             .recruitId(rc.getRecruitConditionId())
                             .elderId(elder.getElderId())
@@ -166,6 +166,7 @@ public class MatchService {
                     Center center = elder.getCenter();
                     RecruitCondition rc = match.getRequirementCondition();
                     return MatchResponseDto.WorkRequest.builder()
+                            .matchId(match.getId())
                             .elderId(elder.getElderId())
                             .recruitConditionId(rc.getRecruitConditionId())
                             .imgUrl(elder.getImgUrl())
@@ -328,8 +329,11 @@ public class MatchService {
         Caregiver caregiver = caregiverRepository.findById(jobCondition.getId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
         Elder elder = recruitCondition.getElder();
+        Admin admin = adminRepository.findByCenterId(elder.getCenter().getCenterId())
+                .orElseThrow(()->new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
 
         return CareGiverInfo.builder()
+                .adminContact(admin.getConnect())
                 .careGiverInfo(CaregiverConverter.infoResponseDto(caregiver))
                 .elderInfoDto(ElderConverter.toResponseDto(elder))
                 .jobCondRes(JobConditionConverter.tojobConditionResponseDTO(jobCondition))
