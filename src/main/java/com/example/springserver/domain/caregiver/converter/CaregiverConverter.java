@@ -106,7 +106,8 @@ public class CaregiverConverter {
     public static MatchCaregiverResponseDto toMatchCaregiverDto(Caregiver caregiver) {
         return MatchCaregiverResponseDto.builder()
                 .careGiverId(caregiver.getId())
-                .useranme(caregiver.getName())
+                .contact(caregiver.getContact())
+                .username(caregiver.getName())
                 .img(caregiver.getImg())
                 .build();
     }

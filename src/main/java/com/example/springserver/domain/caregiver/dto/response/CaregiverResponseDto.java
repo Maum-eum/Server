@@ -119,7 +119,8 @@ public class CaregiverResponseDto {
     @Builder
     public static class MatchCaregiverResponseDto{
         Long careGiverId;
-        String useranme;
+        String username;
         String img;
+        String contact;
     }
 }
