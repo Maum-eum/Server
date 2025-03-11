@@ -6,5 +6,8 @@ import lombok.Getter;
 public class GlobalException extends RuntimeException{
     private final ErrorCode errorCode;
 
-    public GlobalException(ErrorCode errorCode) { this.errorCode = errorCode; }
+    public GlobalException(ErrorCode errorCode) {
+        super(errorCode != null ? errorCode.getMessage() : "Unexpected error occurred");
+        this.errorCode = errorCode;
+    }
 }
