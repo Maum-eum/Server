@@ -60,3 +60,12 @@ springdoc:
 jasypt:
   encryptor:
     key: ${JASYPT_SECRET_KEY}
+
+logging:
+  level:
+    org:
+      hibernate.SQL: DEBUG
+      hibernate.type.descriptor.sql: TRACE
+      springframework.orm.jpa: DEBUG
+      springframework.transaction: DEBUG
+      springframework.jdbc.core: TRACE
