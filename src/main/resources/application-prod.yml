@@ -69,3 +69,9 @@ logging:
       springframework.orm.jpa: DEBUG
       springframework.transaction: DEBUG
       springframework.jdbc.core: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

@@ -75,6 +75,10 @@ dependencies {
 //    // Elastic Search
 //    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 //    implementation 'co.elastic.clients:elasticsearch-java'
+
+    // monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
