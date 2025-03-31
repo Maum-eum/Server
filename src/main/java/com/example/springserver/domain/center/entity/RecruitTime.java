@@ -19,7 +19,7 @@ public class RecruitTime {
     @Column(nullable = false)
     private Long recruitTimeId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "recruit_condition_id")
     private RecruitCondition recruitCondition;
 

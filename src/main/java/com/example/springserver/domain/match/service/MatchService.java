@@ -62,13 +62,6 @@ public class MatchService {
     private final RecruitCondRepository recruitCondRepository;
     private final MatchRepository matchRepository;
     private final AdminRepository adminRepository;
-    private final ElderRepository elderRepository;
-    private final LocationService locationService;
-
-
-    @Autowired
-    private ModelMapper modelMapper;
-
 
     public List<MatchedStatus> getCalenderList(CustomUserDetails user) {
         Caregiver caregiver = commonService.getById(user);
@@ -81,8 +74,8 @@ public class MatchService {
 
         return allByJobConditionWithStatus.stream()
                 .map(match -> {
-                    Elder elder = match.getRequirementCondition().getElder();
-                    RecruitCondition rc = match.getRequirementCondition();
+                    Elder elder = match.getRecruitCondition().getElder();;
+                    RecruitCondition rc = match.getRecruitCondition();
                     Center center = match.getCenter();
 
                     List<RecruitTime> recruitTimes = Optional.ofNullable(rc.getRecruitTimes())
@@ -162,9 +155,9 @@ public class MatchService {
     private List<MatchResponseDto.WorkRequest> toWorkRequestList(List<Match> allByJobConditionWithStatus) {
         return allByJobConditionWithStatus.stream()
                 .map(match -> {
-                    Elder elder = match.getRequirementCondition().getElder();
+                    Elder elder = match.getRecruitCondition().getElder();;
                     Center center = elder.getCenter();
-                    RecruitCondition rc = match.getRequirementCondition();
+                    RecruitCondition rc = match.getRecruitCondition();
                     return MatchResponseDto.WorkRequest.builder()
                             .matchId(match.getId())
                             .elderId(elder.getElderId())
@@ -183,108 +176,7 @@ public class MatchService {
                 .collect(Collectors.toList());
     }
 
-    public List<MatchedCaregiver> getRecommendList(Long request) {
 
-        List<JobCondition> recommendedList  = jobConditionRepository.findAllRecommendedListByElder(request);
-        RecruitCondition recruitCondition = recruitCondRepository.findById(request)
-                .orElseThrow(()-> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
-
-        // 매칭 점수 계산
-        List<MatchedCaregiver> result = new ArrayList<>();
-        for (JobCondition jobCondition : recommendedList) {
-            int timeScore = calculateTimeScore(jobCondition,recruitCondition);
-            int conditionScore = calculateConditionScore(jobCondition,recruitCondition);
-
-            Caregiver caregiver = jobCondition.getCaregiver();
-            MatchStatus st = matchRepository.findAllByJobConditionAndRecruitCondition(recruitCondition.getRecruitConditionId(),
-                    jobCondition.getId());
-
-
-            // 최종 점수 계산 (persent)
-            int persent = (timeScore + conditionScore) / 2;
-
-            // 결과 리스트 추가
-            result.add(MatchedCaregiver.builder()
-                            .jobConditionId(jobCondition.getId())
-                            .caregiverName(caregiver.getName())
-                            .imgUrl(caregiver.getImg())
-                            .matchStatus(st == null ? MatchStatus.NONE : st )
-                            .score(persent)
-                    .build());
-        }
-
-        // 점수가 높은 순으로 정렬
-        result.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
-
-        return result;
-    }
-
-    private int calculateConditionScore(JobCondition jc,RecruitCondition rc) {
-        int totalScore = 100; // 기본 점수
-
-        // 체크할 필드 목록 (getter 메서드 이름을 기반으로 자동 체크)
-        List<String> conditionFields = List.of(
-                "SelfFeeding", "MealPreparation", "CookingAssistance", "EnteralNutritionSupport",
-                "SelfToileting", "OccasionalToiletingAssist", "DiaperCare", "CatheterOrStomaCare",
-                "IndependentMobility", "MobilityAssist", "WheelchairAssist", "Immobile",
-                "CleaningLaundryAssist", "BathingAssist", "HospitalAccompaniment",
-                "ExerciseSupport", "EmotionalSupport", "CognitiveStimulation"
-        );
-
-        try {
-            for (String field : conditionFields) {
-                Method jcMethod = JobCondition.class.getMethod("get" + field);
-                Method rcMethod = RecruitCondition.class.getMethod("is" + field);
-
-                ScheduleAvailability jcValue = (ScheduleAvailability) jcMethod.invoke(jc);
-                boolean rcValue = (boolean) rcMethod.invoke(rc);
-
-                if (jcValue == ScheduleAvailability.IMPOSSIBLE && rcValue) {
-                    totalScore -= 20;
-                } else if (jcValue == ScheduleAvailability.NEGOTIABLE) {
-                    totalScore -= 2;
-                }
-            }
-        } catch (Exception e) {
-            throw new GlobalException(ErrorCode.ERROR_AT_CALCULATE_LOGIC);
-        }
-        return Math.max(0, totalScore);
-    }
-
-    private int calculateTimeScore(JobCondition jc, RecruitCondition rc) {
-        List<RecruitTime> recruitTimes = rc.getRecruitTimes();
-        int totalScore = 0;
-        int matchedDays = 0;
-
-        // JobCondition의 근무 시간을 비트마스크로 변환
-        int jobTimeMask = getTimeMask(jc.getStartTime(), jc.getEndTime());
-        int jobDayMask = jc.getDayOfWeek();
-
-        for (RecruitTime rt : recruitTimes) {
-            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
-
-
-            if ((jobDayMask & recruitDayBit) == 0) {
-                continue;
-            }
-
-            matchedDays++;
-
-            int recruitTimeMask = getTimeMask(rt.getStartTime(), rt.getEndTime());
-
-            // 겹치는 시간 계산 (비트 연산)
-            int overlappedTimeMask = jobTimeMask & recruitTimeMask;
-            int overlapDuration = Integer.bitCount(overlappedTimeMask);
-            int jobDuration = Integer.bitCount(recruitTimeMask);
-
-            // 비율 기반 점수 계산
-            int score = (int) ((overlapDuration / (double) jobDuration) * 100);
-
-            totalScore += score;
-        }
-
-        return (matchedDays > 0) ? (totalScore / matchedDays) : 0;
-    }
 
     private int getTimeMask(long startTime, long endTime) {
         int mask = 0;
@@ -314,7 +206,7 @@ public class MatchService {
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
         Match match = Match.builder()
                 .jobCondition(jc)
-                .requirementCondition(rc)
+                .recruitCondition(rc)
                 .status(MatchStatus.WAITING)
                         .build();
         matchRepository.save(match);
@@ -364,4 +256,74 @@ public class MatchService {
 
         return matchRepository.findByCenterId(centerId);
     }
+
+    //    public List<MatchedCaregiver> getRecommendList(Long rcId) {
+//
+//        List<JobCondition> recommendedList  = jobConditionRepository.findAllRecommendedListByElder(rcId);
+//        RecruitCondition recruitCondition = recruitCondRepository.findById(rcId)
+//                .orElseThrow(()-> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+//
+//        // 매칭 점수 계산
+//        List<MatchedCaregiver> result = new ArrayList<>();
+//        for (JobCondition jobCondition : recommendedList) {
+//            int timeScore = calculateTimeScore(jobCondition,recruitCondition);
+//            int conditionScore = calculateConditionScore(jobCondition,recruitCondition);
+//
+//            Caregiver caregiver = jobCondition.getCaregiver();
+//            MatchStatus st = matchRepository.findByJobConditionAndRecruitCondition(recruitCondition.getRecruitConditionId(),
+//                    jobCondition.getId());
+//
+//
+//            // 최종 점수 계산 (persent)
+//            int persent = (timeScore + conditionScore) / 2;
+//
+//            // 결과 리스트 추가
+//            result.add(MatchedCaregiver.builder()
+//                            .jobConditionId(jobCondition.getId())
+//                            .caregiverName(caregiver.getName())
+//                            .imgUrl(caregiver.getImg())
+//                            .matchStatus(st == null ? MatchStatus.NONE : st )
+//                            .score(persent)
+//                    .build());
+//        }
+//
+//        // 점수가 높은 순으로 정렬
+//        result.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+//
+//        return result;
+//    }
+//    private int calculateTimeScore(JobCondition jc, RecruitCondition rc) {
+//        List<RecruitTime> recruitTimes = rc.getRecruitTimes();
+//        int totalScore = 0;
+//        int matchedDays = 0;
+//
+//        // JobCondition의 근무 시간을 비트마스크로 변환
+//        int jobTimeMask = getTimeMask(jc.getStartTime(), jc.getEndTime());
+//        int jobDayMask = jc.getDayOfWeek();
+//
+//        for (RecruitTime rt : recruitTimes) {
+//            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
+//
+//
+//            if ((jobDayMask & recruitDayBit) == 0) {
+//                continue;
+//            }
+//
+//            matchedDays++;
+//
+//            int recruitTimeMask = getTimeMask(rt.getStartTime(), rt.getEndTime());
+//
+//            // 겹치는 시간 계산 (비트 연산)
+//            int overlappedTimeMask = jobTimeMask & recruitTimeMask;
+//            int overlapDuration = Integer.bitCount(overlappedTimeMask);
+//            int jobDuration = Integer.bitCount(recruitTimeMask);
+//
+//            // 비율 기반 점수 계산
+//            int score = (int) ((overlapDuration / (double) jobDuration) * 100);
+//
+//            totalScore += score;
+//        }
+//
+//        return (matchedDays > 0) ? (totalScore / matchedDays) : 0;
+//    }
 }

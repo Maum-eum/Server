@@ -94,12 +94,12 @@ public class MatchConverter {
                 .matchId(match.getId())
                 .status(match.getStatus())
                 .requirementCondition(
-                        RecruitConverter.toConditionResponseDto(match.getRequirementCondition())
+                        RecruitConverter.toConditionResponseDto(match.getRecruitCondition())
                         ) // recruitCondition -> dto 변환 필요
                 .jobCondition(
                         JobConditionConverter.toJobConditionResponseDto(match.getJobCondition())
                         )
-                .elderInfoDto(ElderConverter.toMatchElderDto(match.getRequirementCondition().getElder())) // elder -> dto 변환 필요
+                .elderInfoDto(ElderConverter.toMatchElderDto(match.getRecruitCondition().getElder())) // elder -> dto 변환 필요
                 .careGiverInfoDto(CaregiverConverter.toMatchCaregiverDto(match.getJobCondition().getCaregiver())) // careGiver -> dto 변환 필요
                 .deletedAt(match.getDeletedAt())
                 .version(match.getVersion())
