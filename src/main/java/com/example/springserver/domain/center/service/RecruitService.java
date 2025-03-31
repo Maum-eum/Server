@@ -12,8 +12,10 @@ import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.apiPayload.format.*;
 import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
 import com.example.springserver.repository.location.LocationRepository;
+import com.example.springserver.service.event.RecruitConditionChangedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +34,13 @@ public class RecruitService {
     private final LocationRepository locationRepository;
     private final CenterRepository centerRepository;
     private final ElderRepository elderRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final RecruitLaborLawValidator recruitLaborLawValidator;
+
+    public List<Long> findAllRecCond(){
+        return recruitCondRepository.findAllRecuitIds();
+    }
 
     public List<RecruitCondition> getRecruitConditionList(Long centerId, Long elderId) {
         isValidCenter(elderId, centerId);
@@ -48,13 +55,14 @@ public class RecruitService {
 
     @Transactional
     public ResponseDto createRecruit(Long centerId, Long elderId, RequestDto createRequestDto) {
-
         // 요청 데이터 검증
         isValidCenter(elderId, centerId);
         isValidRecruitCondition(createRequestDto);
 
         Elder elder = getElderById(elderId);
         RecruitCondition recruitCondition = saveOrUpdateRecruitCondition(null, elder, createRequestDto);
+
+        applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this,recruitCondition.getRecruitConditionId()));
 
         return RecruitConverter.toConditionResponseDto(recruitCondition);
     }
@@ -68,6 +76,8 @@ public class RecruitService {
 
         Elder elder = getElderById(elderId);
         saveOrUpdateRecruitCondition(recruitConditionId, elder, requestDto);
+
+        applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this,recruitConditionId));
     }
 
     @Transactional

@@ -16,8 +16,10 @@ import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.global.utils.FormatUtils;
+import com.example.springserver.service.event.JobConditionChangedEvent;
 import com.example.springserver.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,14 +36,16 @@ public class JobConditionService {
     private final LocationService locationService;
     private final JobConditionRepository jobConditionRepository;
     private final WorkLocationRepository workLocationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public JobConditionResponseDTO createOrUpdateJobCondition(CustomUserDetails user, JobConditionReqDto request) {
         Caregiver caregiver = commonService.getById(user);
-
-        return jobConditionRepository.findByCaregiver(caregiver)
+        JobConditionResponseDTO jobConditionResponseDTO = jobConditionRepository.findByCaregiver(caregiver)
                 .map(existingJobCondition -> updateJobCondition(caregiver, request)) // 존재하면 업데이트
-                .orElseGet(() -> createJobCondition(caregiver, request)); // 없으면 새로 생성
+                .orElseGet(() -> createJobCondition(caregiver, request));// 없으면 새로 생성
+        eventPublisher.publishEvent(new JobConditionChangedEvent(this,jobConditionResponseDTO.getJobConditionId()));
+        return jobConditionResponseDTO;
     }
 
     @Transactional

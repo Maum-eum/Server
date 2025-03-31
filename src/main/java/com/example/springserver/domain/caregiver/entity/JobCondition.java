@@ -137,7 +137,7 @@ public class JobCondition extends BaseEntity {
     private Long endTime;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "caregiver", nullable = false)
     private Caregiver caregiver;
 

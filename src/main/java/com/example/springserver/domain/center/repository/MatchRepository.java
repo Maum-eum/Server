@@ -11,10 +11,8 @@ import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match,Long> {
 
-    List<Match> findAllByJobCondition(JobCondition jobCondition);
-
     @Query("SELECT DISTINCT m FROM Match m "
-            + "JOIN FETCH m.requirementCondition rc "
+            + "JOIN FETCH m.recruitCondition rc "
             + "JOIN FETCH rc.elder e "
             + "LEFT JOIN FETCH rc.recruitTimes rt "
             + "WHERE m.jobCondition = :jobCondition AND m.status IN (:statuses)")
@@ -24,21 +22,23 @@ public interface MatchRepository extends JpaRepository<Match,Long> {
     );
 
     @Query(value = "SELECT `match`.status FROM `match` " +
-            "WHERE requirement_condition_id = :rc " +
+            "WHERE recruit_condition_id = :rc " +
             "AND job_condition_id = :jc " +
             "AND `match`.status IN ('WAITING', 'TUNING')" +
             "LIMIT 1",
             nativeQuery = true)
-    MatchStatus findAllByJobConditionAndRecruitCondition(@Param("rc") Long rc, @Param("jc") Long jc);
+    MatchStatus findByJobCondition_IdAndRecruitCondition_Id(@Param("rc") Long rc, @Param("jc") Long jc);
 
     @Query(value = "SELECT * FROM `match` " +
-            "WHERE requirement_condition_id = :rc " +
+            "WHERE recruit_condition_id = :rc " +
             "AND job_condition_id = :jc " +
             "AND `match`.status IN ('TUNING')" +
             "LIMIT 1",
             nativeQuery = true)
     Match findByJcAndRC(@Param("jc") Long jc, @Param("rc") Long rc);
 
-    @Query("SELECT m FROM Match m WHERE m.requirementCondition.elder.center.centerId = :centerId")
+    @Query("SELECT m FROM Match m WHERE m.recruitCondition.elder.center.centerId = :centerId")
     List<Match> findByCenterId(@Param("centerId") Long centerId);
+
+    List<Match> findAllByRecruitCondition_RecruitConditionId(Long recruitConditionId);
 }
