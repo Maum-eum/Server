@@ -66,12 +66,12 @@ public class MockDataGenerator implements ApplicationRunner {
         for (int i = 0; i < 10; i++) {
             admin();
         }
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             elder();
         }
 
         // 3. 요양보호사 데이터 생성
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             careGiver();
         }
 
@@ -82,17 +82,17 @@ public class MockDataGenerator implements ApplicationRunner {
         }
 
         // 5. 구직 조건, 근무지 데이터 생성
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1; i++) {
             jobCondition(i+1);
             workLocation();
         }
 
         // 6. 구인 조건과 시간 데이터 생성
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             recruitCondition(i+1);
             care(i+1);
         }
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             recruitTime();
             recruitLocation();
         }
