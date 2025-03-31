@@ -65,6 +65,7 @@ public enum ErrorCode {
     // 지역 관련 에러
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),
     LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"LOCATION4001","지역이 존재하지 않습니다."),
+    WORK_LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND,"WORK_LOCATION001" ,"근무가능지역이 존재하지 않습니다."),
 
     // 매치 관련 에러
     MATCH_NOT_FOUND(HttpStatus.BAD_REQUEST,"MATCH4001","매칭을 찾을 수 없습니다."),
