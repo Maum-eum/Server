@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,83 +48,25 @@ public class ScoreCalculationService {
      *  기존 MatchScore가 존재하면 복구 및 업데이트,
      *  존재하지 않으면 새로 생성합니다.
      */
+    //rc 변경시 update
     @Transactional
     public void recalculateScoresForRecruit(Long recruitConditionId) {
-        // RC 조회 + RecruitTime → 시간 마스킹
-        RecruitCondition rc = recruitCondRepository.findById(recruitConditionId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+        RecruitCondition rc = fetchRecruitCondition(recruitConditionId);
+        Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc);
+        int rcDayMask = calculateRcDayMask(rcDayTimeMap);
 
-        Map<Week, Long> rcDayTimeMap = rc.getRecruitTimes().stream()
-                .collect(Collectors.toMap(
-                        RecruitTime::getDayOfWeek,
-                        rt -> getTimeMask(rt.getStartTime(), rt.getEndTime()),
-                        (a, b) -> a | b
-                ));
+        List<JobCondition> candidates = fetchJobConditionCandidatesByLocation(rc);
+        Map<String, MatchScore> existingScoreMap = fetchExistingMatchScoresMapForRecruit(rc.getRecruitConditionId());
+        Map<Long, Match> matchMap = fetchMatchStatusMapForRecruit(rc.getRecruitConditionId());
 
-        int rcDayMask = rcDayTimeMap.keySet().stream()
-                .mapToInt(Week::getBitMask)
-                .reduce(0, (a, b) -> a | b);
+        List<MatchScore> results = calculateMatchScoresForRecruit(candidates, rc, rcDayTimeMap, rcDayMask, existingScoreMap, matchMap);
+        List<MatchScore> toSoftDelete = filterSoftDeleteTargetsForRecruit(existingScoreMap, results);
 
-        // JC 후보 조회 (지역 기준 필터링)
-        List<JobCondition> candidates = jobConditionRepository.findAllByRecommendedListByElder(
-                rc.getRecruitLocation().getLocationId()
-        ).orElseThrow(() -> new GlobalException(ErrorCode.RECOMMEND_LIST_NOT_FOUND));
-
-        // 기존 MatchScore 모두 불러오기 (soft-delete 포함)
-        List<MatchScore> existingScores = scoreRepository.findAllByRecruitConditionIncludingDeleted(recruitConditionId);
-        Map<String, MatchScore> scoreMap = existingScores.stream()
-                .collect(Collectors.toMap(
-                        ms -> ms.getJobCondition().getId() + "_" + ms.getRecruitCondition().getRecruitConditionId(),
-                        ms -> ms
-                ));
-
-        // Match 상태 조회
-        List<Match> matches = matchRepository.findAllByRecruitCondition_RecruitConditionId(rc.getRecruitConditionId());
-        Map<Long, Match> matchMap = matches.stream()
-                .collect(Collectors.toMap(
-                        m -> m.getJobCondition().getId(),
-                        m -> m
-                ));
-
-        List<MatchScore> results = new ArrayList<>();
-
-        for (JobCondition jc : candidates) {
-            if ((jc.getDayOfWeek() & rcDayMask) == 0) continue;
-
-            int conditionScore = calculateConditionScore(jc, rc);
-            int timeScore = calculateTimeScore(rcDayTimeMap, jc);
-            int finalScore = (conditionScore + timeScore) / 2;
-
-            String key = jc.getId() + "_" + rc.getRecruitConditionId();
-
-            if (scoreMap.containsKey(key)) {
-                MatchScore existing = scoreMap.get(key);
-                existing.setScore(finalScore);
-                existing.setStatus(Optional.ofNullable(matchMap.get(jc.getId()))
-                        .map(Match::getStatus)
-                        .orElse(MatchStatus.NONE));
-                existing.setDeletedAt(null);
-                results.add(existing);
-            } else {
-                MatchScore newScore = MatchScore.builder()
-                        .caregiverName(jc.getCaregiver().getName())
-                        .caregiverImg(jc.getCaregiver().getImg())
-                        .recruitCondition(rc)
-                        .jobCondition(jc)
-                        .score(finalScore)
-                        .status(Optional.ofNullable(matchMap.get(jc.getId()))
-                                .map(Match::getStatus)
-                                .orElse(MatchStatus.NONE))
-                        .build();
-                results.add(newScore);
-            }
-        }
-
+        results.addAll(toSoftDelete);
         scoreRepository.saveAll(results);
     }
 
     // JC 변경시 Update
-
     /**
      * JC 변경 시 점수 재계산을 수행합니다.
      * 존재하는 MatchScore는 수정/복구하고, 존재하지 않으면 새로 생성하여 저장합니다.
@@ -158,8 +101,154 @@ public class ScoreCalculationService {
                 results.add(created);
             }
         }
+        Set<String> processedKeys = results.stream()
+                .map(ms -> generateKey(ms.getJobCondition().getId(), ms.getRecruitCondition().getRecruitConditionId()))
+                .collect(Collectors.toSet());
 
+        List<MatchScore> toSoftDelete = existingScoreMap.entrySet().stream()
+                .filter(entry -> !processedKeys.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .filter(ms -> ms.getDeletedAt() == null) // 이미 삭제된 건 제외
+                .peek(ms -> ms.setDeletedAt(LocalDateTime.now()))
+                .toList();
+
+        results.addAll(toSoftDelete);
         scoreRepository.saveAll(results);
+    }
+    /**
+     * 주어진 ID로 RecruitCondition을 조회합니다.
+     * 존재하지 않으면 예외를 발생시킵니다.
+     */
+    private RecruitCondition fetchRecruitCondition(Long recruitConditionId) {
+        return recruitCondRepository.findById(recruitConditionId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+    }
+
+    /**
+     * RecruitCondition에 등록된 RecruitTime들을 기반으로
+     * 요일별 시간 마스크(Map<Week, Long>)를 생성합니다.
+     */
+    private Map<Week, Long> buildRcDayTimeMap(RecruitCondition rc) {
+        return rc.getRecruitTimes().stream()
+                .collect(Collectors.toMap(
+                        RecruitTime::getDayOfWeek,
+                        rt -> getTimeMask(rt.getStartTime(), rt.getEndTime()),
+                        (a, b) -> a | b
+                ));
+    }
+
+    /**
+     * RC가 가능한 요일 목록을 비트 OR 연산을 통해 하나의 int 마스크로 반환합니다.
+     * (ex: 월/수/금 → 0b0010101)
+     */
+    private int calculateRcDayMask(Map<Week, Long> rcDayTimeMap) {
+        return rcDayTimeMap.keySet().stream()
+                .mapToInt(Week::getBitMask)
+                .reduce(0, (a, b) -> a | b);
+    }
+
+    /**
+     * RecruitCondition의 근무 지역을 기준으로 추천 가능한 JobCondition 리스트를 조회합니다.
+     * 존재하지 않으면 예외를 발생시킵니다.
+     */
+    private List<JobCondition> fetchJobConditionCandidatesByLocation(RecruitCondition rc) {
+        return jobConditionRepository.findAllByRecommendedListByElder(
+                rc.getRecruitLocation().getLocationId()
+        ).orElseThrow(() -> new GlobalException(ErrorCode.RECOMMEND_LIST_NOT_FOUND));
+    }
+
+    /**
+     * RecruitCondition 기준으로 기존 MatchScore 리스트를 조회합니다.
+     * soft-delete 포함하며, (jobId_rcId) 형태의 Key로 Map을 구성해 반환합니다.
+     */
+    private Map<String, MatchScore> fetchExistingMatchScoresMapForRecruit(Long recruitConditionId) {
+        List<MatchScore> existing = scoreRepository.findAllByRecruitConditionIncludingDeleted(recruitConditionId);
+        return existing.stream().collect(Collectors.toMap(
+                ms -> generateKey(ms.getJobCondition().getId(), ms.getRecruitCondition().getRecruitConditionId()),
+                ms -> ms
+        ));
+    }
+
+    /**
+     * RecruitCondition 기준으로 기존 Match 리스트를 조회하고
+     * JobCondition ID를 키로 하는 Map 형태로 반환합니다.
+     */
+    private Map<Long, Match> fetchMatchStatusMapForRecruit(Long recruitConditionId) {
+        List<Match> matches = matchRepository.findAllByRecruitCondition_RecruitConditionId(recruitConditionId);
+        return matches.stream().collect(Collectors.toMap(
+                m -> m.getJobCondition().getId(),
+                m -> m
+        ));
+    }
+
+    /**
+     * 주어진 JobCondition 후보 리스트와 RecruitCondition에 대해
+     * 유효한 점수를 계산하여 MatchScore 리스트로 반환합니다.
+     * 이미 존재하는 MatchScore는 복구/갱신, 없으면 새로 생성합니다.
+     */
+    private List<MatchScore> calculateMatchScoresForRecruit(
+            List<JobCondition> candidates,
+            RecruitCondition rc,
+            Map<Week, Long> rcDayTimeMap,
+            int rcDayMask,
+            Map<String, MatchScore> existingScoreMap,
+            Map<Long, Match> matchMap
+    ) {
+        List<MatchScore> results = new ArrayList<>();
+
+        for (JobCondition jc : candidates) {
+            if ((jc.getDayOfWeek() & rcDayMask) == 0) continue;
+
+            int conditionScore = calculateConditionScore(jc, rc);
+            int timeScore = calculateTimeScore(rcDayTimeMap, jc);
+            int finalScore = (conditionScore + timeScore) / 2;
+
+            String key = jc.getId() + "_" + rc.getRecruitConditionId();
+
+            if (existingScoreMap.containsKey(key)) {
+                MatchScore existing = existingScoreMap.get(key);
+                existing.setScore(finalScore);
+                existing.setStatus(Optional.ofNullable(matchMap.get(jc.getId()))
+                        .map(Match::getStatus)
+                        .orElse(MatchStatus.NONE));
+                existing.setDeletedAt(null);
+                results.add(existing);
+            } else {
+                MatchScore newScore = MatchScore.builder()
+                        .caregiverName(jc.getCaregiver().getName())
+                        .caregiverImg(jc.getCaregiver().getImg())
+                        .recruitCondition(rc)
+                        .jobCondition(jc)
+                        .score(finalScore)
+                        .status(Optional.ofNullable(matchMap.get(jc.getId()))
+                                .map(Match::getStatus)
+                                .orElse(MatchStatus.NONE))
+                        .build();
+                results.add(newScore);
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * 기존에 존재하던 MatchScore 중 이번 점수 재계산 결과에 포함되지 않은 항목을 필터링합니다.
+     * 해당 항목들은 soft-delete 처리를 위해 deletedAt을 설정하여 반환합니다.
+     */
+    private List<MatchScore> filterSoftDeleteTargetsForRecruit(
+            Map<String, MatchScore> existingScoreMap,
+            List<MatchScore> newScores
+    ) {
+        Set<String> processedKeys = newScores.stream()
+                .map(ms -> generateKey(ms.getJobCondition().getId(), ms.getRecruitCondition().getRecruitConditionId()))
+                .collect(Collectors.toSet());
+
+        return existingScoreMap.entrySet().stream()
+                .filter(entry -> !processedKeys.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .filter(ms -> ms.getDeletedAt() == null)
+                .peek(ms -> ms.setDeletedAt(LocalDateTime.now()))
+                .toList();
     }
 
     /**

@@ -41,7 +41,7 @@ public class RecruitController {
     @PutMapping("/{recruit_id}")
     public void updateRecruit(@PathVariable Long center_id, @PathVariable Long elder_id, @PathVariable Long recruit_id,
                                               @RequestBody RequestDto requestDto) {
-        recruitService.updateRecruitCondition(center_id, recruit_id, elder_id, requestDto);
+        recruitService.updateRecruitCondition(center_id, elder_id, recruit_id, requestDto);
     }
 
     // 구인 요양보호사 조건 삭제
