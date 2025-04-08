@@ -1,10 +1,8 @@
 package com.example.springserver.domain.caregiver.service;
 
-
 import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
@@ -15,12 +13,14 @@ import com.example.springserver.domain.caregiver.repository.WorkLocationReposito
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
+import com.example.springserver.global.cache.model.CacheJobCondition;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.global.utils.FormatUtils;
 import com.example.springserver.service.event.JobConditionChangedEvent;
 import com.example.springserver.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +40,7 @@ public class JobConditionService {
     private final JobConditionRepository jobConditionRepository;
     private final WorkLocationRepository workLocationRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final RedisTemplate<String, CacheJobCondition> redisTemplate;
 
     /*
     JC 변경 메서드입니다.
@@ -91,13 +92,13 @@ public class JobConditionService {
 
         saveLocations(request, jobCondition);
 
-        return toJobConditionResponseDto(jobCondition);
+        return JobConditionConverter.tojobConditionResponseDTO(jobCondition);
     }
 
 
     @Transactional
     public JobConditionResponseDTO updateJobCondition(Caregiver user, JobConditionReqDto request) {
-        JobCondition jobCondition = getJobCondition(user);
+        JobCondition jobCondition = findJobCondition(user);
 
         Set<Long> updatedIds = new HashSet<>();
 
@@ -125,7 +126,7 @@ public class JobConditionService {
         jobCondition.getWorkLocations().removeIf(wl -> !updatedIds.contains(wl.getId()));
 
         jobCondition.updateInfo(request);
-        return toJobConditionResponseDto(jobCondition);
+        return JobConditionConverter.tojobConditionResponseDTO(jobCondition);
     }
 
     @Transactional
@@ -148,105 +149,23 @@ public class JobConditionService {
 
     public DetailJobConditionResponseDTO getDetailedJobCondition(CustomUserDetails user) {
         Caregiver byId = commonService.getById(user);
-        JobCondition jobCondition = getJobCondition(byId);
-        return toDetailJobConditionResponseDto(byId,jobCondition);
+        JobCondition jobCondition = findJobCondition(byId);
+        return JobConditionConverter.toDetailJobConditionResponseDto(byId,jobCondition);
     }
 
     public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
         Caregiver byId = commonService.getById(user);
-        JobCondition jobCondition = getJobCondition(byId);
-        return toJobConditionResponseDto(jobCondition);
+        JobCondition jobCondition = findJobCondition(byId);
+        return JobConditionConverter.tojobConditionResponseDTO(jobCondition);
     }
 
-    public JobCondition getJobCondition(Caregiver user) {
+    public JobCondition findJobCondition(Caregiver user) {
         return jobConditionRepository.findByCaregiver(user)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
     }
 
-    public JobConditionResponseDTO toJobConditionResponseDto(JobCondition saved) {
-        return JobConditionResponseDTO.builder()
-                .jobConditionId(saved.getId())
-                .bathingAssist(saved.getBathingAssist())
-                .catheterOrStomaCare(saved.getCatheterOrStomaCare())
-                .diaperCare(saved.getDiaperCare())
-                .cleaningLaundryAssist(saved.getCleaningLaundryAssist())
-                .selfToileting(saved.getSelfToileting())
-                .selfFeeding(saved.getSelfFeeding())
-                .cognitiveStimulation(saved.getCognitiveStimulation())
-                .cookingAssistance(saved.getCookingAssistance())
-                .desiredHourlyWage(saved.getDesiredHourlyWage())
-                .emotionalSupport(saved.getEmotionalSupport())
-                .enteralNutritionSupport(saved.getEnteralNutritionSupport())
-                .exerciseSupport(saved.getExerciseSupport())
-                .hospitalAccompaniment(saved.getHospitalAccompaniment())
-                .flexibleSchedule(saved.getFlexibleSchedule())
-                .mealPreparation(saved.getMealPreparation())
-                .immobile(saved.getImmobile())
-                .occasionalToiletingAssist(saved.getOccasionalToiletingAssist())
-                .mobilityAssist(saved.getMobilityAssist())
-                .wheelchairAssist(saved.getWheelchairAssist())
-                .independentMobility(saved.getIndependentMobility())
-                .dayOfWeek(Integer.toBinaryString(saved.getDayOfWeek()))
-                .startTime(saved.getStartTime())
-                .endTime(saved.getEndTime())
-                .locationResponseDtoList(saved.getWorkLocations().stream()
-                        .map(dto -> JobConditionResponseDto.LocationResponseDTO.builder()
-                                .workLocationId(dto.getId())
-                                .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
-                                .build()
-                        )
-                        .toList())
-                .build();
-    }
-
-    private DetailJobConditionResponseDTO toDetailJobConditionResponseDto(Caregiver caregiver , JobCondition saved) {
-        return DetailJobConditionResponseDTO.builder()
-                .name(caregiver.getName())
-                .contact(caregiver.getContact())
-                .car(caregiver.getCar())
-                .education(caregiver.getEducation())
-                .intro(caregiver.getIntro())
-                .address(caregiver.getAddress())
-                .employmentStatus(caregiver.getEmploymentStatus())
-                .certificateResponseDTOList(caregiver.getCertificates().stream()
-                        .map(JobConditionConverter::toResponseCertificate)
-                        .toList())
-                .experienceResponseDTOList(caregiver.getExperiences().stream()
-                        .map(JobConditionConverter::toResponseExperience)
-                        .toList())
-                .img(caregiver.getImg())
-                .jobConditionId(saved.getId())
-                .bathingAssist(saved.getBathingAssist())
-                .catheterOrStomaCare(saved.getCatheterOrStomaCare())
-                .diaperCare(saved.getDiaperCare())
-                .cleaningLaundryAssist(saved.getCleaningLaundryAssist())
-                .selfToileting(saved.getSelfToileting())
-                .selfFeeding(saved.getSelfFeeding())
-                .cognitiveStimulation(saved.getCognitiveStimulation())
-                .cookingAssistance(saved.getCookingAssistance())
-                .desiredHourlyWage(saved.getDesiredHourlyWage())
-                .emotionalSupport(saved.getEmotionalSupport())
-                .enteralNutritionSupport(saved.getEnteralNutritionSupport())
-                .exerciseSupport(saved.getExerciseSupport())
-                .hospitalAccompaniment(saved.getHospitalAccompaniment())
-                .flexibleSchedule(saved.getFlexibleSchedule())
-                .mealPreparation(saved.getMealPreparation())
-                .immobile(saved.getImmobile())
-                .occasionalToiletingAssist(saved.getOccasionalToiletingAssist())
-                .mobilityAssist(saved.getMobilityAssist())
-                .wheelchairAssist(saved.getWheelchairAssist())
-                .independentMobility(saved.getIndependentMobility())
-                .dayOfWeek(FormatUtils.toStringDayOfWeek(saved.getDayOfWeek()))
-                .startTime(saved.getStartTime())
-                .endTime(saved.getEndTime())
-                .locationRequestDTOList(saved.getWorkLocations().stream()
-                        .map(dto -> JobConditionResponseDto.LocationResponseDTO.builder()
-                                .workLocationId(dto.getId())
-                                .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
-                                .build()
-                        )
-                        .toList())
-                .build();
+    private String getRedisKey(Long caregiverId) {
+        return "jobCondition:" + caregiverId;
     }
 
 }

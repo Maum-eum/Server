@@ -2,7 +2,6 @@ package com.example.springserver.domain.caregiver.controller;
 
 
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.service.JobConditionService;
