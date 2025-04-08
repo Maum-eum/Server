@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springdb
     username: root
-    password: 1234
+    password: 9702
 
   jpa:
     hibernate:
@@ -17,11 +17,13 @@ spring:
     defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연https://petstore.swagger.io/v2/swagger.json
 
 
-#    sql:
-#      init:
-#        mode: always
+#   여기 한칸씩 밀렸더라구요 그래서 실행안되는 경우도 있더라구요
+
+#  sql:
+#    init:
+#      mode: always
 #
-#        data-locations: classpath:/data.sql, classpath:/center.sql
+#      data-locations: classpath:/data.sql, classpath:/center.sql
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=

@@ -49,20 +49,6 @@ public class MatchController {
         return MatchConverter.toRequestListRes(matchService.getRequests(user));
     }
 
-    @Operation(summary = "어르신별 추천된 요양보호사리스트 조회", description = "Get")
-    @GetMapping("/recommends/{recruit_condition_id}")
-    public MatchRecommendList getRecommendListByElder(@AuthenticationPrincipal CustomUserDetails user,
-                                                      @PathVariable("recruit_condition_id") Long request) {
-        return MatchConverter.toRecommendList(matchService.getRecommendList(request));
-    }
-
-    @Operation(summary = "요양보호사에게 근무요청", description = "Post")
-    @PostMapping("/recommends/{job_condition_id}/{recruit_condition_id}")
-    public MatchCreateDto createMatchRequest(@AuthenticationPrincipal CustomUserDetails user,
-                                                              @PathVariable("job_condition_id") Long jc,
-                                                              @PathVariable("recruit_condition_id") Long rc) {
-        return matchService.createMatch(user,jc,rc);
-    }
 
     @Operation(summary = "추천결과 조회 및 상세조회 API", description = "Post")
     @GetMapping("/recommends/{job_condition_id}/{recruit_condition_id}")
@@ -88,4 +74,20 @@ public class MatchController {
         List<Match> centerMatchingList = matchService.getCenterMatchingList(centerId);
         return MatchConverter.toMatchDtoList(centerMatchingList);
     }
+
+
+    @Operation(summary = "요양보호사에게 근무요청", description = "Post")
+    @PostMapping("/recommends/{job_condition_id}/{recruit_condition_id}")
+    public MatchCreateDto createMatchRequest(@AuthenticationPrincipal CustomUserDetails user,
+                                             @PathVariable("job_condition_id") Long jc,
+                                             @PathVariable("recruit_condition_id") Long rc) {
+        return matchService.createMatch(user,jc,rc);
+    }
+
+//    @Operation(summary = "어르신별 추천된 요양보호사리스트 조회", description = "Get")
+//    @GetMapping("/recommends/{recruit_condition_id}")
+//    public MatchRecommendList getRecommendListByElder(@AuthenticationPrincipal CustomUserDetails user,
+//                                                      @PathVariable("recruit_condition_id") Long rcId) {
+//        return MatchConverter.toRecommendList(matchService.getRecommendList(rcId));
+//    }
 }

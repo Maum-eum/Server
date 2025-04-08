@@ -2,6 +2,7 @@ package com.example.springserver.domain.caregiver.service;
 
 
 import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
@@ -16,13 +17,17 @@ import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.global.utils.FormatUtils;
+import com.example.springserver.service.event.JobConditionChangedEvent;
 import com.example.springserver.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,14 +39,21 @@ public class JobConditionService {
     private final LocationService locationService;
     private final JobConditionRepository jobConditionRepository;
     private final WorkLocationRepository workLocationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
+    /*
+    JC 변경 메서드입니다.
+    여기서 eventPublisher 통해 JobcondChangedEvent 호출됩니다.
+    이제 EventListener 가시면됩니다. -> ScoreRecalculateEventListener
+     */
     @Transactional
     public JobConditionResponseDTO createOrUpdateJobCondition(CustomUserDetails user, JobConditionReqDto request) {
         Caregiver caregiver = commonService.getById(user);
-
-        return jobConditionRepository.findByCaregiver(caregiver)
+        JobConditionResponseDTO jobConditionResponseDTO = jobConditionRepository.findByCaregiver(caregiver)
                 .map(existingJobCondition -> updateJobCondition(caregiver, request)) // 존재하면 업데이트
-                .orElseGet(() -> createJobCondition(caregiver, request)); // 없으면 새로 생성
+                .orElseGet(() -> createJobCondition(caregiver, request));// 없으면 새로 생성
+        eventPublisher.publishEvent(new JobConditionChangedEvent(this,jobConditionResponseDTO.getJobConditionId()));
+        return jobConditionResponseDTO;
     }
 
     @Transactional
@@ -85,23 +97,34 @@ public class JobConditionService {
 
     @Transactional
     public JobConditionResponseDTO updateJobCondition(Caregiver user, JobConditionReqDto request) {
-
         JobCondition jobCondition = getJobCondition(user);
 
-        workLocationRepository.deleteByJobCondition(jobCondition);
-        workLocationRepository.flush();
+        Set<Long> updatedIds = new HashSet<>();
 
-        jobCondition.getWorkLocations().clear();
+        for (JobConditionRequestDto.LocationRequestDTO dto : request.getLocationRequestDTOList()) {
+            Location location = locationService.findById(dto.getLocationId());
+
+            if (dto.getWorkLocationId() != null) {
+                WorkLocation existing = jobCondition.getWorkLocations().stream()
+                        .filter(wl -> wl.getId().equals(dto.getWorkLocationId()))
+                        .findFirst()
+                        .orElseThrow(() -> new GlobalException(ErrorCode.WORK_LOCATION_NOT_FOUND));
+
+                existing.setLocationId(location);
+                updatedIds.add(existing.getId());
+            }
+            else {
+                WorkLocation newLocation = WorkLocation.builder()
+                        .locationId(location)
+                        .jobCondition(jobCondition)
+                        .build();
+                jobCondition.addWokLocation(newLocation);
+            }
+        }
+
+        jobCondition.getWorkLocations().removeIf(wl -> !updatedIds.contains(wl.getId()));
 
         jobCondition.updateInfo(request);
-
-        jobCondition = jobConditionRepository.save(jobCondition);
-
-        saveLocations(request, jobCondition);
-
-        jobCondition = jobConditionRepository.findById(jobCondition.getId())
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-
         return toJobConditionResponseDto(jobCondition);
     }
 

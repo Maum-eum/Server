@@ -65,6 +65,7 @@ public enum ErrorCode {
     // 지역 관련 에러
     BAD_REQUEST(HttpStatus.BAD_REQUEST,"LOCATION4001","찾고자 하는 지역 입력이 없습니다."),
     LOCATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"LOCATION4001","지역이 존재하지 않습니다."),
+    WORK_LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND,"WORK_LOCATION001" ,"근무가능지역이 존재하지 않습니다."),
 
     // 매치 관련 에러
     MATCH_NOT_FOUND(HttpStatus.BAD_REQUEST,"MATCH4001","매칭을 찾을 수 없습니다."),
@@ -83,7 +84,11 @@ public enum ErrorCode {
     NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!"),
 
     // 매칭 에러
-    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" ), MONEY_NOT_MATCHED(HttpStatus.BAD_REQUEST,"MATCH002" ,"시급이 일치하지 않습니다.");
+    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" )
+    , MONEY_NOT_MATCHED(HttpStatus.BAD_REQUEST,"MATCH002" ,"시급이 일치하지 않습니다."),
+    //추천리스트 조회
+    RECOMMEND_LIST_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE001","추천리스트가 존재하지 않습니다."),
+    MATCH_SCORE_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE002" ,"점수리스트가 존재하지 않습니다." );
 
 
     private final HttpStatus status;

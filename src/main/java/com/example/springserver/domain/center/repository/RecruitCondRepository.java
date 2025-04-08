@@ -19,4 +19,9 @@ public interface RecruitCondRepository extends JpaRepository<RecruitCondition, L
     // Mock 데이터 생성용
     @Query(value = "SELECT * FROM recruit_condition order by RAND() limit 1",nativeQuery = true)
     Optional<RecruitCondition> findRandom();
+
+    List<RecruitCondition> findAllByRecruitLocation_LocationIdIn(List<Long> locationIds);
+
+    @Query(value = "SELECT recruit_condition_id FROM recruit_condition",nativeQuery = true)
+    List<Long> findAllRecuitIds();
 }

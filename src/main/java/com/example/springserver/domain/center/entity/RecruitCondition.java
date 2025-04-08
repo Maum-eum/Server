@@ -28,7 +28,7 @@ public class RecruitCondition extends BaseEntity {
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id", nullable = false)
     private Location recruitLocation;
 

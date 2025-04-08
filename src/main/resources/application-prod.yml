@@ -3,6 +3,7 @@ spring:
     name: SpringServer
 
   datasource:
+
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ENC(ABqPb8zpG5FCvSB2CiqLc0svq0Qmh7Wkgk1wYlJJEqMi3sULrdp1Hd2XrLsL6tK2Gnt2SW9nv49Rj86I1ftb13LmdPhd19BM4plbeTrnznna7Q/eIr7gwhJ4n5JuyfzW)
     username: ENC(LAdrT9uRSsMhF4WuzP6tzA==)

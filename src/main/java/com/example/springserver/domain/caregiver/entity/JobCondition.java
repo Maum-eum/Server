@@ -137,12 +137,12 @@ public class JobCondition extends BaseEntity {
     private Long endTime;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "caregiver", nullable = false)
     private Caregiver caregiver;
 
     @NotNull
-    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "jobCondition",fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkLocation> workLocations = new ArrayList<>();
 
     public JobCondition(ScheduleAvailability flexibleSchedule, Integer desiredHourlyWage, ScheduleAvailability selfFeeding,
@@ -179,7 +179,7 @@ public class JobCondition extends BaseEntity {
         this.caregiver = caregiver;
     }
 
-    public void updateInfo(JobConditionReqDto req){
+    public void updateInfo(JobConditionReqDto req) {
         this.flexibleSchedule = req.getFlexibleSchedule();
         this.desiredHourlyWage = req.getDesiredHourlyWage();
         this.selfFeeding = req.getSelfFeeding();
