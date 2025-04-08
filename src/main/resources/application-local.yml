@@ -2,11 +2,20 @@ spring:
   application:
     name: SpringServer
 
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springdb
     username: root
     password: 9702
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
+      password: ${SPRING_REDIS_PASSWORD}
 
   jpa:
     hibernate:
