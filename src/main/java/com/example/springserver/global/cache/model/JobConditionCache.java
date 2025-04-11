@@ -1,6 +1,7 @@
 package com.example.springserver.global.cache.model;
 
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -12,9 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @RedisHash("job_condition")
-public class CacheJobCondition implements Serializable {
-
-    private Long caregiverId;
+public class JobConditionCache implements Serializable {
+    @Id
+    private Long id;
 
     private ScheduleAvailability flexibleSchedule;
     private Integer desiredHourlyWage;
@@ -46,4 +47,5 @@ public class CacheJobCondition implements Serializable {
     private Long endTime;
 
     private List<Long> workLocationIds;
+    private Long caregiverId;
 }

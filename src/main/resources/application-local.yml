@@ -8,8 +8,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springdb
-    username: root
-    password: 9702
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   data:
     redis:
@@ -28,11 +28,11 @@ spring:
 
 #   여기 한칸씩 밀렸더라구요 그래서 실행안되는 경우도 있더라구요
 
-#  sql:
-#    init:
-#      mode: always
-#
-#      data-locations: classpath:/data.sql, classpath:/center.sql
+  sql:
+    init:
+      mode: always
+
+      data-locations: classpath:/data.sql, classpath:/center.sql
 
   jwt:
     secret: qo0ZNtzizpcWq/E+Ou/FN8rcYDaycVNolSpOYhIPOOM=
@@ -61,6 +61,7 @@ springdoc:
 logging:
   level:
     org.springframework.data.redis: DEBUG
+    org.springframework.security: DEBUG
 
 jasypt:
   encryptor:

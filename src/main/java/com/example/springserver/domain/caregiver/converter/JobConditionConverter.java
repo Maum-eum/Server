@@ -132,6 +132,5 @@ public class JobConditionConverter {
                 .description(experience.getDescription())
                 .build();
     }
-
 }
 

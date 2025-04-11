@@ -49,6 +49,9 @@ public enum ErrorCode {
     RECRUIT_MONTHLY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-MONTHLY-LABOR-TIME4002", "근로법 위반: 한달 최대 근무 시간(40시간)을 초과할 수 없습니다."),
     RECRUIT_LABOR_WAGE_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-LABOR-WAGE4002", "근로법 위반: 최저임금(10,030원) 미만의 급여입니다."),
 
+    // 구직 관련 에러
+    JOBCONDTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB_CONDITION_NOTFOUND4001","구직정보가 존재하지 않습니다."),
+
     // 요양보호사 관련 에러
     JOB_CONDITION_NOT_FOUND(HttpStatus.NOT_FOUND,"JOB_CONDITION_NOTFOUND4001","보호사의 구직정보가 존재하지 않습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),

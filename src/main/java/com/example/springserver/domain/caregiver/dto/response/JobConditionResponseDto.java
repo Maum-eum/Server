@@ -63,6 +63,8 @@ public class JobConditionResponseDto {
         private Long endTime;
 
         private List<LocationResponseDTO> locationResponseDtoList;
+
+        private Long caregiverId;
     }
 
     @Getter

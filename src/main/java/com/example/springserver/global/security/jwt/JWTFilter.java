@@ -31,6 +31,14 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI();
+
+        // JWT 인증이 필요 없는 경로 (여기서 예외 처리)
+        if (requestURI.equals("/caregiver/signup") || requestURI.equals("/login") || requestURI.equals("/center/signup")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // Authorization 헤더에서 access token을 꺼냄
         String accessToken = request.getHeader("Authorization");
 

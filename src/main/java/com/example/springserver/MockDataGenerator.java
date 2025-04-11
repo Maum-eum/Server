@@ -30,9 +30,9 @@ public class MockDataGenerator implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        System.out.println("Mock 데이터 생성 메서드 실행...");
-//        createMockData();
-//        System.out.println("Mock 데이터 생성 메서드 끝...");
+    //        System.out.println("Mock 데이터 생성 메서드 실행...");
+    //        createMockData();
+    //        System.out.println("Mock 데이터 생성 메서드 끝...");
     }
 
     /* 애플리케이션 실행 시점에 Mock 데이터 생성 */
