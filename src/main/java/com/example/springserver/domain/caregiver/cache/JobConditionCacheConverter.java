@@ -41,7 +41,7 @@ public class JobConditionCacheConverter {
                 .workLocationIds(
                         toWorkLocationIdList(jobCondition.getWorkLocations())
                 )
-
+                .caregiverId(jobCondition.getCaregiver().getId())
                 .build();
     }
 

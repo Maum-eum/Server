@@ -41,28 +41,36 @@ public class JobConditionCacheRepository {
         return Optional.ofNullable(result);
     }
 
-    public Optional<JobConditionCache> findByCaregiverKey(Long caregiverKey) {
-        Long jobConditionId = getJobConditionIdFromCache(caregiverKey);
-        if (jobConditionId == null) return Optional.empty();
+    public Optional<JobConditionCache> findByCaregiverId(Long caregiverId) {
+        Long jobConditionId = getJobConditionIdFromCache(caregiverId);
+
+        if (jobConditionId == null) {
+            log.warn("[CacheRepository] jobConditionId not exist - caregiverId: {}", caregiverId);
+            return Optional.empty();
+        }
 
         return findByJobConditionKey(jobConditionId);
     }
 
-    public void deleteByCaregiverKey(Long caregiverKey) {
-        Long jobConditionKey = getJobConditionIdFromCache(caregiverKey);
-        if (jobConditionKey != null) {
-            redisTemplate.delete(getJobConditionKey(jobConditionKey));
-        }
-        redisTemplate.delete(getCaregiverKey(caregiverKey));
+    public void deleteByCaregiverId(Long caregiverId) {
+        redisTemplate.delete(getCaregiverKey(caregiverId));
     }
 
     private Long getJobConditionIdFromCache(Long caregiverKey) {
         Object value = redisTemplate.opsForValue().get(getCaregiverKey(caregiverKey));
+
         if (value instanceof Long) {
             return (Long) value;
-        } else {
-            log.warn("Expected Long but got: {}", value != null ? value.getClass() : "null");
-            return null;
+        } else if (value instanceof Integer) {
+            return ((Integer) value).longValue();  // Integer → Long 변환
+        } else if (value instanceof String) {
+            try {
+                return Long.parseLong((String) value); // 문자열로 저장된 경우
+            } catch (NumberFormatException e) {
+                log.warn("[CacheRepository] Cannot parse jobConditionId from string: {}", value);
+            }
         }
+        log.warn("[CacheRepository] Expected Long but got: {} type", value != null ? value.getClass() : "null");
+        return null;
     }
 }

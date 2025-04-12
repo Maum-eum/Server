@@ -62,6 +62,7 @@ logging:
   level:
     org.springframework.data.redis: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.transaction: DEBUG
 
 jasypt:
   encryptor:

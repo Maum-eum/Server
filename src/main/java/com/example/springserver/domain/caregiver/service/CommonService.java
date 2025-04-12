@@ -17,6 +17,8 @@ public class CommonService {
     private final CaregiverRepository caregiverRepository;
 
     public Caregiver getById(CustomUserDetails user) throws GlobalException {
-        return caregiverRepository.findById(user.getId()).orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
+        return caregiverRepository.findById(user.getId())
+
+                .orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
 }

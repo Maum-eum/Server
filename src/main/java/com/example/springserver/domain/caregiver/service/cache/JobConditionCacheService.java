@@ -2,8 +2,8 @@ package com.example.springserver.domain.caregiver.service.cache;
 
 import com.example.springserver.domain.caregiver.cache.JobConditionCache;
 import com.example.springserver.domain.caregiver.cache.JobConditionCacheRepository;
+import com.example.springserver.global.apiPayload.format.CacheException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
-import com.example.springserver.global.apiPayload.format.GlobalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ public class JobConditionCacheService {
     }
 
     public JobConditionCache getByCaregiverKey(Long caregiverKey) {
-        return jobConditionCacheRepository.findByCaregiverKey(caregiverKey)
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+        return jobConditionCacheRepository.findByCaregiverId(caregiverKey)
+                .orElseThrow(() -> new CacheException(ErrorCode.JOB_CONDITION_CACHE_MISS));
     }
 
     public void deleteByCaregiverKey(Long caregiverKey) {
-        jobConditionCacheRepository.deleteByCaregiverKey(caregiverKey);
+        jobConditionCacheRepository.deleteByCaregiverId(caregiverKey);
     }
 }
