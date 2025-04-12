@@ -1,6 +1,7 @@
 package com.example.springserver.domain.caregiver.service;
 
-import com.example.springserver.domain.caregiver.converter.JobConditionCacheConverter;
+import com.example.springserver.domain.caregiver.cache.JobConditionCache;
+import com.example.springserver.domain.caregiver.cache.JobConditionCacheConverter;
 import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
@@ -9,15 +10,13 @@ import com.example.springserver.domain.caregiver.dto.response.JobConditionRespon
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.WorkLocation;
-import com.example.springserver.domain.caregiver.repository.JobConditionCacheRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
+import com.example.springserver.domain.caregiver.service.cache.JobConditionCacheService;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
-import com.example.springserver.global.cache.model.JobConditionCache;
 import com.example.springserver.global.security.util.CustomUserDetails;
-import com.example.springserver.global.utils.FormatUtils;
 import com.example.springserver.service.event.JobConditionChangedEvent;
 import com.example.springserver.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +38,10 @@ public class JobConditionService {
 
     private final CommonService commonService;
     private final LocationService locationService;
-    private final JobConditionCacheRepository jobConditionCacheRepository;
     private final JobConditionRepository jobConditionRepository;
     private final WorkLocationRepository workLocationRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final JobConditionCacheService jobConditionCacheService;
 
     /*
     JC 변경 메서드입니다.
@@ -53,7 +54,7 @@ public class JobConditionService {
         Long caregiverId = user.getId();
 
         // 캐시 데이터 삭제
-        jobConditionCacheRepository.deleteByCaregiverId(caregiverId);
+        jobConditionCacheService.deleteByCaregiverKey(caregiverId);
 
         JobConditionResponseDTO jobConditionResponseDTO = jobConditionRepository.findByCaregiver(caregiver)
                 .map(existingJobCondition -> updateJobCondition(caregiver, request)) // 존재하면 업데이트
@@ -63,7 +64,7 @@ public class JobConditionService {
         // 새로운 데이터 캐싱
         JobCondition updatedJobCondition = findJobCondition(caregiver); // 방금 업데이트된 거니까 다시 조회
         JobConditionCache newCache = JobConditionCacheConverter.toRedisDto(updatedJobCondition);
-        jobConditionCacheRepository.save(newCache);
+        jobConditionCacheService.save(newCache);
 
         return jobConditionResponseDTO;
     }
@@ -71,36 +72,10 @@ public class JobConditionService {
     @Transactional
     public JobConditionResponseDTO createJobCondition(Caregiver user, JobConditionReqDto request) {
 
-        JobCondition jobCondition = JobCondition.builder()
-                .caregiver(user)
-                .bathingAssist(request.getBathingAssist())
-                .catheterOrStomaCare(request.getCatheterOrStomaCare())
-                .diaperCare(request.getDiaperCare())
-                .cleaningLaundryAssist(request.getCleaningLaundryAssist())
-                .selfToileting(request.getSelfToileting())
-                .selfFeeding(request.getSelfFeeding())
-                .cognitiveStimulation(request.getCognitiveStimulation())
-                .cookingAssistance(request.getCookingAssistance())
-                .desiredHourlyWage(request.getDesiredHourlyWage())
-                .emotionalSupport(request.getEmotionalSupport())
-                .enteralNutritionSupport(request.getEnteralNutritionSupport())
-                .exerciseSupport(request.getExerciseSupport())
-                .hospitalAccompaniment(request.getHospitalAccompaniment())
-                .flexibleSchedule(request.getFlexibleSchedule())
-                .mealPreparation(request.getMealPreparation())
-                .immobile(request.getImmobile())
-                .occasionalToiletingAssist(request.getOccasionalToiletingAssist())
-                .mobilityAssist(request.getMobilityAssist())
-                .wheelchairAssist(request.getWheelchairAssist())
-                .independentMobility(request.getIndependentMobility())
-                .dayOfWeek(FormatUtils.toIntegerDayOfWeek(request.getDayOfWeek()))
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .workLocations(new ArrayList<>())
-                .build();
+        JobCondition jobCondition = JobConditionConverter.from(user, request);
 
+        // save
         jobCondition = jobConditionRepository.save(jobCondition);
-
         saveLocations(request, jobCondition);
 
         return JobConditionConverter.tojobConditionResponseDTO(jobCondition);
@@ -142,13 +117,12 @@ public class JobConditionService {
 
     @Transactional
     public void saveLocations(JobConditionReqDto request, JobCondition jobCondition) {
-        final JobCondition finalJobCondition = jobCondition;
 
         List<WorkLocation> workLocations = request.getLocationRequestDTOList().stream()
                 .map(dto -> {
                     Location location = locationService.findById(dto.getLocationId());
                     return WorkLocation.builder()
-                            .jobCondition(finalJobCondition)
+                            .jobCondition(jobCondition)
                             .locationId(location)
                             .build();
                 })
@@ -164,23 +138,16 @@ public class JobConditionService {
         return JobConditionConverter.toDetailJobConditionResponseDto(byId,jobCondition);
     }
 
-    // 기존 jobCondition 조회 코드
-//    public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
-//        Caregiver byId = commonService.getById(user);
-//        JobCondition jobCondition = findJobCondition(byId);
-//        return JobConditionConverter.tojobConditionResponseDTO(jobCondition);
-//    }
-
     // read-through 캐싱 전략이 적용된 조회 코드
     public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
 
         // Redis 캐시 먼저 조회
         Caregiver caregiver = commonService.getById(user);
-        Optional<JobConditionCache> cachedJc = jobConditionCacheRepository.findByCaregiverId(user.getId());
+        JobConditionCache cachedJc = jobConditionCacheService.getByCaregiverKey(user.getId());
 
-        if (cachedJc.isPresent()) {
+        if (cachedJc != null) {
             log.info("[Redis] jobConditionCache 조회 ======== ");
-            return JobConditionCacheConverter.fromRedisDto(cachedJc.get()); // 캐싱 데이터 return
+            return JobConditionCacheConverter.fromRedisDto(cachedJc);
         }
 
         // DB 조회
@@ -188,8 +155,7 @@ public class JobConditionService {
         JobCondition jobCondition = findJobCondition(caregiver);
 
         // Redis 캐시 저장
-        JobConditionCache cache = JobConditionCacheConverter.toRedisDto(jobCondition);
-        jobConditionCacheRepository.save(cache);
+        jobConditionCacheService.save(JobConditionCacheConverter.toRedisDto(jobCondition));
 
         return JobConditionConverter.tojobConditionResponseDTO(jobCondition); // DB 데이터 캐싱 후 return
     }

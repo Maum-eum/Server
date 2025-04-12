@@ -1,5 +1,6 @@
 package com.example.springserver.domain.caregiver.converter;
 
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.CertificateResponseDTO;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.ExperienceResponseDTO;
@@ -10,6 +11,7 @@ import com.example.springserver.service.location.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,6 +132,36 @@ public class JobConditionConverter {
                 .duration(experience.getDuration())
                 .title(experience.getTitle())
                 .description(experience.getDescription())
+                .build();
+    }
+
+    public static JobCondition from(Caregiver user, JobConditionRequestDto.JobConditionReqDto request) {
+        return JobCondition.builder()
+                .caregiver(user)
+                .bathingAssist(request.getBathingAssist())
+                .catheterOrStomaCare(request.getCatheterOrStomaCare())
+                .diaperCare(request.getDiaperCare())
+                .cleaningLaundryAssist(request.getCleaningLaundryAssist())
+                .selfToileting(request.getSelfToileting())
+                .selfFeeding(request.getSelfFeeding())
+                .cognitiveStimulation(request.getCognitiveStimulation())
+                .cookingAssistance(request.getCookingAssistance())
+                .desiredHourlyWage(request.getDesiredHourlyWage())
+                .emotionalSupport(request.getEmotionalSupport())
+                .enteralNutritionSupport(request.getEnteralNutritionSupport())
+                .exerciseSupport(request.getExerciseSupport())
+                .hospitalAccompaniment(request.getHospitalAccompaniment())
+                .flexibleSchedule(request.getFlexibleSchedule())
+                .mealPreparation(request.getMealPreparation())
+                .immobile(request.getImmobile())
+                .occasionalToiletingAssist(request.getOccasionalToiletingAssist())
+                .mobilityAssist(request.getMobilityAssist())
+                .wheelchairAssist(request.getWheelchairAssist())
+                .independentMobility(request.getIndependentMobility())
+                .dayOfWeek(FormatUtils.toIntegerDayOfWeek(request.getDayOfWeek()))
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .workLocations(new ArrayList<>())
                 .build();
     }
 }

@@ -1,9 +1,8 @@
-package com.example.springserver.domain.caregiver.converter;
+package com.example.springserver.domain.caregiver.cache;
 
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.WorkLocation;
-import com.example.springserver.global.cache.model.JobConditionCache;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

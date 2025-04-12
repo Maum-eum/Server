@@ -1,4 +1,4 @@
-package com.example.springserver.global.cache.model;
+package com.example.springserver.domain.caregiver.cache;
 
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import jakarta.persistence.Id;
