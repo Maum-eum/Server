@@ -1,13 +1,10 @@
 package com.example.springserver.domain.center.converter;
 
-import com.example.springserver.domain.center.dto.response.CareResponseDto.*;
+import com.example.springserver.domain.center.dto.request.CareRequestDto.RequestDto;
+import com.example.springserver.domain.center.dto.response.CareResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.Care;
 import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.dto.request.CareRequestDto.RequestDto;
 import com.example.springserver.domain.location.entity.Location;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CareConverter {
 
@@ -74,11 +71,5 @@ public class CareConverter {
                 .cognitiveStimulation(care.isCognitiveStimulation())
                 .detailRequiredService(care.getDetailRequiredService())
                 .build();
-    }
-
-    public static List<ResponseDto> toListResponseDto(List<Care> recruitConditionList) {
-        return recruitConditionList.stream()
-                .map(CareConverter::toConditionResponseDto)
-                .collect(Collectors.toList());
     }
 }

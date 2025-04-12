@@ -1,7 +1,6 @@
 package com.example.springserver.domain.center.controller;
 
 import com.example.springserver.domain.center.converter.AdminConverter;
-import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
 import com.example.springserver.domain.center.dto.response.AdminResponseDTO;
 import com.example.springserver.domain.center.service.AdminService;
@@ -29,10 +28,7 @@ public class AdminController {
     @Operation(summary = "회원가입", description = "Post")
     @PostMapping("/signup")
     public AdminResponseDTO.SignUpAdminResult signUpAdmin(@RequestBody @Valid AdminRequestDTO.SignUpAdminReq request){
-
-        Admin newAdmin = joinService.signUpAdmin(request);
-
-        return AdminConverter.toSignUpAdminResult(newAdmin);
+        return AdminConverter.toSignUpAdminResult(joinService.signUpAdmin(request));
     }
 
     @Operation(summary = "관리자 정보 조회", description = "Get")

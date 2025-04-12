@@ -1,6 +1,5 @@
 package com.example.springserver.domain.center.service;
 
-import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.center.converter.AdminConverter;
 import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
 import com.example.springserver.domain.center.dto.response.AdminResponseDTO;
@@ -25,7 +24,6 @@ import java.util.Objects;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final CaregiverRepository caregiverRepository;
     private final CenterRepository centerRepository;
 
     public AdminResponseDTO.SearchAdminResult searchAdmin(CustomUserDetails admin) {

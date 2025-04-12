@@ -8,11 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ElderRepository extends JpaRepository<Elder, Long> {
-
-    List<Elder> findByIsTemporarySave(boolean isTemporary);
-
-    Elder findByElderIdAndIsTemporarySave(Long elderId, boolean isTemporary);
-
     List<Elder> findByCenter_CenterId(Long centerId);
 
     Optional<Elder> findByElderIdAndCenter_CenterId(Long elderId, Long centerId);

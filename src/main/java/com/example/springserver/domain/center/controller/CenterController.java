@@ -1,7 +1,6 @@
 package com.example.springserver.domain.center.controller;
 
 import com.example.springserver.domain.center.converter.CenterConverter;
-import com.example.springserver.domain.center.dto.response.CenterResponseDto;
 import com.example.springserver.domain.center.dto.response.CenterResponseDto.CenterSearchDto;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.service.CenterService;
@@ -21,9 +20,7 @@ public class CenterController {
     private final CenterService centerService;
 
     @GetMapping("/search")
-    public List<CenterSearchDto> searchCenters(
-            @RequestParam String keyword) {
-
+    public List<CenterSearchDto> searchCenters(@RequestParam String keyword) {
         List<Center> centers = centerService.searchCenterName(keyword);
         return CenterConverter.toSearchListDto(centers);
     }

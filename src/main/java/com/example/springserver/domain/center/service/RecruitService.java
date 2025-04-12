@@ -35,12 +35,7 @@ public class RecruitService {
     private final CenterRepository centerRepository;
     private final ElderRepository elderRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-
     private final RecruitLaborLawValidator recruitLaborLawValidator;
-
-    public List<Long> findAllRecCond(){
-        return recruitCondRepository.findAllRecuitIds();
-    }
 
     public List<RecruitCondition> getRecruitConditionList(Long centerId, Long elderId) {
         isValidCenter(elderId, centerId);
@@ -59,7 +54,7 @@ public class RecruitService {
         isValidCenter(elderId, centerId);
         isValidRecruitCondition(createRequestDto);
 
-        Elder elder = getElderById(elderId);
+        Elder elder = getValidElderById(elderId);
         RecruitCondition recruitCondition = saveOrUpdateRecruitCondition(null, elder, createRequestDto);
 
         applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this,recruitCondition.getRecruitConditionId()));
@@ -74,7 +69,7 @@ public class RecruitService {
         isValidCenter(elderId, centerId);
         isValidRecruitCondition(requestDto);
 
-        Elder elder = getElderById(elderId);
+        Elder elder = getValidElderById(elderId);
         saveOrUpdateRecruitCondition(recruitConditionId, elder, requestDto);
 
         applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this,recruitConditionId));
@@ -91,8 +86,8 @@ public class RecruitService {
     }
 
     private RecruitCondition saveOrUpdateRecruitCondition(Long recruitConditionId, Elder elder, RequestDto requestDto) {
-        Location location = locationRepository.findByLocationId(requestDto.getRecruitLocation())
-                .orElseThrow(()-> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
+        Location location = getValidLocationById(requestDto.getRecruitLocationId());
+
         RecruitCondition recruitCondition;
 
         if (recruitConditionId == null) { // create
@@ -107,20 +102,25 @@ public class RecruitService {
         }
 
         recruitCondRepository.save(recruitCondition);
-        RecruitTimesMapping(recruitCondition, requestDto.getRecruitTimes());
+        mapRecruitTimes(recruitCondition, requestDto.getRecruitTimes());
         return recruitCondition;
     }
 
-    private void RecruitTimesMapping(RecruitCondition recruitCondition, List<RequestTimeDto> recruitTimes) {
+    private void mapRecruitTimes(RecruitCondition recruitCondition, List<RequestTimeDto> recruitTimes) {
         recruitTimes.forEach(time -> {
             RecruitTime recruitTime = RecruitConverter.toRecruitTime(time, recruitCondition);
             recruitCondition.addRecruitTime(recruitTime);
         });
     }
 
-    private Elder getElderById(Long elderId) {
+    private Elder getValidElderById(Long elderId) {
         return elderRepository.findById(elderId)
                 .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_FOUND));
+    }
+
+    private Location getValidLocationById(Long locationId) {
+        return locationRepository.findByLocationId(locationId)
+                .orElseThrow(()-> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
     }
 
     private void isValidCenter(Long elderId, Long centerId) {

@@ -36,28 +36,18 @@ public class JoinService {
     private final ExperienceRepository experienceRepository;
     private final S3Service s3Service;
 
-
     @Transactional
     public Caregiver signUpCaregiver(SignUpCaregiverReqDto request, MultipartFile profileImg) {
 
         List<CertificateRequestDTO> certificateRequestDTOList = request.getCertificateRequestDTOList();
         List<ExperienceRequestDTO> experienceRequestDTOList = request.getExperienceRequestDTOList();
 
-        Boolean isAdminExist = adminRepository.existsByUsername(request.getUsername());
-        Boolean isCaregiverExist = caregiverRepository.existsByUsername(request.getUsername());
-
-        if(isAdminExist || isCaregiverExist){
-            throw new GlobalException(ErrorCode.USERNAME_IS_EXIST);
-        }
+        // 요청 객체 검증
+        validAdmin(request.getUsername());
+        validCareGiver(request.getUsername());
 
         // 이미지 적용
-        String imgUrl;
-        if(profileImg == null) {
-            imgUrl = "http://localhost:8080/basicImg.jpeg";
-        } else {
-            imgUrl = s3Service.uploadFileImage(profileImg);
-        }
-
+        String imgUrl = saveImgUrl(profileImg);
         Caregiver saved = caregiverRepository.save(CaregiverConverter.toCaregiver(request, bCryptPasswordEncoder, imgUrl));
 
         //자격증저장
@@ -76,26 +66,42 @@ public class JoinService {
     @Transactional
     public Admin signUpAdmin(AdminRequestDTO.SignUpAdminReq request) {
 
-        Boolean isAdminExist = adminRepository.existsByUsername(request.getUsername());
-        Boolean isCaregiverExist = caregiverRepository.existsByUsername(request.getUsername());
-
-        if(isAdminExist || isCaregiverExist){
-            throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
-        }
-
-        Center centerData = centerRepository.findByCenterName(request.getCenterName())
-                .orElseThrow(() -> new GlobalException(ErrorCode.CENTER_NOT_FOUND));
+        // 요청 객체 검증
+        validAdmin(request.getUsername());
+        validCareGiver(request.getUsername());
+        Center centerData = validCenter(request.getCenterName());
 
         // Admin 객체 converter를 통해 생성
         if(!centerData.getCertification().equals(request.getCenterCertification()))
             throw new GlobalException(ErrorCode.CENTER_CERTIFICATION_FAIL);
 
         Admin newAdmin = AdminConverter.toAdmin(request, bCryptPasswordEncoder, centerData);
-
         // 양방향 연관관계 매핑
         newAdmin.changeCenter(centerData);
 
         return adminRepository.save(newAdmin);
     }
 
+    private void validAdmin(String adminName) {
+        if(adminRepository.existsByUsername(adminName))
+            throw new GlobalException(ErrorCode.MEMBER_IS_EXIST);
+    }
+
+    private void validCareGiver(String caregiverName) {
+        if(caregiverRepository.existsByUsername(caregiverName))
+                throw new GlobalException(ErrorCode.CAREGIVER_IS_EXIST);
+    }
+
+    private Center validCenter(String centerName) {
+        return centerRepository.findByCenterName(centerName)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CENTER_NOT_FOUND));
+    }
+
+    private String saveImgUrl(MultipartFile profileImg) {
+        if(profileImg == null) {
+            return "http://localhost:8080/basicImg.jpeg";
+        } else {
+            return s3Service.uploadFileImage(profileImg);
+        }
+    }
 }

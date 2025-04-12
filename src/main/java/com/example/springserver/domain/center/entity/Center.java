@@ -9,7 +9,6 @@ import java.util.List;
 
 @Getter
 @Entity
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name="center")
@@ -45,4 +44,8 @@ public class Center extends BaseEntity {
     private String address;
 
     private String certification;
+
+    public void removeElder(Elder elder) {
+        elders.remove(elder);
+    }
 }

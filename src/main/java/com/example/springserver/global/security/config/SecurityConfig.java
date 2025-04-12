@@ -28,6 +28,19 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final AdminRepository adminRepository;
 
+    private static final String[] whiteList = {
+            "/match/**",
+            "/location/**",
+            "/login",
+            "/admin/**",
+            "/",
+            "/actuator/**",
+            "/caregiver/**",
+            "/reissue",
+            "/health/**",
+            "/center/search/**"
+    };
+
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, AdminRepository adminRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.adminRepository = adminRepository;
@@ -49,20 +62,10 @@ public class SecurityConfig {
                 .httpBasic(auth -> auth.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/caregiver/signup").permitAll()
-                        .requestMatchers(
-                                "/match/**",
-                                "/location/**",
-                                "/login",
-                                "/admin/signup",
-                                "/",
-                                "/actuator/**",
-                                "/caregiver/**",
-                                "/reissue",
-                                "/health/**",
-                                "/center/search/**"
-                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/signup").permitAll()
+                        .requestMatchers(whiteList).permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/fcm/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         /*.requestMatchers("/caregiver/**").hasRole("CAREGIVER")*/
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTFilter(jwtUtil, adminRepository), LoginFilter.class)

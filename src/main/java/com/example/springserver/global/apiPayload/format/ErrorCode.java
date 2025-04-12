@@ -14,12 +14,13 @@ public enum ErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
 
-    // 멤버 관려 에러
+    // 멤버 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     MEMBER_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "사용자가 이미 존재합니다.."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4003", "닉네임은 필수 입니다."),
     INVALID_MEMBER_ROLE(HttpStatus.BAD_REQUEST, "MEMBER4004", "사용자의 ROLE이 잘못 되었습니다."),
-    USERNAME_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 아이디가 이미 존재합니다."),
+    USERNAME_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 관리자 아이디가 이미 존재합니다."),
+    CAREGIVER_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 요양보호사 아이디가 이미 존재합니다."),
 
     // 토큰 관련 에러
     ACCESS_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "TOKEN4001", "액세스 토큰이 만료되었습니다."),
@@ -57,7 +58,6 @@ public enum ErrorCode {
     // 관리자 관련 에러
     ADMIN_DELETE_FAILED(HttpStatus.BAD_REQUEST,"ADMIN_DELETE_FAILED4001","관리자 계정 삭제를 실패했습니다."),
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN-NOTFOUND4001","관리자정보가 존재하지 않습니다."),
-
 
     // 시간 관련 에러
     TIME_LIMIT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "TIME_LIMIT_OUT4001","시간 범위 초과 입력입니다."),
