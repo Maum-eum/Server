@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Getter
-@Setter
 @Builder
 @Entity
 @AllArgsConstructor

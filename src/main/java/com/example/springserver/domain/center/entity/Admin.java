@@ -8,7 +8,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @DynamicUpdate
@@ -44,6 +43,15 @@ public class Admin extends BaseEntity {
         this.name = name;
         this.center = center;
         this.connect = connect;
+    }
+
+    public void update(String name, String connect) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (connect != null) {
+            this.connect = connect;
+        }
     }
 
     /* 양방향 연관관계 편의 메서드 */

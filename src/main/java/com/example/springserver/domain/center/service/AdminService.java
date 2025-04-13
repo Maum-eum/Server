@@ -42,13 +42,7 @@ public class AdminService {
         Admin adminData = adminRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
 
-        if (request.getName() != null) {
-            adminData.setName(request.getName());
-        }
-        if (request.getConnect() != null) {
-            adminData.setConnect(request.getConnect());
-        }
-
+        adminData.update(request.getName(), request.getConnect());
         adminRepository.save(adminData);
 
         Center center = centerRepository.findByCenterLeaderName(adminUsername);
