@@ -1,10 +1,10 @@
 package com.example.springserver.domain.center.converter;
 
-import com.example.springserver.domain.center.dto.response.AdminResponseDTO.AdminResponseDto;
+import com.example.springserver.domain.center.dto.response.AdminResponseDto.AdminResult;
 import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.domain.center.entity.Center;
-import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
-import com.example.springserver.domain.center.dto.response.AdminResponseDTO;
+import com.example.springserver.domain.center.dto.request.AdminRequestDto;
+import com.example.springserver.domain.center.dto.response.AdminResponseDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -18,15 +18,15 @@ public class AdminConverter {
         return dateTime.format(formatter);
     }
 
-    public static AdminResponseDTO.SignUpAdminResult toSignUpAdminResult(Admin admin){
-        return AdminResponseDTO.SignUpAdminResult.builder()
+    public static AdminResponseDto.SignUpAdminResult toSignUpAdminResult(Admin admin){
+        return AdminResponseDto.SignUpAdminResult.builder()
                 .adminId(admin.getId())
                 .createAt(formatDateTime(admin.getCreatedAt()))
                 .build();
     }
 
     //    Admin 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
-    public static Admin toAdmin(AdminRequestDTO.SignUpAdminReq request, BCryptPasswordEncoder bCryptPasswordEncoder, Center center){
+    public static Admin toAdmin(AdminRequestDto.SignUpAdminReq request, BCryptPasswordEncoder bCryptPasswordEncoder, Center center){
 
         return Admin.builder()
                 .username(request.getUsername())
@@ -38,9 +38,9 @@ public class AdminConverter {
     }
 
     // 관리자 프로필 조회 응답
-    public static AdminResponseDTO.SearchAdminResult toSearchAdminResult(Admin admin, Boolean isLeader){
+    public static AdminResponseDto.SearchAdminResult toSearchAdminResult(Admin admin, Boolean isLeader){
 
-        return AdminResponseDTO.SearchAdminResult.builder()
+        return AdminResponseDto.SearchAdminResult.builder()
                 .username(admin.getUsername())
                 .name(admin.getName())
                 .connect(admin.getConnect())
@@ -50,15 +50,15 @@ public class AdminConverter {
     }
 
     // 관리자 계정 삭제 응답
-    public static AdminResponseDTO.DeleteAdminResult toDeleteAdminResult(Boolean isSuccess){
+    public static AdminResponseDto.DeleteAdminResult toDeleteAdminResult(Boolean isSuccess){
 
-        return AdminResponseDTO.DeleteAdminResult.builder()
+        return AdminResponseDto.DeleteAdminResult.builder()
                 .isSuccess(isSuccess)
                 .build();
     }
 
-    public static AdminResponseDto toResponseDto(Admin admin){
-        return AdminResponseDTO.AdminResponseDto.builder()
+    public static AdminResult toResponseDto(Admin admin){
+        return AdminResult.builder()
                 .adminId(admin.getId())
                 .createAt(formatDateTime(admin.getCreatedAt()))
                 .build();

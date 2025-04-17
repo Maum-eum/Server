@@ -18,6 +18,8 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.HashMap;
 
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
@@ -41,7 +43,16 @@ public class CacheConfig {
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(cf)
                 .cacheDefaults(defaultCacheConfiguration())
+                .withInitialCacheConfigurations(getCustomCacheConfigurations())
                 .build();
+    }
+
+    private Map<String, RedisCacheConfiguration> getCustomCacheConfigurations() {
+        Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
+        cacheConfigurations.put("recruitCache", RedisCacheConfiguration
+                .defaultCacheConfig()
+                .serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()))));
+        return cacheConfigurations;
     }
 
     @Bean
@@ -73,3 +84,4 @@ public class CacheConfig {
         return redisTemplate;
     }
 }
+

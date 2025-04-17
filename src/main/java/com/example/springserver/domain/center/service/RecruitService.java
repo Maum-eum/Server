@@ -1,15 +1,22 @@
 package com.example.springserver.domain.center.service;
 
+import com.example.springserver.domain.center.cache.RecruitConditionCache;
+import com.example.springserver.domain.center.cache.RecruitConditionCacheConverter;
 import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestTimeDto;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.entity.RecruitTime;
-import com.example.springserver.domain.center.repository.*;
+import com.example.springserver.domain.center.repository.ElderRepository;
+import com.example.springserver.domain.center.repository.RecruitConditionRepository;
+import com.example.springserver.domain.center.service.cache.RecruitConditionCacheService;
 import com.example.springserver.domain.location.entity.Location;
-import com.example.springserver.global.apiPayload.format.*;
+import com.example.springserver.global.apiPayload.format.CacheException;
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
+import com.example.springserver.global.apiPayload.format.RecruitException;
 import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
 import com.example.springserver.repository.location.LocationRepository;
 import com.example.springserver.service.event.RecruitConditionChangedEvent;
@@ -29,132 +36,133 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecruitService {
 
-    private final RecruitCondRepository recruitCondRepository;
-    private final RecruitTimeRepository recruitTimeRepository;
+    private final RecruitConditionRepository recruitConditionRepository;
     private final LocationRepository locationRepository;
-    private final CenterRepository centerRepository;
     private final ElderRepository elderRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RecruitLaborLawValidator recruitLaborLawValidator;
+    private final RecruitConditionCacheService recruitConditionCacheService;
 
-    public List<RecruitCondition> getRecruitConditionList(Long centerId, Long elderId) {
-        isValidCenter(elderId, centerId);
-        return recruitCondRepository.findWithRecruitTimesByElderId(elderId);
+    public List<ResponseDto> getRecruitConditionList(Long centerId, Long elderId) {
+        validateElderBelongsToCenter(elderId, centerId);
+
+        try { // Cache Hit : Redis 조회
+            log.info("[Redis] recruitCondition 리스트 조회 ========");
+
+            List<RecruitConditionCache> cachedList = recruitConditionCacheService.getByElderIdFromRedis(elderId);
+            return RecruitConditionCacheConverter.fromCacheList(cachedList);
+        } catch(CacheException ce) { // Cache Miss : DB 직접 조회
+            log.info("[MySQL] recruitCondition 리스트 조회 ========");
+
+            List<RecruitCondition> conditions = recruitConditionRepository.findWithRecruitTimesByElderId(elderId);
+            recruitConditionCacheService.saveAll(RecruitConditionCacheConverter.toCacheList(conditions));
+            return RecruitConverter.toListResponseDto(conditions);
+        }
     }
 
-    public RecruitCondition getRecruitCondition(Long centerId, Long elderId, Long recruitId) {
-        isValidCenter(elderId, centerId);
-        return recruitCondRepository.findWithRecruitTimesById(recruitId)
-                .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
+    public RecruitResponseDto.ResponseDto getRecruitCondition(Long centerId, Long elderId, Long recruitId) {
+        validateElderBelongsToCenter(elderId, centerId);
+
+        try { // Cache Hit : Redis 조회
+            log.info("[Redis] recruitCondition 단건 조회 ========");
+
+            RecruitConditionCache cachedRecruitCondition = getRecruitConditionFromRedis(recruitId);
+            return RecruitConditionCacheConverter.fromCache(cachedRecruitCondition);
+        } catch (CacheException ce) { // Cache Miss : DB 직접 조회
+            log.info("[MySQL] recruitCondition 단건 조회 ========");
+
+            RecruitCondition recruitCondition = getValidRecruitCondition(recruitId);
+            // DB 조회 후 Caching
+            recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(recruitCondition));
+            return RecruitConverter.toConditionResponseDto(recruitCondition);
+        }
     }
 
     @Transactional
-    public ResponseDto createRecruit(Long centerId, Long elderId, RequestDto createRequestDto) {
-        // 요청 데이터 검증
-        isValidCenter(elderId, centerId);
-        isValidRecruitCondition(createRequestDto);
+    public ResponseDto createRecruitCondition(Long centerId, Long elderId, RequestDto requestDto) {
+        validateElderBelongsToCenter(elderId, centerId);
+        validateRequest(requestDto);
 
-        Elder elder = getValidElderById(elderId);
-        RecruitCondition recruitCondition = saveOrUpdateRecruitCondition(null, elder, createRequestDto);
+        Elder elder = getValidElder(elderId);
+        Location location = getValidLocation(requestDto.getRecruitLocationId());
 
-        applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this,recruitCondition.getRecruitConditionId()));
+        RecruitCondition newRecruitCondition = RecruitConverter.toRecruitCondition(requestDto, elder, location);
+        recruitConditionRepository.save(newRecruitCondition);
+        recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(newRecruitCondition));
 
-        return RecruitConverter.toConditionResponseDto(recruitCondition);
+        return RecruitConverter.toConditionResponseDto(newRecruitCondition);
     }
 
     @Transactional
     public void updateRecruitCondition(Long centerId, Long elderId, Long recruitConditionId, RequestDto requestDto) {
+        validateElderBelongsToCenter(elderId, centerId);
+        validateRequest(requestDto);
 
-        // 요청 데이터 검증
-        isValidCenter(elderId, centerId);
-        isValidRecruitCondition(requestDto);
+        RecruitCondition recruitCondition = getValidRecruitCondition(recruitConditionId);
+        Location location = getValidLocation(requestDto.getRecruitLocationId());
 
-        Elder elder = getValidElderById(elderId);
-        saveOrUpdateRecruitCondition(recruitConditionId, elder, requestDto);
+        recruitCondition.update(requestDto, location);
+        recruitConditionRepository.save(recruitCondition);
+        recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(recruitCondition));
 
-        applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this,recruitConditionId));
+        applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this, recruitConditionId));
     }
 
     @Transactional
     public void deleteRecruitCondition(Long centerId, Long elderId, Long recruitConditionId) {
-        isValidCenter(elderId, centerId);
+        validateElderBelongsToCenter(elderId, centerId);
 
-        RecruitCondition recruitCondition = recruitCondRepository.findById(recruitConditionId)
-                .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
-
-        recruitCondRepository.delete(recruitCondition);
+        RecruitCondition recruitCondition = getValidRecruitCondition(recruitConditionId);
+        // DB 삭제
+        recruitConditionRepository.delete(recruitCondition);
+        // Redis 삭제
+        recruitConditionCacheService.deleteByRecruitConditionId(recruitConditionId);
     }
 
-    private RecruitCondition saveOrUpdateRecruitCondition(Long recruitConditionId, Elder elder, RequestDto requestDto) {
-        Location location = getValidLocationById(requestDto.getRecruitLocationId());
-
-        RecruitCondition recruitCondition;
-
-        if (recruitConditionId == null) { // create
-            recruitCondition = RecruitConverter.toRecruitCondition(requestDto, elder, location);
-        } else { // update
-            recruitCondition = recruitCondRepository.findById(recruitConditionId)
-                    .orElseThrow(() -> new RecruitException(ErrorCode.RECRUIT_NOT_FOUND));
-
-            recruitCondition.update(requestDto, location);
-            recruitTimeRepository.deleteByRecruitConditionId(recruitConditionId);
-            recruitCondition.getRecruitTimes().clear();
-        }
-
-        recruitCondRepository.save(recruitCondition);
-        mapRecruitTimes(recruitCondition, requestDto.getRecruitTimes());
-        return recruitCondition;
+    private RecruitCondition getValidRecruitCondition(Long recruitConditionId) {
+        return recruitConditionRepository.findWithRecruitTimesById(recruitConditionId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
     }
 
-    private void mapRecruitTimes(RecruitCondition recruitCondition, List<RequestTimeDto> recruitTimes) {
-        recruitTimes.forEach(time -> {
-            RecruitTime recruitTime = RecruitConverter.toRecruitTime(time, recruitCondition);
-            recruitCondition.addRecruitTime(recruitTime);
-        });
-    }
-
-    private Elder getValidElderById(Long elderId) {
+    private Elder getValidElder(Long elderId) {
         return elderRepository.findById(elderId)
-                .orElseThrow(() -> new ElderException(ErrorCode.ELDER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.ELDER_NOT_FOUND));
     }
 
-    private Location getValidLocationById(Long locationId) {
+    private Location getValidLocation(Long locationId) {
         return locationRepository.findByLocationId(locationId)
-                .orElseThrow(()-> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.LOCATION_NOT_FOUND));
     }
 
-    private void isValidCenter(Long elderId, Long centerId) {
-        // 센터 검증
-        if (!centerRepository.existsById(centerId)) {
-            throw new CenterException(ErrorCode.CENTER_NOT_FOUND);
-        }
-        // 어르신 검증
-        if (!elderRepository.existsById(elderId)) {
-            throw new ElderException(ErrorCode.ELDER_NOT_FOUND);
-        }
-        // 센터 - 어르신 관계 검증
-        if (!elderRepository.existsByElderIdAndCenter_CenterId(elderId, centerId)) {
-            throw new ElderException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
+    private void validateElderBelongsToCenter(Long elderId, Long centerId) {
+        Elder elder = elderRepository.findById(elderId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.ELDER_NOT_FOUND));
+        if (!elder.getCenter().getCenterId().equals(centerId)) {
+            throw new GlobalException(ErrorCode.ELDER_NOT_BELONG_TO_CENTER);
         }
     }
 
-    private void isValidRecruitCondition(RequestDto createRecruitDto) {
-        if (createRecruitDto.getRecruitTimes() == null || createRecruitDto.getRecruitTimes().isEmpty()) {
+    private void validateRequest(RequestDto requestDto) {
+        if (requestDto.getRecruitTimes() == null || requestDto.getRecruitTimes().isEmpty()) {
             throw new RecruitException(ErrorCode.RECRUIT_TIME_INVALID);
         }
 
-        for(RequestTimeDto requestTimeDto : createRecruitDto.getRecruitTimes()) {
+        for (RequestTimeDto requestTimeDto : requestDto.getRecruitTimes()) {
             long dailyHour = Duration.between(
-                            convertTime(requestTimeDto.getStartTime()),
-                            convertTime(requestTimeDto.getEndTime()))
+                            convertToLocalTime(requestTimeDto.getStartTime()),
+                            convertToLocalTime(requestTimeDto.getEndTime()))
                     .toHours();
-            log.info("현재 하루 근무 시간은 = {} - {} = {}", convertTime(requestTimeDto.getEndTime()), convertTime(requestTimeDto.getStartTime()), dailyHour);
-            recruitLaborLawValidator.validateMinimumWage(createRecruitDto.getDesiredHourlyWage());
+            log.info("하루 근무 시간: {}시간", dailyHour);
+            recruitLaborLawValidator.validateMinimumWage(requestDto.getDesiredHourlyWage());
             recruitLaborLawValidator.validateWorkingHours(dailyHour);
         }
     }
 
-    private LocalTime convertTime(Long time) {
+    private LocalTime convertToLocalTime(Long time) {
         return LocalTime.MIN.plusMinutes(time * 30);
+    }
+
+    private RecruitConditionCache getRecruitConditionFromRedis(Long recruitConditionId) throws CacheException{
+        return recruitConditionCacheService.getByRecruitConditionId(recruitConditionId);
     }
 }

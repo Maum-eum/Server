@@ -14,7 +14,6 @@ import java.time.Duration;
 public class JobConditionCacheRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
-
     private static final String JOB_CONDITION_CACHE_KEY_PREFIX = "job_condition:";
     private static final String CARE_GIVER_CACHE_KEY_PREFIX = "care_giver:";
     private static final Duration TTL = Duration.ofHours(6); // 캐시 유효 시간 설정
@@ -35,8 +34,8 @@ public class JobConditionCacheRepository {
         redisTemplate.opsForValue().set(subKey, jobConditionCache.getId(), TTL);
     }
 
-    public Optional<JobConditionCache> findByJobConditionKey(Long jobConditionKey) {
-        String key = getJobConditionKey(jobConditionKey);
+    public Optional<JobConditionCache> findByJobConditionId(Long jobConditionId) {
+        String key = getJobConditionKey(jobConditionId);
         JobConditionCache result = (JobConditionCache) redisTemplate.opsForValue().get(key);
         return Optional.ofNullable(result);
     }
@@ -49,7 +48,7 @@ public class JobConditionCacheRepository {
             return Optional.empty();
         }
 
-        return findByJobConditionKey(jobConditionId);
+        return findByJobConditionId(jobConditionId);
     }
 
     public void deleteByCaregiverId(Long caregiverId) {

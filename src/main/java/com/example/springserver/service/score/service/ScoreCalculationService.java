@@ -6,7 +6,7 @@ import com.example.springserver.domain.caregiver.repository.JobConditionReposito
 import com.example.springserver.domain.center.entity.*;
 import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.MatchRepository;
-import com.example.springserver.domain.center.repository.RecruitCondRepository;
+import com.example.springserver.domain.center.repository.RecruitConditionRepository;
 import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.domain.score.entity.MatchScore;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class ScoreCalculationService {
 
     private final JobConditionRepository jobConditionRepository;
-    private final RecruitCondRepository recruitCondRepository;
+    private final RecruitConditionRepository recruitConditionRepository;
     private final MatchRepository matchRepository;
     private final ScoreRepository scoreRepository;
 
@@ -120,7 +120,7 @@ public class ScoreCalculationService {
      * 존재하지 않으면 예외를 발생시킵니다.
      */
     private RecruitCondition fetchRecruitCondition(Long recruitConditionId) {
-        return recruitCondRepository.findById(recruitConditionId)
+        return recruitConditionRepository.findById(recruitConditionId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
     }
 
@@ -267,7 +267,7 @@ public class ScoreCalculationService {
         List<Long> locationIds = jc.getWorkLocations().stream()
                 .map(wl -> wl.getLocationId().getLocationId())
                 .toList();
-        return recruitCondRepository.findAllByRecruitLocation_LocationIdIn(locationIds);
+        return recruitConditionRepository.findAllByRecruitLocation_LocationIdIn(locationIds);
     }
 
     /**

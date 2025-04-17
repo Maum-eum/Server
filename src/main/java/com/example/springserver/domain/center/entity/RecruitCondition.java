@@ -11,8 +11,8 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Builder
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +23,7 @@ public class RecruitCondition extends BaseEntity {
     @Column(name = "recruit_condition_id", nullable = false)
     private Long recruitConditionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "elder_id", nullable = false)
     private Elder elder;
 
@@ -92,7 +92,7 @@ public class RecruitCondition extends BaseEntity {
     private String detailRequiredService;
 
     public RecruitCondition(Elder elder, Location recruitLocation, List<CareType> careTypes,
-                            boolean flexibleSchedule, boolean mealAssistance,
+                            boolean flexibleSchedule, String address, boolean mealAssistance,
                             boolean toiletAssistance, boolean moveAssistance, boolean dailyLivingAssistance,
                             Integer desiredHourlyWage, boolean selfFeeding, boolean mealPreparation,
                             boolean cookingAssistance, boolean enteralNutritionSupport, boolean selfToileting,
@@ -105,6 +105,7 @@ public class RecruitCondition extends BaseEntity {
         this.recruitLocation = recruitLocation;
         this.careTypes = careTypes;
         this.flexibleSchedule = flexibleSchedule;
+        this.address = address;
         this.mealAssistance = mealAssistance;
         this.toiletAssistance = toiletAssistance;
         this.moveAssistance = moveAssistance;
@@ -136,6 +137,14 @@ public class RecruitCondition extends BaseEntity {
             this.recruitTimes.add(recruitTime);
             recruitTime.setRecruitCondition(this); // 양방향 관계 설정
         }
+    }
+
+    public void updateRecruitTimes(List<RecruitTime> recruitTimes) {
+        this.recruitTimes = recruitTimes;
+    }
+
+    public void setRecruitLocation(Location location) {
+        this.recruitLocation = location;
     }
 
     public void update(RequestDto requestDto, Location location) {

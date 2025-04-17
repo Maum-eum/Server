@@ -9,7 +9,7 @@ import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.center.entity.Center;
-import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
+import com.example.springserver.domain.center.dto.request.AdminRequestDto;
 import com.example.springserver.domain.center.repository.AdminRepository;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
@@ -64,7 +64,7 @@ public class JoinService {
     }
 
     @Transactional
-    public Admin signUpAdmin(AdminRequestDTO.SignUpAdminReq request) {
+    public Admin signUpAdmin(AdminRequestDto.SignUpAdminReq request) {
 
         // 요청 객체 검증
         validAdmin(request.getUsername());

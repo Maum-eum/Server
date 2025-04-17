@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
-public class AdminRequestDTO {
+public class AdminRequestDto {
 
     @Getter
     public static class SignUpAdminReq{

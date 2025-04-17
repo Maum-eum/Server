@@ -18,8 +18,6 @@ public class RecruitRequestDto {
 
         private Long recruitLocationId;
 
-        private String address;
-
         private boolean mealAssistance;
 
         private boolean toiletAssistance;

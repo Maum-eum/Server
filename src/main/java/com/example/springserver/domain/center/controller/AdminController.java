@@ -1,8 +1,8 @@
 package com.example.springserver.domain.center.controller;
 
 import com.example.springserver.domain.center.converter.AdminConverter;
-import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
-import com.example.springserver.domain.center.dto.response.AdminResponseDTO;
+import com.example.springserver.domain.center.dto.request.AdminRequestDto;
+import com.example.springserver.domain.center.dto.response.AdminResponseDto;
 import com.example.springserver.domain.center.service.AdminService;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.service.JoinService;
@@ -27,25 +27,25 @@ public class AdminController {
 
     @Operation(summary = "회원가입", description = "Post")
     @PostMapping("/signup")
-    public AdminResponseDTO.SignUpAdminResult signUpAdmin(@RequestBody @Valid AdminRequestDTO.SignUpAdminReq request){
+    public AdminResponseDto.SignUpAdminResult signUpAdmin(@RequestBody @Valid AdminRequestDto.SignUpAdminReq request){
         return AdminConverter.toSignUpAdminResult(joinService.signUpAdmin(request));
     }
 
     @Operation(summary = "관리자 정보 조회", description = "Get")
     @GetMapping("/profile")
-    public AdminResponseDTO.SearchAdminResult getProfileAdmin(@AuthenticationPrincipal CustomUserDetails admin){
+    public AdminResponseDto.SearchAdminResult getProfileAdmin(@AuthenticationPrincipal CustomUserDetails admin){
         return adminService.searchAdmin(admin);
     }
 
     @Operation(summary = "관리자 정보 수정", description = "Put")
     @PutMapping("/profile")
-    public AdminResponseDTO.SearchAdminResult updateAdmin(@AuthenticationPrincipal CustomUserDetails admin, @RequestBody @Valid AdminRequestDTO.UpdateAdminReq request){
+    public AdminResponseDto.SearchAdminResult updateAdmin(@AuthenticationPrincipal CustomUserDetails admin, @RequestBody @Valid AdminRequestDto.UpdateAdminReq request){
         return adminService.updateAdmin(admin, request);
     }
 
     @Operation(summary = "관리자 계정 삭제", description = "Delete")
     @DeleteMapping("/")
-    public AdminResponseDTO.DeleteAdminResult deleteAdmin(@AuthenticationPrincipal CustomUserDetails admin){
+    public AdminResponseDto.DeleteAdminResult deleteAdmin(@AuthenticationPrincipal CustomUserDetails admin){
         return adminService.deleteAdmin(admin);
     }
 }

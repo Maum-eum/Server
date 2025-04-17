@@ -42,7 +42,7 @@ public class MockDataGenerator implements ApplicationRunner {
     @Autowired
     ElderRepository elderRepository; // 어르신
     @Autowired
-    RecruitCondRepository recruitCondRepository; // 어르신 - 구인조건
+    RecruitConditionRepository recruitConditionRepository; // 어르신 - 구인조건
     @Autowired
     RecruitTimeRepository recruitTimeRepository; // 어르신 - 구인조건 별 시간
     @Autowired
@@ -184,11 +184,12 @@ public class MockDataGenerator implements ApplicationRunner {
         }
 
         RecruitCondition recruitCondition = new RecruitCondition(
-                elder, location, careTypes,
-                boolFields[0], boolFields[1], boolFields[2], boolFields[3],
+                elder, location, careTypes, boolFields[0], "주소",
+                boolFields[1], boolFields[2], boolFields[3],
                 boolFields[4], desiredHourlyWage, boolFields[5], boolFields[6],
-                boolFields[7], boolFields[8], boolFields[9], false, false, false,
-                false, false, false, false, false, false, false, false, false, false,
+                boolFields[7], boolFields[8], boolFields[9], boolFields[6], boolFields[7], boolFields[8],
+                boolFields[1], boolFields[2], boolFields[3], boolFields[6], boolFields[6], boolFields[9],
+                boolFields[0], boolFields[6], boolFields[4], boolFields[7],
                 detailRequiredService
         );
 
@@ -206,7 +207,7 @@ public class MockDataGenerator implements ApplicationRunner {
         }
 
         // recruitCondition 저장
-        recruitCondRepository.save(recruitCondition);
+        recruitConditionRepository.save(recruitCondition);
     }
 
 
@@ -250,7 +251,7 @@ public class MockDataGenerator implements ApplicationRunner {
     }
 
     void recruitTime() {
-        RecruitCondition recruitCondition = recruitCondRepository.findRandom().get();
+        RecruitCondition recruitCondition = recruitConditionRepository.findRandom().get();
         Week dayOfWeek = faker.options().option(Week.class);
         Long startTime = (long) faker.number().numberBetween(18, 28);
         Long endTime = (long) faker.number().numberBetween(30, 36);
@@ -260,7 +261,7 @@ public class MockDataGenerator implements ApplicationRunner {
     }
 
     void recruitLocation() {
-        RecruitCondition recruitCondition = recruitCondRepository.findRandom().get();
+        RecruitCondition recruitCondition = recruitConditionRepository.findRandom().get();
         Week dayOfWeek = faker.options().option(Week.class);
         Long startTime = (long) faker.number().numberBetween(18, 28);
         Long endTime = (long) faker.number().numberBetween(30, 36);
