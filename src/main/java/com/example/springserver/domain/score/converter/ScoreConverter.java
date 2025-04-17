@@ -10,9 +10,13 @@ import java.util.List;
 public class ScoreConverter {
 
     public static RecommendCaregiverListDto toRecommendCaregiverListDto(List<MatchScore> scores){
-        return (RecommendCaregiverListDto) scores.stream()
+        List<RecommendCaregiverDto> recommendCaregivers = scores.stream()
                 .map(ScoreConverter::toRecommendCaregiverDto)
                 .toList();
+
+        return RecommendCaregiverListDto.builder()
+                .recommendCaregivers(recommendCaregivers)
+                .build();
     }
 
     public static RecommendCaregiverDto toRecommendCaregiverDto(MatchScore score){
