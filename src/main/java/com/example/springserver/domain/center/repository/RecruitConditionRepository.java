@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface RecruitCondRepository extends JpaRepository<RecruitCondition, Long> {
+public interface RecruitConditionRepository extends JpaRepository<RecruitCondition, Long> {
 
     @Query("SELECT rc FROM RecruitCondition rc LEFT JOIN FETCH rc.recruitTimes WHERE rc.recruitConditionId = :recruitId")
     Optional<RecruitCondition> findWithRecruitTimesById(@Param("recruitId") Long recruitId);
@@ -21,7 +21,4 @@ public interface RecruitCondRepository extends JpaRepository<RecruitCondition, L
     Optional<RecruitCondition> findRandom();
 
     List<RecruitCondition> findAllByRecruitLocation_LocationIdIn(List<Long> locationIds);
-
-    @Query(value = "SELECT recruit_condition_id FROM recruit_condition",nativeQuery = true)
-    List<Long> findAllRecuitIds();
 }

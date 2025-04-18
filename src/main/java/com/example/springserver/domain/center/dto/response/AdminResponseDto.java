@@ -1,18 +1,17 @@
 package com.example.springserver.domain.center.dto.response;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class AdminResponseDTO {
+public class AdminResponseDto {
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SignUpAdminResult {
+    public static class AdminResult {
         private Long adminId;
         private String createAt;
     }
@@ -21,7 +20,7 @@ public class AdminResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AdminResponseDto {
+    public static class SignUpAdminResult {
         private Long adminId;
         private String createAt;
     }

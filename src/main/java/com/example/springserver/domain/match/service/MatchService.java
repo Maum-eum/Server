@@ -4,20 +4,15 @@ import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
-import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.service.CommonService;
 import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.converter.RecruitConverter;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
 import com.example.springserver.domain.center.entity.*;
-import com.example.springserver.domain.center.entity.enums.CareType;
-import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.*;
-import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.domain.center.entity.Center;
@@ -25,24 +20,16 @@ import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
-import com.example.springserver.domain.center.entity.enums.Week;
-import com.example.springserver.domain.center.repository.RecruitCondRepository;
+import com.example.springserver.domain.center.repository.RecruitConditionRepository;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
-import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.Match;
-import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
-import com.example.springserver.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -59,7 +46,7 @@ public class MatchService {
     private final CommonService commonService;
     private final JobConditionRepository jobConditionRepository;
     private final CaregiverRepository caregiverRepository;
-    private final RecruitCondRepository recruitCondRepository;
+    private final RecruitConditionRepository recruitConditionRepository;
     private final MatchRepository matchRepository;
     private final AdminRepository adminRepository;
 
@@ -202,7 +189,7 @@ public class MatchService {
     public MatchCreateDto createMatch(CustomUserDetails user, Long jcid, Long rcid) {
         JobCondition jc = jobConditionRepository.findById(jcid)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-        RecruitCondition rc = recruitCondRepository.findById(rcid)
+        RecruitCondition rc = recruitConditionRepository.findById(rcid)
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
         Match match = Match.builder()
                 .jobCondition(jc)
@@ -216,7 +203,7 @@ public class MatchService {
     public CareGiverInfo getRecommendResult(CustomUserDetails user, Long jc, Long rc) {
         JobCondition jobCondition = jobConditionRepository.findById(jc)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-        RecruitCondition recruitCondition = recruitCondRepository.findById(rc)
+        RecruitCondition recruitCondition = recruitConditionRepository.findById(rc)
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
         Caregiver caregiver = caregiverRepository.findById(jobCondition.getId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
@@ -238,7 +225,7 @@ public class MatchService {
         Match byJcAndRC = matchRepository.findByJcAndRC(jc, rc);
         JobCondition jobCondition = jobConditionRepository.findById(jc)
                 .orElseThrow(() ->new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-        RecruitCondition recruitCondition = recruitCondRepository.findById(rc)
+        RecruitCondition recruitCondition = recruitConditionRepository.findById(rc)
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
         if(!status) {
             byJcAndRC.setStatus(MatchStatus.DECLINED);

@@ -1,9 +1,8 @@
 package com.example.springserver.domain.center.service;
 
-import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.center.converter.AdminConverter;
-import com.example.springserver.domain.center.dto.request.AdminRequestDTO;
-import com.example.springserver.domain.center.dto.response.AdminResponseDTO;
+import com.example.springserver.domain.center.dto.request.AdminRequestDto;
+import com.example.springserver.domain.center.dto.response.AdminResponseDto;
 import com.example.springserver.domain.center.entity.Admin;
 import com.example.springserver.domain.center.entity.Center;
 import com.example.springserver.domain.center.repository.AdminRepository;
@@ -25,10 +24,9 @@ import java.util.Objects;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final CaregiverRepository caregiverRepository;
     private final CenterRepository centerRepository;
 
-    public AdminResponseDTO.SearchAdminResult searchAdmin(CustomUserDetails admin) {
+    public AdminResponseDto.SearchAdminResult searchAdmin(CustomUserDetails admin) {
         String adminUsername = admin.getUsername();
         Admin adminData = adminRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
@@ -39,18 +37,12 @@ public class AdminService {
         return AdminConverter.toSearchAdminResult(adminData, isLeader);
     }
 
-    public AdminResponseDTO.SearchAdminResult updateAdmin(CustomUserDetails admin, AdminRequestDTO.UpdateAdminReq request) {
+    public AdminResponseDto.SearchAdminResult updateAdmin(CustomUserDetails admin, AdminRequestDto.UpdateAdminReq request) {
         String adminUsername = admin.getUsername();
         Admin adminData = adminRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
 
-        if (request.getName() != null) {
-            adminData.setName(request.getName());
-        }
-        if (request.getConnect() != null) {
-            adminData.setConnect(request.getConnect());
-        }
-
+        adminData.update(request.getName(), request.getConnect());
         adminRepository.save(adminData);
 
         Center center = centerRepository.findByCenterLeaderName(adminUsername);
@@ -59,7 +51,7 @@ public class AdminService {
         return AdminConverter.toSearchAdminResult(adminData, isLeader);
     }
 
-    public AdminResponseDTO.DeleteAdminResult deleteAdmin(CustomUserDetails admin) {
+    public AdminResponseDto.DeleteAdminResult deleteAdmin(CustomUserDetails admin) {
         String adminUsername = admin.getUsername();
         Admin adminData = adminRepository.findByUsername(adminUsername)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ADMIN_NOT_FOUND));

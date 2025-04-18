@@ -107,7 +107,6 @@ public class ElderController {
     }
 
     public List<Inmate> StringTypeToEnumType(List<String> inmateTypes) {
-
         // inmateTypes 값을 List<Inmate>로 변환
         return inmateTypes.stream()
                 .map(String::trim) // 공백 제거

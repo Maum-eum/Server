@@ -6,6 +6,7 @@ import com.example.springserver.global.security.jwt.JWTUtil;
 import com.example.springserver.global.security.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 
 @Configuration
@@ -25,6 +27,19 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final AdminRepository adminRepository;
+
+    private static final String[] whiteList = {
+            "/match/**",
+            "/location/**",
+            "/login",
+            "/admin/**",
+            "/",
+            "/actuator/**",
+            "/caregiver/**",
+            "/reissue",
+            "/health/**",
+            "/center/search/**"
+    };
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, AdminRepository adminRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
@@ -46,10 +61,12 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.disable())
                 .httpBasic(auth -> auth.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("match/**","location/**","/login", "/admin/signup", "/", "/actuator/**", "/caregiver/signup", "/reissue", "/health/**", "/center/search/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/caregiver/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/signup").permitAll()
+                        .requestMatchers(whiteList).permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/fcm/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/caregiver/**").hasRole("CAREGIVER")
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        /*.requestMatchers("/caregiver/**").hasRole("CAREGIVER")*/
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTFilter(jwtUtil, adminRepository), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationConfiguration.getAuthenticationManager(), jwtUtil),

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 @Entity
 @AllArgsConstructor
@@ -112,6 +111,7 @@ public class Care extends BaseEntity {
         this.independentMobility = independentMobility;
         this.mobilityAssist = mobilityAssist;
         this.wheelchairAssist = wheelchairAssist;
+        this.immobile = immobile;
         this.cleaningLaundryAssist = cleaningLaundryAssist;
         this.bathingAssist = bathingAssist;
         this.hospitalAccompaniment = hospitalAccompaniment;

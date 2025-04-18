@@ -14,12 +14,13 @@ public enum ErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
 
-    // 멤버 관려 에러
+    // 멤버 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     MEMBER_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "사용자가 이미 존재합니다.."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4003", "닉네임은 필수 입니다."),
     INVALID_MEMBER_ROLE(HttpStatus.BAD_REQUEST, "MEMBER4004", "사용자의 ROLE이 잘못 되었습니다."),
-    USERNAME_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 아이디가 이미 존재합니다."),
+    USERNAME_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 관리자 아이디가 이미 존재합니다."),
+    CAREGIVER_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 요양보호사 아이디가 이미 존재합니다."),
 
     // 토큰 관련 에러
     ACCESS_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "TOKEN4001", "액세스 토큰이 만료되었습니다."),
@@ -48,15 +49,16 @@ public enum ErrorCode {
     RECRUIT_DAILY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-DAILY-LABOR-TIME4002", "근로법 위반: 하루 최대 근무 시간(8시간)을 초과할 수 없습니다."),
     RECRUIT_MONTHLY_LABOR_TIME_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-MONTHLY-LABOR-TIME4002", "근로법 위반: 한달 최대 근무 시간(40시간)을 초과할 수 없습니다."),
     RECRUIT_LABOR_WAGE_INVALID(HttpStatus.BAD_REQUEST, "RECRUIT-LABOR-WAGE4002", "근로법 위반: 최저임금(10,030원) 미만의 급여입니다."),
+    RECRUIT_CONDITION_CACHE_MISS(HttpStatus.BAD_REQUEST, "RECRUIT_CONDITION_CACHE_MISS4001", "레디스에 해당 구인정보가 캐시되지 않았습니다."),
 
     // 요양보호사 관련 에러
     JOB_CONDITION_NOT_FOUND(HttpStatus.NOT_FOUND,"JOB_CONDITION_NOTFOUND4001","보호사의 구직정보가 존재하지 않습니다."),
+    JOB_CONDITION_CACHE_MISS(HttpStatus.BAD_REQUEST, "JOB_CONDITION_CACHE_MISS4001", "레디스에 해당 구직정보가 캐시되지 않았습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),
 
     // 관리자 관련 에러
     ADMIN_DELETE_FAILED(HttpStatus.BAD_REQUEST,"ADMIN_DELETE_FAILED4001","관리자 계정 삭제를 실패했습니다."),
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN-NOTFOUND4001","관리자정보가 존재하지 않습니다."),
-
 
     // 시간 관련 에러
     TIME_LIMIT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "TIME_LIMIT_OUT4001","시간 범위 초과 입력입니다."),
@@ -84,8 +86,8 @@ public enum ErrorCode {
     NOT_ALLOW_STRING(HttpStatus.INTERNAL_SERVER_ERROR,"NO STRING" ,"백엔드 담당자가 String으로 반환을 설정했습니다. String 반환은 허용되지 않습니다. 담당자에게 문의하세요!"),
 
     // 매칭 에러
-    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" )
-    , MONEY_NOT_MATCHED(HttpStatus.BAD_REQUEST,"MATCH002" ,"시급이 일치하지 않습니다."),
+    ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" ),
+    MONEY_NOT_MATCHED(HttpStatus.BAD_REQUEST,"MATCH002" ,"시급이 일치하지 않습니다."),
     //추천리스트 조회
     RECOMMEND_LIST_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE001","추천리스트가 존재하지 않습니다."),
     MATCH_SCORE_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE002" ,"점수리스트가 존재하지 않습니다." );

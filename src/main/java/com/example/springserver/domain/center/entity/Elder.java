@@ -1,18 +1,18 @@
 package com.example.springserver.domain.center.entity;
 
 import com.example.springserver.domain.center.converter.enums.InmateEnumListConverter;
+import com.example.springserver.domain.center.entity.enums.ElderRate;
 import com.example.springserver.domain.center.entity.enums.Inmate;
 import com.example.springserver.global.common.entity.BaseEntity;
-import com.example.springserver.domain.center.entity.enums.ElderRate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@Setter
 @Builder
 @Entity
 @AllArgsConstructor
@@ -99,5 +99,9 @@ public class Elder extends BaseEntity {
         if (!center.getElders().contains(this)) {
             center.getElders().add(this);
         }
+    }
+
+    public void removeCenter() {
+        this.center = null;
     }
 }

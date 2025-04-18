@@ -97,7 +97,7 @@ public class MatchConverter {
                         RecruitConverter.toConditionResponseDto(match.getRecruitCondition())
                         ) // recruitCondition -> dto 변환 필요
                 .jobCondition(
-                        JobConditionConverter.toJobConditionResponseDto(match.getJobCondition())
+                        JobConditionConverter.tojobConditionResponseDTO(match.getJobCondition())
                         )
                 .elderInfoDto(ElderConverter.toMatchElderDto(match.getRecruitCondition().getElder())) // elder -> dto 변환 필요
                 .careGiverInfoDto(CaregiverConverter.toMatchCaregiverDto(match.getJobCondition().getCaregiver())) // careGiver -> dto 변환 필요

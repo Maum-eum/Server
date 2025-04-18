@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface CenterRepository extends JpaRepository<Center, Long> {
     Optional<Center> findByCenterName(String centerName);
     Center findByCenterLeaderName(String adminUsername);
-
     List<Center> findByCenterNameContaining(String keyword);
 
     // Mock 데이터 생성용

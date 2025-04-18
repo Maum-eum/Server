@@ -49,27 +49,6 @@ public class ElderResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UpdateResponseDto {
-        private Long elderId;
-        private String name;
-        private String centerName;
-        private ElderRate rate;
-        private List<Inmate> inmateTypes;
-        private String img;
-        private Integer weight;
-        private boolean isTemporarySave; // 임시 저장 여부
-        private boolean isNormal; // 증상 보유 여부
-        private boolean hasShortTermMemoryLoss; // 단기 기억 장애 여부
-        private boolean wandersOutside; // 집밖을 배회 여부
-        private boolean actsLikeChild; // 어린아이 같은 행동 여부
-        private boolean hasDelusions; // 망상 여부
-        private boolean hasAggressiveBehavior; // 공격적인 행동 여부
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class DeleteResponseDto {
         private Long elderId;
         private String name;

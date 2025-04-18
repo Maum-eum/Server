@@ -1,11 +1,6 @@
 package com.example.springserver.domain.center.dto.response;
 
-import com.example.springserver.domain.center.dto.response.AdminResponseDTO.AdminResponseDto;
-import com.example.springserver.domain.center.dto.response.ElderResponseDto.ResponseDto;
-import com.example.springserver.domain.center.entity.Admin;
-import com.example.springserver.domain.center.entity.Elder;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
+import com.example.springserver.domain.center.dto.response.AdminResponseDto.AdminResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,9 +20,9 @@ public class CenterResponseDto {
 
         private String centerLeaderName;
 
-        private List<AdminResponseDto> admins;
+        private List<AdminResult> admins;
 
-        private List<ResponseDto> elders;
+        private List<ElderResponseDto.ResponseDto> elders;
 
         private Boolean hasBathCar; // 목욕차량 보유 여부
 

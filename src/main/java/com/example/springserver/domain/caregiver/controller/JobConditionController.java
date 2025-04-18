@@ -2,7 +2,6 @@ package com.example.springserver.domain.caregiver.controller;
 
 
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
 import com.example.springserver.domain.caregiver.service.JobConditionService;
@@ -28,14 +27,14 @@ public class JobConditionController {
     @PostMapping
     public JobConditionResponseDTO createJobCondition(@AuthenticationPrincipal CustomUserDetails user,
                                                                               @RequestBody @Valid JobConditionReqDto request){
-        return  jobConditionService.createOrUpdateJobCondition(user,request);
+        return jobConditionService.createOrUpdateJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직조건수정", description = "Put")
     @PutMapping
     public JobConditionResponseDTO updateJobCondition(@AuthenticationPrincipal CustomUserDetails user,
                                                                            @RequestBody @Valid JobConditionReqDto request){
-        return  jobConditionService.createOrUpdateJobCondition(user,request);
+        return jobConditionService.createOrUpdateJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직정보조회", description = "Get")

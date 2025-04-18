@@ -9,19 +9,18 @@ import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.location.entity.Location;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecruitConverter {
 
     public static RecruitCondition toRecruitCondition(RequestDto requestDto, Elder elder, Location location) {
-        return RecruitCondition.builder()
+
+        RecruitCondition recruitCondition = RecruitCondition.builder()
                 .elder(elder)
                 .careTypes(requestDto.getCareTypes())
                 .flexibleSchedule(requestDto.isFlexibleSchedule())
-                .recruitTimes(new ArrayList<>())
-                .recruitLocation(location)
+                .address(location.getAddress())
                 .mealAssistance(requestDto.isMealAssistance())
                 .toiletAssistance(requestDto.isToiletAssistance())
                 .moveAssistance(requestDto.isMoveAssistance())
@@ -47,6 +46,12 @@ public class RecruitConverter {
                 .cognitiveStimulation(requestDto.isCognitiveStimulation())
                 .detailRequiredService(requestDto.getDetailRequiredService())
                 .build();
+
+        List<RecruitTime> recruitTimes = toRecruitTimeList(requestDto.getRecruitTimes(), recruitCondition);
+        recruitCondition.updateRecruitTimes(recruitTimes);
+        recruitCondition.setRecruitLocation(location);
+
+        return recruitCondition;
     }
 
     public static RecruitTime toRecruitTime(RequestTimeDto createReqTimeDto, RecruitCondition recruitcondition) {
@@ -56,6 +61,12 @@ public class RecruitConverter {
                 .endTime(createReqTimeDto.getEndTime())
                 .dayOfWeek(createReqTimeDto.getDayOfWeek())
                 .build();
+    }
+
+    public static List<RecruitTime> toRecruitTimeList(List<RequestTimeDto> recruitTimeDtoList, RecruitCondition recruitcondition) {
+        return recruitTimeDtoList.stream()
+                .map(dto -> toRecruitTime(dto, recruitcondition))
+                .collect(Collectors.toList());
     }
 
     public static ResponseDto toConditionResponseDto(RecruitCondition recruitCondition) {
