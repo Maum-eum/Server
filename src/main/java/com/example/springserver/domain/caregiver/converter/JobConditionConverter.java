@@ -52,6 +52,7 @@ public class JobConditionConverter {
                 .startTime(saved.getStartTime())
                 .endTime(saved.getEndTime())
                 .locationResponseDtoList(toListResponseDto(saved.getWorkLocations()))
+                .caregiverId(saved.getCaregiver().getId())
                 .build();
     }
 
@@ -98,7 +99,7 @@ public class JobConditionConverter {
                 .locationRequestDTOList(saved.getWorkLocations().stream()
                         .map(dto -> JobConditionResponseDto.LocationResponseDTO.builder()
                                 .workLocationId(dto.getId())
-                                .locationName(locationService.getLocation(dto.getLocationId().getLocationId()))
+                                .locationName(locationService.getLocation(dto.getLocation().getLocationId()))
                                 .build()
                         )
                         .toList())
@@ -115,7 +116,7 @@ public class JobConditionConverter {
 
         return JobConditionResponseDto.LocationResponseDTO.builder()
                 .workLocationId(location.getId())
-                .locationName(locationService.getLocation(location.getLocationId().getLocationId()))
+                .locationName(locationService.getLocation(location.getLocation().getLocationId()))
                 .build();
     }
 

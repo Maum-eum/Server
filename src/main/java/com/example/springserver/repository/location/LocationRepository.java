@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface LocationRepository extends JpaRepository<Location,Long> {
     Optional<Location> findByLocationId(Long locationId);
+    List<Location> findAllById(Iterable<Long> ids);
     List<Location> findAllBySigunguId(Long sigunguId);
 }

@@ -2,7 +2,10 @@ package com.example.springserver.domain.caregiver.cache;
 
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
@@ -46,6 +49,6 @@ public class JobConditionCache implements Serializable {
     private Long startTime;
     private Long endTime;
 
-    private List<Long> workLocationIds;
+    private List<WorkLocationCache> workLocations;
     private Long caregiverId;
 }

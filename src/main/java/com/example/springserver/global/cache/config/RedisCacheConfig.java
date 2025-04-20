@@ -25,7 +25,7 @@ import static org.springframework.data.redis.serializer.RedisSerializationContex
 
 @Configuration
 @EnableCaching
-public class CacheConfig {
+public class RedisCacheConfig {
     private ObjectMapper objectMapper() {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType(Object.class)

@@ -3,7 +3,8 @@ package com.example.springserver.service.score.service;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
-import com.example.springserver.domain.center.entity.*;
+import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.MatchRepository;
 import com.example.springserver.domain.center.repository.RecruitConditionRepository;
@@ -14,6 +15,7 @@ import com.example.springserver.domain.score.repository.ScoreRepository;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ScoreCalculationService {
@@ -40,7 +43,12 @@ public class ScoreCalculationService {
      */
     @Transactional
     public void summarize() {
-        scoreRepository.deleteAllMarkedAsDeleted();
+        try {
+            scoreRepository.deleteAllMarkedAsDeleted();
+        } catch (Exception e) {
+            log.error("scoreRepository.deleteAllMarkedAsDeleted 실패", e);
+            throw new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR_DELETE_MATCH_SCORE);
+        }
     }
 
     /**
@@ -49,7 +57,6 @@ public class ScoreCalculationService {
      *  존재하지 않으면 새로 생성합니다.
      */
     //rc 변경시 update
-    @Transactional
     public void recalculateScoresForRecruit(Long recruitConditionId) {
         RecruitCondition rc = fetchRecruitCondition(recruitConditionId);
         Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc);
@@ -71,50 +78,59 @@ public class ScoreCalculationService {
      * JC 변경 시 점수 재계산을 수행합니다.
      * 존재하는 MatchScore는 수정/복구하고, 존재하지 않으면 새로 생성하여 저장합니다.
      */
-    @Transactional
     public void recalculateScoresForJob(Long jobConditionId) {
-        JobCondition jc = fetchJobCondition(jobConditionId);
-        List<RecruitCondition> rcList = fetchRelatedRecruitConditions(jc);
-        Map<String, MatchScore> existingScoreMap = fetchExistingMatchScoreMap(jobConditionId);
+        try {
+            JobCondition jc = fetchJobCondition(jobConditionId);
+            List<RecruitCondition> rcList = fetchRelatedRecruitConditions(jc);
+            Map<String, MatchScore> existingScoreMap = fetchExistingMatchScoreMap(jobConditionId);
 
-        List<MatchScore> results = new ArrayList<>();
+            List<MatchScore> results = new ArrayList<>();
 
-        for (RecruitCondition rc : rcList) {
-            Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc.getRecruitTimes());
+            for (RecruitCondition rc : rcList) {
+                Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc.getRecruitTimes());
 
-            if (!isAvailableOnSameDay(jc, rcDayTimeMap)) continue;
+                if (!isAvailableOnSameDay(jc, rcDayTimeMap)) continue;
 
-            int conditionScore = calculateConditionScore(jc, rc);
-            int timeScore = calculateTimeScore(rcDayTimeMap, jc);
-            int finalScore = (conditionScore + timeScore) / 2;
+                int conditionScore = calculateConditionScore(jc, rc);
+                int timeScore = calculateTimeScore(rcDayTimeMap, jc);
+                int finalScore = (conditionScore + timeScore) / 2;
 
-            MatchStatus match = matchRepository.findByJobCondition_IdAndRecruitCondition_Id(
-                    rc.getRecruitConditionId(), jc.getId());
+                MatchStatus match = matchRepository.findByJobCondition_IdAndRecruitCondition_Id(
+                        rc.getRecruitConditionId(), jc.getId());
 
-            String key = generateKey(jc.getId(), rc.getRecruitConditionId());
+                String key = generateKey(jc.getId(), rc.getRecruitConditionId());
 
-            if (existingScoreMap.containsKey(key)) {
-                MatchScore updated = updateExistingScore(existingScoreMap.get(key), match, finalScore);
-                results.add(updated);
-            } else {
-                MatchScore created = createNewScore(jc, rc, finalScore, match);
-                results.add(created);
+                if (existingScoreMap.containsKey(key)) {
+                    MatchScore updated = updateExistingScore(existingScoreMap.get(key), match, finalScore);
+                    results.add(updated);
+                } else {
+                    MatchScore created = createNewScore(jc, rc, finalScore, match);
+                    results.add(created);
+                }
             }
+
+            Set<String> processedKeys = results.stream()
+                    .map(ms -> generateKey(ms.getJobCondition().getId(), ms.getRecruitCondition().getRecruitConditionId()))
+                    .collect(Collectors.toSet());
+
+            List<MatchScore> toSoftDelete = existingScoreMap.entrySet().stream()
+                    .filter(entry -> !processedKeys.contains(entry.getKey()))
+                    .map(Map.Entry::getValue)
+                    .filter(ms -> ms.getDeletedAt() == null)
+                    .map(ms -> {
+                        ms.setDeletedAt(LocalDateTime.now());
+                        return ms;
+                    })
+                    .toList();
+
+            results.addAll(toSoftDelete);
+            scoreRepository.saveAll(results);
+        } catch (Exception e) {
+            log.error("recalculateScoresForJob 실패: jobConditionId = {}", jobConditionId, e);
+            throw new GlobalException(ErrorCode.JCSCORE_RECALCULATING_FAIL);
         }
-        Set<String> processedKeys = results.stream()
-                .map(ms -> generateKey(ms.getJobCondition().getId(), ms.getRecruitCondition().getRecruitConditionId()))
-                .collect(Collectors.toSet());
-
-        List<MatchScore> toSoftDelete = existingScoreMap.entrySet().stream()
-                .filter(entry -> !processedKeys.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .filter(ms -> ms.getDeletedAt() == null) // 이미 삭제된 건 제외
-                .peek(ms -> ms.setDeletedAt(LocalDateTime.now()))
-                .toList();
-
-        results.addAll(toSoftDelete);
-        scoreRepository.saveAll(results);
     }
+
     /**
      * 주어진 ID로 RecruitCondition을 조회합니다.
      * 존재하지 않으면 예외를 발생시킵니다.
@@ -227,7 +243,6 @@ public class ScoreCalculationService {
                 results.add(newScore);
             }
         }
-
         return results;
     }
 
@@ -247,7 +262,10 @@ public class ScoreCalculationService {
                 .filter(entry -> !processedKeys.contains(entry.getKey()))
                 .map(Map.Entry::getValue)
                 .filter(ms -> ms.getDeletedAt() == null)
-                .peek(ms -> ms.setDeletedAt(LocalDateTime.now()))
+                .map(ms -> {
+                    ms.setDeletedAt(LocalDateTime.now());
+                    return ms;
+                })
                 .toList();
     }
 
@@ -256,6 +274,7 @@ public class ScoreCalculationService {
      * 존재하지 않으면 예외를 발생시킵니다.
      */
     private JobCondition fetchJobCondition(Long jobConditionId) {
+        log.info("jobConditionId = {}", jobConditionId);
         return jobConditionRepository.findById(jobConditionId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
     }
@@ -265,7 +284,7 @@ public class ScoreCalculationService {
      */
     private List<RecruitCondition> fetchRelatedRecruitConditions(JobCondition jc) {
         List<Long> locationIds = jc.getWorkLocations().stream()
-                .map(wl -> wl.getLocationId().getLocationId())
+                .map(wl -> wl.getLocation().getLocationId())
                 .toList();
         return recruitConditionRepository.findAllByRecruitLocation_LocationIdIn(locationIds);
     }
@@ -334,23 +353,22 @@ public class ScoreCalculationService {
         return jobConditionId + "_" + recruitConditionId;
     }
 
-
-    /**
-     * 여기를 @Transactional로 나눴더니 Update/Delete Transactional 안씌워지는 오류 해결되더라구요
-     * 여기 통해서 점수계산 Transactional 씌워서 들어가게되요
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void recalculateScoresForJobWithNewTransaction(Long id) {
-        recalculateScoresForJob(id);
-    }
-
-    /**
-     * 여기를 @Transactional로 나눴더니 Update/Delete Transactional 안씌워지는 오류 해결되더라구요
-     * 여기 통해서 점수계산 Transactional 씌워서 들어가게되요
-     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recalculateScoresForRecruitWithNewTransaction(Long recruitConditionId) {
-        recalculateScoresForRecruit(recruitConditionId);
+        try {
+            recalculateScoresForRecruit(recruitConditionId);
+        } catch (Exception e) {
+            throw new GlobalException(ErrorCode.RCSCORE_RECALCULATING_FAIL);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void recalculateScoresForJobWithNewTransaction(Long jobConditionId) {
+        try {
+            recalculateScoresForJob(jobConditionId);
+        } catch (Exception e) {
+            throw new GlobalException(ErrorCode.JCSCORE_RECALCULATING_FAIL);
+        }
     }
 
     private int calculateConditionScore(JobCondition jc, RecruitCondition rc) {

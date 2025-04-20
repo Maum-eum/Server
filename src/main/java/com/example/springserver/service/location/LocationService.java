@@ -24,6 +24,13 @@ public class LocationService {
         return locationRepository.findAllBySigunguId(sigunguId);
     }
 
+    public List<Location> findAllById(List<Long> locationIdList) {
+        if (locationIdList == null || locationIdList.isEmpty()) {
+            throw new GlobalException(ErrorCode.BAD_REQUEST);
+        }
+        return locationRepository.findAllById(locationIdList);
+    }
+
     public String getLocation(Long locationId){
         if(locationId == 0)
             throw new GlobalException(ErrorCode.BAD_REQUEST);
