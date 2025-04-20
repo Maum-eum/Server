@@ -32,7 +32,7 @@ public class JobConditionCacheRepository {
         String caregiverKey = getCaregiverKey(cache.getCaregiverId());
 
         cacheHelper.saveValue(jobKey, cache, TTL);
-        cacheHelper.saveValue(caregiverKey, cache.getId(), TTL); // caregiverId → jobConditionId 매핑
+        cacheHelper.saveValue(caregiverKey, cache.getId().toString(), TTL); // caregiverId → jobConditionId 매핑
     }
 
     public Optional<JobConditionCache> findByJobConditionId(Long id) {
@@ -40,7 +40,9 @@ public class JobConditionCacheRepository {
     }
 
     public Optional<JobConditionCache> findByCaregiverId(Long caregiverId) {
-        return cacheHelper.get(getCaregiverKey(caregiverId), Long.class)
+        log.info("caregiver_condition key : {}", getCaregiverKey(caregiverId));
+        return cacheHelper.get(getCaregiverKey(caregiverId), String.class)
+                .map(Long::valueOf)
                 .flatMap(this::findByJobConditionId);
     }
 

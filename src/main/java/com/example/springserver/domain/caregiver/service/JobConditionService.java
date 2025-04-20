@@ -49,71 +49,35 @@ public class JobConditionService {
     이제 EventListener 가시면됩니다. -> ScoreRecalculateEventListener
      */
     @Transactional
-    public JobConditionResponseDTO createOrUpdateJobCondition(CustomUserDetails user, JobConditionReqDto request) {
+    public JobConditionResponseDTO createJobCondition(CustomUserDetails user, JobConditionReqDto request) {
         Caregiver caregiver = commonService.getById(user);
-        Long caregiverId = user.getId();
+        // 캐시 삭제
+        jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
 
-        // 캐시 데이터 삭제
-        jobConditionCacheService.deleteByCaregiverKey(caregiverId);
-
-        JobCondition jobcondition = jobConditionRepository.findByCaregiver(caregiver)
-                .map(existingJobCondition -> updateJobCondition(caregiver, request)) // 존재하면 업데이트
-                .orElseGet(() -> createJobCondition(caregiver, request));// 없으면 새로 생성
-
-        JobConditionResponseDTO jcDto = JobConditionConverter.tojobConditionResponseDTO(jobcondition);
-
-        log.info("event 처리에 활용돠는 jobConditionId = {}", jcDto.getJobConditionId());
-        eventPublisher.publishEvent(new JobConditionChangedEvent(this, jcDto.getJobConditionId()));
-
-        // 캐시 저장
-        JobConditionCache cacheData = JobConditionCacheConverter.toRedisDto(jobcondition);
-        jobConditionCacheService.save(cacheData);
-
-        return jcDto;
-    }
-
-    public JobCondition createJobCondition(Caregiver user, JobConditionReqDto request) {
-
-        JobCondition jobCondition = JobConditionConverter.from(user, request);
-
-        // save
+        // 생성
+        JobCondition jobCondition = JobConditionConverter.from(caregiver, request);
         jobCondition = jobConditionRepository.save(jobCondition);
+
         saveLocations(request, jobCondition);
 
-        return jobCondition;
+        return postProcess(jobCondition);
     }
 
-    public JobCondition updateJobCondition(Caregiver user, JobConditionReqDto request) {
-        JobCondition jobCondition = findJobCondition(user);
+    @Transactional
+    public JobConditionResponseDTO updateJobCondition(CustomUserDetails userDetails, JobConditionReqDto request) {
+        Caregiver caregiver = commonService.getById(userDetails);
+        Long caregiverId = caregiver.getId();
 
-        Set<Long> updatedIds = new HashSet<>();
+        jobConditionCacheService.deleteByCaregiverKey(caregiverId);
 
-        for (JobConditionRequestDto.LocationRequestDTO dto : request.getLocationRequestDTOList()) {
-            Location location = locationService.findById(dto.getLocationId());
-
-            if (dto.getWorkLocationId() != null) {
-                WorkLocation existing = jobCondition.getWorkLocations().stream()
-                        .filter(wl -> wl.getId().equals(dto.getWorkLocationId()))
-                        .findFirst()
-                        .orElseThrow(() -> new GlobalException(ErrorCode.WORK_LOCATION_NOT_FOUND));
-
-                existing.setLocationId(location);
-                updatedIds.add(existing.getId());
-            }
-            else {
-                WorkLocation newLocation = WorkLocation.builder()
-                        .locationId(location)
-                        .jobCondition(jobCondition)
-                        .build();
-                jobCondition.addWokLocation(newLocation);
-            }
-        }
-
-        jobCondition.getWorkLocations().removeIf(wl -> !updatedIds.contains(wl.getId()));
+        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
+                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
 
         jobCondition.updateInfo(request);
+        updateWorkLocations(jobCondition, request);
+        jobCondition = jobConditionRepository.save(jobCondition);
 
-        return jobCondition;
+        return postProcess(jobCondition);
     }
 
     public void saveLocations(JobConditionReqDto request, JobCondition jobCondition) {
@@ -123,13 +87,37 @@ public class JobConditionService {
                     Location location = locationService.findById(dto.getLocationId());
                     return WorkLocation.builder()
                             .jobCondition(jobCondition)
-                            .locationId(location)
+                            .location(location)
                             .build();
                 })
                 .toList();
 
         workLocationRepository.saveAll(workLocations);
         jobCondition.setWorkLocations(workLocations);
+    }
+
+    private void updateWorkLocations(JobCondition jobCondition, JobConditionReqDto request) {
+        List<Long> locationIds = request.getLocationRequestDTOList().stream()
+                .map(JobConditionRequestDto.LocationRequestDTO::getLocationId)
+                .toList();
+
+        Set<Location> requestedLocations = new HashSet<>(locationService.findAllById(locationIds));
+        List<WorkLocation> currentLocations = jobCondition.getWorkLocations();
+
+        // 기존에 없는 새로운 Location만 추가
+        for (Location location : requestedLocations) {
+            boolean alreadyExists = currentLocations.stream()
+                    .anyMatch(wl -> wl.getLocation().getLocationId().equals(location.getLocationId())); // 수정 포인트
+
+            if (!alreadyExists) {
+                WorkLocation workLocation = WorkLocation.builder()
+                        .jobCondition(jobCondition)
+                        .location(location)
+                        .build();
+                workLocationRepository.save(workLocation);
+                jobCondition.addWokLocation(workLocation);  // 양방향 연관관계 설정
+            }
+        }
     }
 
     public DetailJobConditionResponseDTO getDetailedJobCondition(CustomUserDetails user) {
@@ -139,6 +127,7 @@ public class JobConditionService {
     }
 
     // read-through 캐싱 전략이 적용된 조회 코드
+    @Transactional(readOnly = true)
     public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
         try {
             JobConditionCache cachedJc = jobConditionCacheService.getByCaregiverKey(user.getId());
@@ -162,5 +151,20 @@ public class JobConditionService {
     public JobCondition findJobCondition(Caregiver user) {
         return jobConditionRepository.findByCaregiver(user)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+    }
+
+    private JobConditionResponseDTO postProcess(JobCondition jobCondition) {
+        JobConditionResponseDTO jcDto = JobConditionConverter.tojobConditionResponseDTO(jobCondition);
+
+        // 이벤트 발행
+        if (jobCondition.getId() != null) {
+            eventPublisher.publishEvent(new JobConditionChangedEvent(this, jobCondition.getId()));
+        }
+
+        // 캐시 저장
+        JobConditionCache cacheData = JobConditionCacheConverter.toRedisDto(jobCondition);
+        jobConditionCacheService.save(cacheData);
+
+        return jcDto;
     }
 }

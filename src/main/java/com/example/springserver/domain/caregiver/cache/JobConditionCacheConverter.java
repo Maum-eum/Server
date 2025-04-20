@@ -90,8 +90,8 @@ public class JobConditionCacheConverter {
     private static WorkLocationCache toWorkLocationCache(WorkLocation workLocation) {
         return WorkLocationCache.builder()
                 .workLocationId(workLocation.getId())
-                .locationId(workLocation.getLocationId().getLocationId())
-                .address(workLocation.getLocationId().getAddress())
+                .locationId(workLocation.getLocation().getLocationId())
+                .address(workLocation.getLocation().getAddress())
                 .build();
     }
 }

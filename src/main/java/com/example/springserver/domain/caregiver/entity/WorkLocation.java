@@ -21,21 +21,21 @@ public class WorkLocation {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "location_id", nullable = false)
-    private Location locationId;
+    private Location location;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "job_condition_id", nullable = false)
     private JobCondition jobCondition;
 
-    public WorkLocation(Location locationId, JobCondition jobCondition) {
-        this.locationId = locationId;
+    public WorkLocation(Location location, JobCondition jobCondition) {
+        this.location = location;
         this.jobCondition = jobCondition;
     }
 
-    public WorkLocation(JobCondition jobCondition, Location locationId) {
+    public WorkLocation(JobCondition jobCondition, Location location) {
         this.jobCondition = jobCondition;
-        this.locationId = locationId;
+        this.location = location;
     }
 
     public void setJobCondition(JobCondition jobCondition) {

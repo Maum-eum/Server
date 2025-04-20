@@ -52,7 +52,7 @@ public enum ErrorCode {
     RECRUIT_CONDITION_CACHE_MISS(HttpStatus.BAD_REQUEST, "RECRUIT_CONDITION_CACHE_MISS4001", "레디스에 해당 구인정보가 캐시되지 않았습니다."),
 
     // 요양보호사 관련 에러
-    JOB_CONDITION_NOT_FOUND(HttpStatus.NOT_FOUND,"JOB_CONDITION_NOTFOUND4001","보호사의 구직정보가 존재하지 않습니다."),
+    JOB_CONDITION_NOT_FOUND(HttpStatus.BAD_REQUEST,"JOB_CONDITION_NOTFOUND4001","보호사의 구직정보가 존재하지 않습니다."),
     JOB_CONDITION_CACHE_MISS(HttpStatus.BAD_REQUEST, "JOB_CONDITION_CACHE_MISS4001", "레디스에 해당 구직정보가 캐시되지 않았습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "CAREGIVER-NOTFOUND4001","보호사정보가 존재하지 않습니다."),
 
@@ -88,10 +88,15 @@ public enum ErrorCode {
     // 매칭 에러
     ERROR_AT_CALCULATE_LOGIC(HttpStatus.NOT_FOUND,"MATCH001", "점수계산중 오류발생" ),
     MONEY_NOT_MATCHED(HttpStatus.BAD_REQUEST,"MATCH002" ,"시급이 일치하지 않습니다."),
+    INTERNAL_SERVER_ERROR_DELETE_MATCH_SCORE(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "매칭 점수 삭제 중 서버 에러 발생"),
+
+    // 매칭 점수 계산 에러
+    JCSCORE_RECALCULATING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "jc 점수 재계산 중 오류 발생"),
+    RCSCORE_RECALCULATING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "rc 점수 재계산 중 오류 발생"),
+
     //추천리스트 조회
     RECOMMEND_LIST_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE001","추천리스트가 존재하지 않습니다."),
     MATCH_SCORE_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE002" ,"점수리스트가 존재하지 않습니다." );
-
 
     private final HttpStatus status;
     private final String code;

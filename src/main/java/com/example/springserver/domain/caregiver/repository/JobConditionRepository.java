@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JobConditionRepository extends JpaRepository<JobCondition,Long> {
+
+    // fetch join으로 수정
     Optional<JobCondition> findByCaregiver(Caregiver caregiver);
+
+    boolean existsById(Long id);
 
     @Query(value = """
         SELECT jc.*

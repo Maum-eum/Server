@@ -27,14 +27,14 @@ public class JobConditionController {
     @PostMapping
     public JobConditionResponseDTO createJobCondition(@AuthenticationPrincipal CustomUserDetails user,
                                                                               @RequestBody @Valid JobConditionReqDto request){
-        return jobConditionService.createOrUpdateJobCondition(user,request);
+        return jobConditionService.createJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직조건수정", description = "Put")
     @PutMapping
     public JobConditionResponseDTO updateJobCondition(@AuthenticationPrincipal CustomUserDetails user,
                                                                            @RequestBody @Valid JobConditionReqDto request){
-        return jobConditionService.createOrUpdateJobCondition(user,request);
+        return jobConditionService.updateJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직정보조회", description = "Get")
