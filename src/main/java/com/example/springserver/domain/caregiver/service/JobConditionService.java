@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -73,7 +72,6 @@ public class JobConditionService {
         return jcDto;
     }
 
-    @Transactional
     public JobCondition createJobCondition(Caregiver user, JobConditionReqDto request) {
 
         JobCondition jobCondition = JobConditionConverter.from(user, request);
@@ -85,7 +83,6 @@ public class JobConditionService {
         return jobCondition;
     }
 
-    @Transactional
     public JobCondition updateJobCondition(Caregiver user, JobConditionReqDto request) {
         JobCondition jobCondition = findJobCondition(user);
 
@@ -119,7 +116,6 @@ public class JobConditionService {
         return jobCondition;
     }
 
-    @Transactional
     public void saveLocations(JobConditionReqDto request, JobCondition jobCondition) {
 
         List<WorkLocation> workLocations = request.getLocationRequestDTOList().stream()
@@ -130,7 +126,7 @@ public class JobConditionService {
                             .locationId(location)
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         workLocationRepository.saveAll(workLocations);
         jobCondition.setWorkLocations(workLocations);

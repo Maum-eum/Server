@@ -38,9 +38,9 @@ public class JobConditionCacheConverter {
                 .dayOfWeek(jobCondition.getDayOfWeek())
                 .startTime(jobCondition.getStartTime())
                 .endTime(jobCondition.getEndTime())
-                .workLocationIds(
-                        toWorkLocationIdList(jobCondition.getWorkLocations())
-                )
+                .workLocations(jobCondition.getWorkLocations().stream()
+                        .map(JobConditionCacheConverter::toWorkLocationCache)
+                        .collect(Collectors.toList()))
                 .caregiverId(jobCondition.getCaregiver().getId())
                 .build();
     }
@@ -72,24 +72,26 @@ public class JobConditionCacheConverter {
                 .dayOfWeek(String.valueOf(cache.getDayOfWeek()))
                 .startTime(cache.getStartTime())
                 .endTime(cache.getEndTime())
-                .locationResponseDtoList(toLocationResponseDtoList(cache.getWorkLocationIds()))
+                .locationResponseDtoList(toLocationResponseDtoList(cache.getWorkLocations()))
                 .caregiverId(cache.getCaregiverId())
                 .build();
     }
 
-    private static List<JobConditionResponseDto.LocationResponseDTO> toLocationResponseDtoList(List<Long> workLocationIds) {
+    private static List<JobConditionResponseDto.LocationResponseDTO> toLocationResponseDtoList(List<WorkLocationCache> workLocationIds) {
         return workLocationIds.stream()
-                .map(id -> JobConditionResponseDto.LocationResponseDTO.builder()
-                        .workLocationId(id)
-                        .locationName(null) // 캐시에는 name 정보가 없다고 가정
+                .map(w -> JobConditionResponseDto.LocationResponseDTO.builder()
+                        .workLocationId(w.getWorkLocationId())
+                        .locationName(w.getAddress())
                         .build()
                 )
                 .collect(Collectors.toList());
     }
 
-    private static List<Long> toWorkLocationIdList(List<WorkLocation> workLocations) {
-        return workLocations.stream()
-                .map(WorkLocation::getId)
-                .collect(Collectors.toList());
+    private static WorkLocationCache toWorkLocationCache(WorkLocation workLocation) {
+        return WorkLocationCache.builder()
+                .workLocationId(workLocation.getId())
+                .locationId(workLocation.getLocationId().getLocationId())
+                .address(workLocation.getLocationId().getAddress())
+                .build();
     }
 }
