@@ -16,7 +16,7 @@ public class MatchScoreCacheService {
     private final MatchScoreCacheRepository cacheRepository;
 
     public List<MatchScoreCache> getByRecruitConditionId(Long recruitConditionId) {
-        return cacheRepository.findByRecruitConditionId(recruitConditionId);
+        return cacheRepository.findTopByRecruitConditionId(recruitConditionId);
     }
 
     public void saveAll(List<MatchScoreCache> caches) {

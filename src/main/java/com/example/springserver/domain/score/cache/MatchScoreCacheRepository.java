@@ -1,55 +1,72 @@
 package com.example.springserver.domain.score.cache;
 
+import com.example.springserver.global.apiPayload.format.ErrorCode;
+import com.example.springserver.global.apiPayload.format.GlobalException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
 public class MatchScoreCacheRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String KEY_PREFIX = "match_score:";
 
-    public List<MatchScoreCache> findByRecruitConditionId(Long recruitConditionId) {
-        String pattern = KEY_PREFIX + recruitConditionId + ":";
-        Cursor<byte[]> cursor = redisTemplate.execute((RedisCallback<Cursor<byte[]>>) connection ->
-                connection.scan(ScanOptions.scanOptions().match(pattern + "*").build()));
+    public String getKeyByRecruitConditionId(Long id) {return KEY_PREFIX + id;}
 
-        List<MatchScoreCache> result = new ArrayList<>();
-        while (cursor != null && cursor.hasNext()) {
-            byte[] key = cursor.next();
-            Object cache = redisTemplate.opsForValue().get(new String(key));
-            if (cache != null) {
-                result.add((MatchScoreCache) cache);
-            }
-        }
-        return result;
+    public List<MatchScoreCache> findTopByRecruitConditionId(Long recruitConditionId) {
+        String key = getKeyByRecruitConditionId(recruitConditionId);
+        Set<Object> results = redisTemplate.opsForZSet().reverseRange(key, 0, -1);
+
+        if (results == null) return List.of();
+
+        return results.stream()
+                .map(this::deserialize)
+                .toList();
     }
 
     public void saveAll(List<MatchScoreCache> caches) {
-        // Redis 파이프라인 처리
         redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
             for (MatchScoreCache cache : caches) {
-                String key = KEY_PREFIX + cache.getRecruitConditionId() + ":" + cache.getId();
-                connection.set(key.getBytes(), serialize(cache));
+                String key = getKeyByRecruitConditionId(cache.getRecruitConditionId());
+                String value = serialize(cache);
+                double score = cache.getScore();
+
+                redisTemplate.opsForZSet().add(key, value, score);
+                redisTemplate.expire(key, Duration.ofMinutes(60)); // 임시 1시간 설정
             }
             return null;
         });
     }
 
-    private byte[] serialize(MatchScoreCache cache) {
+    // 직렬화
+    private String serialize(MatchScoreCache cache) {
         try {
-            return new ObjectMapper().writeValueAsBytes(cache);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize cache", e);
+            return objectMapper.writeValueAsString(cache);
+        } catch (JsonProcessingException e) {
+            throw new GlobalException(ErrorCode.MATCH_SCORE_SERIALIZE_FAILED);
+        }
+    }
+
+    // 역직렬화
+    private MatchScoreCache deserialize(Object value) {
+        if (value instanceof String stringValue) {
+            try {
+                return objectMapper.readValue(stringValue, MatchScoreCache.class);
+            } catch (JsonProcessingException e) {
+                throw new GlobalException(ErrorCode.MATCH_SCORE_DESERIALIZE_FAILED);
+            }
+        } else {
+            throw new GlobalException(ErrorCode.MATCH_SCORE_DESERIALIZE_FAILED);
         }
     }
 }
