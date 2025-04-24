@@ -32,7 +32,7 @@ public class ScoreService {
 
         // Cache hit
         if (!cachedScores.isEmpty()) {
-
+            log.info("[Redis] score 조회 ========");
             List<MatchScore> scores = cachedScores.stream()
                     .map(matchScoreCacheConverter::fromCache)
                     .toList();
@@ -40,6 +40,7 @@ public class ScoreService {
         }
 
         // Cache miss → DB 조회
+        log.info("[MySQL] score 조회 ========");
         List<MatchScore> scores = scoreRepository.findByRecruitConditionId(recruitConditionId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.RECOMMEND_LIST_NOT_FOUND));
 

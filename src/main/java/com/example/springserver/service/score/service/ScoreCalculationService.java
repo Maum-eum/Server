@@ -10,8 +10,11 @@ import com.example.springserver.domain.center.repository.MatchRepository;
 import com.example.springserver.domain.center.repository.RecruitConditionRepository;
 import com.example.springserver.domain.match.entity.Match;
 import com.example.springserver.domain.match.entity.enums.MatchStatus;
+import com.example.springserver.domain.score.cache.MatchScoreCache;
+import com.example.springserver.domain.score.cache.MatchScoreCacheConverter;
 import com.example.springserver.domain.score.entity.MatchScore;
 import com.example.springserver.domain.score.repository.ScoreRepository;
+import com.example.springserver.domain.score.service.cache.MatchScoreCacheService;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,8 @@ public class ScoreCalculationService {
     private final RecruitConditionRepository recruitConditionRepository;
     private final MatchRepository matchRepository;
     private final ScoreRepository scoreRepository;
+    private final MatchScoreCacheService matchScoreCacheService;
+    private final MatchScoreCacheConverter matchScoreCacheConverter;
 
     // 주기적 삭제
     /**
@@ -56,8 +61,9 @@ public class ScoreCalculationService {
      *  기존 MatchScore가 존재하면 복구 및 업데이트,
      *  존재하지 않으면 새로 생성합니다.
      */
-    //rc 변경시 update
+    //rc 변경시 update (Redis, DB 수정 O)
     public void recalculateScoresForRecruit(Long recruitConditionId) {
+        log.info("recalculateScoresForRecruit===========");
         RecruitCondition rc = fetchRecruitCondition(recruitConditionId);
         Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc);
         int rcDayMask = calculateRcDayMask(rcDayTimeMap);
@@ -70,15 +76,23 @@ public class ScoreCalculationService {
         List<MatchScore> toSoftDelete = filterSoftDeleteTargetsForRecruit(existingScoreMap, results);
 
         results.addAll(toSoftDelete);
+
+        // DB data -> cache로 변환 & 저장
+        List<MatchScoreCache> newCaches = results.stream()
+                .map(matchScoreCacheConverter::toCache)
+                .toList();
+
         scoreRepository.saveAll(results);
+        matchScoreCacheService.saveAll(newCaches);
     }
 
-    // JC 변경시 Update
+    // JC 변경시 Update (Redis, DB 수정 O)
     /**
      * JC 변경 시 점수 재계산을 수행합니다.
      * 존재하는 MatchScore는 수정/복구하고, 존재하지 않으면 새로 생성하여 저장합니다.
      */
     public void recalculateScoresForJob(Long jobConditionId) {
+        log.info("recalculateScoresForJob===========");
         try {
             JobCondition jc = fetchJobCondition(jobConditionId);
             List<RecruitCondition> rcList = fetchRelatedRecruitConditions(jc);
@@ -124,7 +138,14 @@ public class ScoreCalculationService {
                     .toList();
 
             results.addAll(toSoftDelete);
+
+            // DB data -> cache로 변환 & 저장
+            List<MatchScoreCache> newCaches = results.stream()
+                    .map(matchScoreCacheConverter::toCache)
+                    .toList();
+
             scoreRepository.saveAll(results);
+            matchScoreCacheService.saveAll(newCaches);
         } catch (Exception e) {
             log.error("recalculateScoresForJob 실패: jobConditionId = {}", jobConditionId, e);
             throw new GlobalException(ErrorCode.JCSCORE_RECALCULATING_FAIL);
