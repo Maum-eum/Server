@@ -94,6 +94,10 @@ public enum ErrorCode {
     JCSCORE_RECALCULATING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "jc 점수 재계산 중 오류 발생"),
     RCSCORE_RECALCULATING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "rc 점수 재계산 중 오류 발생"),
 
+    // 매칭 점수 캐싱 에러
+    MATCH_SCORE_SERIALIZE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "매칭 점수 Redis 직렬화 오류 발생"),
+    MATCH_SCORE_DESERIALIZE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MATCHSCORE500", "매칭 점수 Redis 역직렬화 오류 발생"),
+
     //추천리스트 조회
     RECOMMEND_LIST_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE001","추천리스트가 존재하지 않습니다."),
     MATCH_SCORE_NOT_FOUND(HttpStatus.NOT_FOUND,"SCORE002" ,"점수리스트가 존재하지 않습니다." );

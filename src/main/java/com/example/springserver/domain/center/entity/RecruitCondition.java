@@ -133,9 +133,12 @@ public class RecruitCondition extends BaseEntity {
     }
 
     public void addRecruitTime(RecruitTime recruitTime) {
+        if (this.recruitTimes == null) {
+            this.recruitTimes = new ArrayList<>();
+        }
         if (!this.recruitTimes.contains(recruitTime)) {
             this.recruitTimes.add(recruitTime);
-            recruitTime.setRecruitCondition(this); // 양방향 관계 설정
+            recruitTime.setRecruitCondition(this);
         }
     }
 
