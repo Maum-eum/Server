@@ -30,9 +30,9 @@ public class MockDataGenerator implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-    //        System.out.println("Mock 데이터 생성 메서드 실행...");
-    //        createMockData();
-    //        System.out.println("Mock 데이터 생성 메서드 끝...");
+        //        System.out.println("Mock 데이터 생성 메서드 실행...");
+        //        createMockData();
+        //        System.out.println("Mock 데이터 생성 메서드 끝...");
     }
 
     /* 애플리케이션 실행 시점에 Mock 데이터 생성 */
@@ -62,44 +62,44 @@ public class MockDataGenerator implements ApplicationRunner {
     @Autowired
     CareRepository careRepository;
 
-    void createMockData() {
+    public void createMockData() {
         for (int i = 0; i < 10; i++) {
             admin();
         }
         for (int i = 0; i < 10; i++) {
-            elder();
+            Elder elder = elder();
+
+            for (int j = 0; j < 1; j++) {
+                recruitCondition(Math.toIntExact(elder.getElderId()));
+                care(Math.toIntExact(elder.getElderId()));
+                recruitTime();
+                recruitLocation();
+            }
+
         }
 
         // 3. 요양보호사 데이터 생성
         for (int i = 0; i < 10; i++) {
-            careGiver();
-        }
-
-        // 4. 자격증 및 경력 데이터 생성
-        for (int i = 0; i < 5; i++) {
-            certificate();
-            experience();
-        }
-
-        // 5. 구직 조건, 근무지 데이터 생성
-        for (int i = 0; i < 1; i++) {
-            jobCondition(i+1);
+            Caregiver caregiver = careGiver();
+            for (int j = 0; j < 3; j++) {
+                certificate();
+                experience();
+            }
+            jobCondition(Math.toIntExact(caregiver.getId()));
             workLocation();
         }
 
-        // 6. 구인 조건과 시간 데이터 생성
-        for (int i = 0; i < 1; i++) {
-            recruitCondition(i+1);
-            care(i+1);
-        }
-        for (int i = 0; i < 1; i++) {
-            recruitTime();
-            recruitLocation();
-        }
+
+
     }
 
     void certificate() {
-        Caregiver caregiver = caregiverRepository.findRandom().get();
+        Optional<Caregiver> caregiverOptional = caregiverRepository.findRandom();
+        if (!caregiverOptional.isPresent()) {
+            System.out.println("Caregiver not found");
+            return; // 또는 다른 처리
+        }
+        Caregiver caregiver = caregiverOptional.get();
         String certNum = faker.text().text();
         CertType certType = faker.options().option(CertType.class);
         Level certRate = faker.options().option(Level.class);
@@ -109,7 +109,12 @@ public class MockDataGenerator implements ApplicationRunner {
     }
 
     void experience() {
-        Caregiver caregiver = caregiverRepository.findRandom().get();
+        Optional<Caregiver> caregiverOptional = caregiverRepository.findRandom();
+        if (!caregiverOptional.isPresent()) {
+            System.out.println("Caregiver not found");
+            return; // 또는 다른 처리
+        }
+        Caregiver caregiver = caregiverOptional.get();
         Integer duration = faker.number().numberBetween(1, 10);
         String title = faker.text().text();
         String description = faker.text().text();
@@ -130,7 +135,7 @@ public class MockDataGenerator implements ApplicationRunner {
         adminRepository.save(admin);
     }
 
-    void elder() {
+    Elder elder() {
         Center center = centerRepository.findRandom().get(); // 센터: 1~5
         String name = faker.name().fullName();
         Integer gender = faker.number().numberBetween(0, 1); // 1 or 0
@@ -152,12 +157,12 @@ public class MockDataGenerator implements ApplicationRunner {
         Elder elder = new Elder(center, name, gender, birth, rate, inmateTypes, null, weight,
                 isTemporarySave, isNormal, hasShortTermMemoryLoss, wandersOutside, actsLikeChild,
                 hasDelusions, hasAggressiveBehavior);
-        elderRepository.save(elder);
+        return elderRepository.save(elder);
     }
 
     void recruitCondition(int i) {
         Elder elder = elderRepository.findById(Long.valueOf(i))
-                .orElseThrow(() -> new RuntimeException("===== elder 중복 ====="));
+                .orElseThrow(() -> new RuntimeException("elderId ==== " + i));
 
         List<CareType> careTypes = Collections.singletonList(faker.options().option(CareType.class));
 
@@ -270,14 +275,13 @@ public class MockDataGenerator implements ApplicationRunner {
         recruitTimeRepository.save(recruitTime);
     }
 
-    void careGiver() {
+    Caregiver careGiver() {
         String username = faker.funnyName().name();
         String password = faker.hashing().sha256();
         String name = faker.name().fullName();
         String contact = String.valueOf(faker.phoneNumber());
         Boolean car = faker.bool().bool();
         Boolean education = faker.bool().bool();
-//        String img = faker.image().base64JPG();
         String intro = faker.text().text();
         String address = String.valueOf(faker.address());
         Boolean employmentStatus = faker.bool().bool();
@@ -285,11 +289,23 @@ public class MockDataGenerator implements ApplicationRunner {
         List<Certificate> certificates = certificateRepository.findRandom().stream().toList();
 
         Caregiver caregiver = new Caregiver(username, password, name, contact, car, education, null, intro, address, employmentStatus, experiences, certificates);
-        Caregiver savedCaregiver = caregiverRepository.save(caregiver);
-        System.out.println("Saved Caregiver ID: " + savedCaregiver.getId());
+
+        // Log before saving
+        System.out.println("Saving caregiver: " + caregiver);
+
+        return caregiverRepository.save(caregiver);
     }
 
-    void jobCondition(int i) {
+    // 수정된 코드 (방법1 적용)
+    public void jobCondition(int caregiverId) {
+        Optional<Caregiver> optionalCaregiver = caregiverRepository.findById((long) caregiverId);
+        if (optionalCaregiver.isEmpty()) {
+            System.out.println("caregiverId " + caregiverId + "에 해당하는 Caregiver가 존재하지 않아 jobCondition 생성 생략");
+            return; // 예외 던지지 않고 그냥 넘어감
+        }
+
+        Caregiver caregiver = optionalCaregiver.get();
+
         ScheduleAvailability flexibleSchedule = faker.options().option(ScheduleAvailability.class);
         Integer desiredHourlyWage = faker.number().numberBetween(10030, 50000);
         ScheduleAvailability selfFeeding = faker.options().option(ScheduleAvailability.class);
@@ -314,25 +330,15 @@ public class MockDataGenerator implements ApplicationRunner {
         Integer dayOfWeek = faker.number().numberBetween(1, 6);
         Long startTime = (long) faker.number().numberBetween(18, 28);
         Long endTime = (long) faker.number().numberBetween(30, 36);
-        Caregiver caregiver = caregiverRepository.findById((long)i)
-                .orElseThrow(() -> new RuntimeException("=========== caregiver 매핑 안됨 ==========="));
 
         JobCondition jobCondition = new JobCondition(flexibleSchedule, desiredHourlyWage, selfFeeding, mealPreparation,
                 cookingAssistance, enteralNutritionSupport, selfToileting, occasionalToiletingAssist, diaperCare, catheterOrStomaCare,
                 independentMobility, mobilityAssist, wheelchairAssist, immobile, cleaningLaundryAssist, bathingAssist, hospitalAccompaniment,
                 exerciseSupport, emotionalSupport, cognitiveStimulation, dayOfWeek, startTime, endTime, caregiver);
 
-        // 근무 가능 지역 랜덤 2개 생성
-        for(int k=0; k<2; k++) {
-            WorkLocation workLocation = new WorkLocation(
-                    jobCondition, locationRepository.findByLocationId((long) faker.number().numberBetween(1, 10))
-                    .orElseThrow(() -> new RuntimeException("=== locatino error ====="))
-            );
-            // recruitCondition에 추가
-            jobCondition.addWokLocation(workLocation);
-        }
         jobConditionRepository.save(jobCondition);
     }
+
 
     void workLocation() {
         Location locationId = locationRepository.findByLocationId((long) faker.number().numberBetween(1, 10))
