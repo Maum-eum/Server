@@ -1,6 +1,6 @@
 package com.example.springserver.global.cache.config;
 
-import com.example.springserver.global.cache.CacheType;
+import com.example.springserver.global.cache.LocalCacheType;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -19,7 +19,7 @@ public class LocalCacheConfig { // CaffeineCache Configuration
 
     @Bean
     public List<CaffeineCache> caffeineCaches() {
-        return Arrays.stream(CacheType.values())
+        return Arrays.stream(LocalCacheType.values())
                 .map(cache -> new CaffeineCache(
                         cache.getCacheName(),
                         Caffeine.newBuilder()
