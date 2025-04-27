@@ -17,6 +17,9 @@ spring:
       port: ${SPRING_REDIS_PORT}
       password: ${SPRING_REDIS_PASSWORD}
 
+  cache:
+    type: caffeine
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -63,6 +66,7 @@ logging:
     org.springframework.data.redis: DEBUG
     org.springframework.security: DEBUG
     org.springframework.transaction: DEBUG
+    org.springframework.cache: DEBUG
 
 jasypt:
   encryptor:
