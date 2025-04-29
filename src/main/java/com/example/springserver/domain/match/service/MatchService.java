@@ -120,7 +120,7 @@ public class MatchService {
 
         if (request.getStatus() == RecruitStatus.ACCEPTED || request.getStatus() == RecruitStatus.TUNING) {
             originalMatch.setStatus(MatchStatus.TUNING);
-            caregiver.setEmploymentStatus(false);
+            caregiver.changeEmploymentStatus(false);
         } else {
             originalMatch.setStatus(MatchStatus.DECLINED);
             originalMatch.setDeletedAt(LocalDateTime.now());
@@ -215,7 +215,7 @@ public class MatchService {
                 .adminContact(admin.getConnect())
                 .careGiverInfo(CaregiverConverter.infoResponseDto(caregiver))
                 .elderInfoDto(ElderConverter.toResponseDto(elder))
-                .jobCondRes(JobConditionConverter.tojobConditionResponseDTO(jobCondition))
+                .jobCondRes(JobConditionConverter.toJobConditionResponseDTO(jobCondition))
                 .recruitCondRes(RecruitConverter.toConditionResponseDto(recruitCondition))
                 .build();
     }

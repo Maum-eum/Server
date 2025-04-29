@@ -4,12 +4,13 @@ import com.example.springserver.domain.caregiver.cache.JobConditionCache;
 import com.example.springserver.domain.caregiver.cache.JobConditionCacheConverter;
 import com.example.springserver.domain.caregiver.converter.JobConditionConverter;
 import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
-import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.Request;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailResponse;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.Response;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.WorkLocation;
+import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
 import com.example.springserver.domain.caregiver.service.cache.JobConditionCacheService;
@@ -35,9 +36,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class JobConditionService {
-
-    private final CommonService commonService;
     private final LocationService locationService;
+    private final CaregiverRepository caregiverRepository;
     private final JobConditionRepository jobConditionRepository;
     private final WorkLocationRepository workLocationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -49,8 +49,8 @@ public class JobConditionService {
     이제 EventListener 가시면됩니다. -> ScoreRecalculateEventListener
      */
     @Transactional
-    public JobConditionResponseDTO createJobCondition(CustomUserDetails user, JobConditionReqDto request) {
-        Caregiver caregiver = commonService.getById(user);
+    public Response createJobCondition(CustomUserDetails user, Request request) {
+        Caregiver caregiver = getValidCaregiver(user.getId());
         // 캐시 삭제
         jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
 
@@ -64,15 +64,12 @@ public class JobConditionService {
     }
 
     @Transactional
-    public JobConditionResponseDTO updateJobCondition(CustomUserDetails userDetails, JobConditionReqDto request) {
-        Caregiver caregiver = commonService.getById(userDetails);
-        Long caregiverId = caregiver.getId();
+    public Response updateJobCondition(CustomUserDetails userDetails, Request request) {
+        Caregiver caregiver = getValidCaregiver(userDetails.getId());
 
-        jobConditionCacheService.deleteByCaregiverKey(caregiverId);
+        jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
 
-        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-
+        JobCondition jobCondition = getValidJobCondition(caregiver);
         jobCondition.updateInfo(request);
         updateWorkLocations(jobCondition, request);
         jobCondition = jobConditionRepository.save(jobCondition);
@@ -80,9 +77,9 @@ public class JobConditionService {
         return postProcess(jobCondition);
     }
 
-    public void saveLocations(JobConditionReqDto request, JobCondition jobCondition) {
+    public void saveLocations(Request request, JobCondition jobCondition) {
 
-        List<WorkLocation> workLocations = request.getLocationRequestDTOList().stream()
+        List<WorkLocation> workLocations = request.getLocationRequestList().stream()
                 .map(dto -> {
                     Location location = locationService.findById(dto.getLocationId());
                     return WorkLocation.builder()
@@ -96,9 +93,9 @@ public class JobConditionService {
         jobCondition.setWorkLocations(workLocations);
     }
 
-    private void updateWorkLocations(JobCondition jobCondition, JobConditionReqDto request) {
-        List<Long> locationIds = request.getLocationRequestDTOList().stream()
-                .map(JobConditionRequestDto.LocationRequestDTO::getLocationId)
+    private void updateWorkLocations(JobCondition jobCondition, Request request) {
+        List<Long> locationIds = request.getLocationRequestList().stream()
+                .map(JobConditionRequestDto.LocationRequest::getLocationId)
                 .toList();
 
         Set<Location> requestedLocations = new HashSet<>(locationService.findAllById(locationIds));
@@ -120,15 +117,16 @@ public class JobConditionService {
         }
     }
 
-    public DetailJobConditionResponseDTO getDetailedJobCondition(CustomUserDetails user) {
-        Caregiver byId = commonService.getById(user);
-        JobCondition jobCondition = findJobCondition(byId);
+    public DetailResponse getDetailedJobCondition(CustomUserDetails user) {
+        Caregiver byId = getValidCaregiver(user.getId());
+        JobCondition jobCondition = getValidJobCondition(byId);
+
         return JobConditionConverter.toDetailJobConditionResponseDto(byId,jobCondition);
     }
 
     // read-through 캐싱 전략이 적용된 조회 코드
     @Transactional(readOnly = true)
-    public JobConditionResponseDTO getJobCondition(CustomUserDetails user) {
+    public Response getJobCondition(CustomUserDetails user) {
         try {
             JobConditionCache cachedJc = jobConditionCacheService.getByCaregiverKey(user.getId());
 
@@ -139,22 +137,27 @@ public class JobConditionService {
             // Cache Miss : DB 직접 조회
             log.info("[MySQL] jobCondition 조회 ======== ");
 
-            Caregiver caregiver = commonService.getById(user);
-            JobCondition jobCondition = findJobCondition(caregiver);
+            Caregiver caregiver = getValidCaregiver(user.getId());
+            JobCondition jobCondition = getValidJobCondition(caregiver);
 
             // DB 조회 후 Caching
             jobConditionCacheService.save(JobConditionCacheConverter.toRedisDto(jobCondition));
-            return JobConditionConverter.tojobConditionResponseDTO(jobCondition);
+            return JobConditionConverter.toJobConditionResponseDTO(jobCondition);
         }
     }
 
-    public JobCondition findJobCondition(Caregiver user) {
+    public Caregiver getValidCaregiver(Long caregiverId) {
+        return caregiverRepository.findById(caregiverId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CAREGIVER_IS_NOT_EXIST));
+    }
+
+    public JobCondition getValidJobCondition(Caregiver user) {
         return jobConditionRepository.findByCaregiver(user)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
     }
 
-    private JobConditionResponseDTO postProcess(JobCondition jobCondition) {
-        JobConditionResponseDTO jcDto = JobConditionConverter.tojobConditionResponseDTO(jobCondition);
+    private Response postProcess(JobCondition jobCondition) {
+        Response jcDto = JobConditionConverter.toJobConditionResponseDTO(jobCondition);
 
         // 이벤트 발행
         if (jobCondition.getId() != null) {

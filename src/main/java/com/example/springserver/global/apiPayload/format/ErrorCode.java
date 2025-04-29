@@ -21,6 +21,7 @@ public enum ErrorCode {
     INVALID_MEMBER_ROLE(HttpStatus.BAD_REQUEST, "MEMBER4004", "사용자의 ROLE이 잘못 되었습니다."),
     USERNAME_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 관리자 아이디가 이미 존재합니다."),
     CAREGIVER_IS_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "해당 요양보호사 아이디가 이미 존재합니다."),
+    CAREGIVER_IS_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "요양보호사가 존재하지 않습니다."),
 
     // 토큰 관련 에러
     ACCESS_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "TOKEN4001", "액세스 토큰이 만료되었습니다."),

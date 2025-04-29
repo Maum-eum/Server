@@ -1,5 +1,8 @@
 package com.example.springserver.domain.caregiver.entity;
 
+import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
+import com.example.springserver.domain.caregiver.dto.CaregiverBasicInfo;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto;
 import com.example.springserver.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -74,39 +77,35 @@ public class Caregiver extends BaseEntity {
         this.certificates = certificates;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-
-    public void setCar(Boolean car) {
-        this.car = car;
-    }
-
-    public void setEducation(Boolean education) {
-        this.education = education;
-    }
-
-    public void setImg(String img) {
+    // 요양보호사 기본 프로필 정보 + 사진 업데이트
+    public void updateProfile(String img, CaregiverBasicInfo basicInfo) {
         this.img = img;
+        this.contact = basicInfo.getContact();
+        this.car = basicInfo.getCar();
+        this.education = basicInfo.getEducation();
+        this.intro = basicInfo.getIntro();
+        this.address = basicInfo.getAddress();
     }
 
-    public void setIntro(String intro) {
-        this.intro = intro;
+    public void updateCertificates(List<CaregiverRequestDto.CertificateRequest> newCertificates) {
+        List<Certificate> updated = newCertificates.stream()
+                .map(dto -> CaregiverConverter.toCertificate(this, dto))
+                .toList();
+
+        certificates.clear();
+        certificates.addAll(updated);
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void updateExperiences(List<CaregiverRequestDto.ExperienceRequest> newExperiences) {
+        List<Experience> updated = newExperiences.stream()
+                .map(dto -> CaregiverConverter.toExperience(this, dto))
+                .toList();
+
+        experiences.clear();
+        experiences.addAll(updated);
     }
 
-    public void setEmploymentStatus(Boolean status) {
+    public void changeEmploymentStatus(Boolean status) {
         this.employmentStatus = status;
-    }
-
-    public String getRole() {
-        return "ROLE_CAREGIVER";
     }
 }

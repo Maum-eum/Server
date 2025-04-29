@@ -1,6 +1,6 @@
 package com.example.springserver.domain.caregiver.entity;
 
-import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.Request;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.global.common.entity.BaseEntity;
 import com.example.springserver.global.utils.FormatUtils;
@@ -179,30 +179,30 @@ public class JobCondition extends BaseEntity {
         this.caregiver = caregiver;
     }
 
-    public void updateInfo(JobConditionReqDto req) {
-        this.flexibleSchedule = req.getFlexibleSchedule();
-        this.desiredHourlyWage = req.getDesiredHourlyWage();
-        this.selfFeeding = req.getSelfFeeding();
-        this.mealPreparation = req.getMealPreparation();
-        this.cookingAssistance = req.getCookingAssistance();
-        this.enteralNutritionSupport = req.getEnteralNutritionSupport();
-        this.selfToileting = req.getSelfToileting();
-        this.occasionalToiletingAssist = req.getOccasionalToiletingAssist();
-        this.diaperCare = req.getDiaperCare();
-        this.catheterOrStomaCare = req.getCatheterOrStomaCare();
-        this.independentMobility = req.getIndependentMobility();
-        this.mobilityAssist = req.getMobilityAssist();
-        this.wheelchairAssist = req.getWheelchairAssist();
-        this.immobile = req.getImmobile();
-        this.cleaningLaundryAssist = req.getCleaningLaundryAssist();
-        this.bathingAssist = req.getBathingAssist();
-        this.hospitalAccompaniment = req.getHospitalAccompaniment();
-        this.exerciseSupport = req.getExerciseSupport();
-        this.emotionalSupport = req.getEmotionalSupport();
-        this.cognitiveStimulation = req.getCognitiveStimulation();
-        this.dayOfWeek = FormatUtils.toIntegerDayOfWeek(req.getDayOfWeek());
-        this.startTime = req.getStartTime();
-        this.endTime = req.getEndTime();
+    public void updateInfo(Request req) {
+        this.flexibleSchedule = req.getJobConditionOptionInfo().getFlexibleSchedule();
+        this.desiredHourlyWage = req.getJobConditionOptionInfo().getDesiredHourlyWage();
+        this.selfFeeding = req.getJobConditionOptionInfo().getSelfFeeding();
+        this.mealPreparation = req.getJobConditionOptionInfo().getMealPreparation();
+        this.cookingAssistance = req.getJobConditionOptionInfo().getCookingAssistance();
+        this.enteralNutritionSupport = req.getJobConditionOptionInfo().getEnteralNutritionSupport();
+        this.selfToileting = req.getJobConditionOptionInfo().getSelfToileting();
+        this.occasionalToiletingAssist = req.getJobConditionOptionInfo().getOccasionalToiletingAssist();
+        this.diaperCare = req.getJobConditionOptionInfo().getDiaperCare();
+        this.catheterOrStomaCare = req.getJobConditionOptionInfo().getCatheterOrStomaCare();
+        this.independentMobility = req.getJobConditionOptionInfo().getIndependentMobility();
+        this.mobilityAssist = req.getJobConditionOptionInfo().getMobilityAssist();
+        this.wheelchairAssist = req.getJobConditionOptionInfo().getWheelchairAssist();
+        this.immobile = req.getJobConditionOptionInfo().getImmobile();
+        this.cleaningLaundryAssist = req.getJobConditionOptionInfo().getCleaningLaundryAssist();
+        this.bathingAssist = req.getJobConditionOptionInfo().getBathingAssist();
+        this.hospitalAccompaniment = req.getJobConditionOptionInfo().getHospitalAccompaniment();
+        this.exerciseSupport = req.getJobConditionOptionInfo().getExerciseSupport();
+        this.emotionalSupport = req.getJobConditionOptionInfo().getEmotionalSupport();
+        this.cognitiveStimulation = req.getJobConditionOptionInfo().getCognitiveStimulation();
+        this.dayOfWeek = FormatUtils.toIntegerDayOfWeek(req.getJobConditionOptionInfo().getDayOfWeek());
+        this.startTime = req.getJobConditionOptionInfo().getStartTime();
+        this.endTime = req.getJobConditionOptionInfo().getEndTime();
     }
 
     public void addWokLocation(WorkLocation wokLocation) {

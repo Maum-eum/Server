@@ -1,10 +1,7 @@
 package com.example.springserver.domain.caregiver.service;
 
-import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.*;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CaregiverUpdateRequest;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
-import com.example.springserver.domain.caregiver.entity.Certificate;
-import com.example.springserver.domain.caregiver.entity.Experience;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
@@ -15,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -26,75 +21,34 @@ public class CareGiverService {
     private final S3Service s3Service;
 
     public Caregiver getUserInfo(CustomUserDetails user) {
-        Long userId = user.getId();
-        return caregiverRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+        return getValidCaregiver(user.getId());
     }
 
     @Transactional
-    public Caregiver updateUserInfo(CustomUserDetails user,
-                                    UpdateCaregiverReqDto request,
-                                    MultipartFile profileImg) {
-        Caregiver caregiver = getById(user);
+    public Caregiver updateUserInfo(CustomUserDetails user, CaregiverUpdateRequest request, MultipartFile profileImg) {
+        Caregiver caregiver = getValidCaregiver(user.getId());
 
         // 이미지 적용
-        String imgUrl;
-        if(profileImg == null) {
-            imgUrl = request.getImg();
-        } else {
-            imgUrl = s3Service.uploadFileImage(profileImg);
-        }
+        String imgUrl = (profileImg != null)
+                ? s3Service.uploadFileImage(profileImg)
+                : request.getImg();
 
-        updateCertificates(caregiver, request.getCertificateRequestDTOList());
-        updateExperiences(caregiver, request.getExperienceRequestDTOList());
+        caregiver.updateProfile(imgUrl, request.getBasicInfo());
+        caregiver.updateCertificates(request.getCertificateRequestList());
+        caregiver.updateExperiences(request.getExperienceRequestList());
 
-        caregiver.setCar(request.getCar());
-        caregiver.setAddress(request.getAddress());
-        caregiver.setImg(imgUrl);
-        caregiver.setEducation(request.getEducation());
-        caregiver.setContact(request.getContact());
-        caregiver.setIntro(request.getIntro());
+        return caregiver;
+    }
 
-        return caregiverRepository.save(caregiver);
+    private Caregiver getValidCaregiver(Long userId) throws GlobalException {
+        return caregiverRepository.findById(userId)
+                .orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
-    public Boolean changeStatus(CustomUserDetails user) {
-        Caregiver byId = getById(user);
-        byId.setEmploymentStatus(!byId.getEmploymentStatus());
-        return caregiverRepository.save(byId).getEmploymentStatus();
-    }
-
-    private Caregiver getById(CustomUserDetails user) throws GlobalException {
-        return caregiverRepository.findById(user.getId()).orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    private void updateCertificates(Caregiver caregiver, List<CertificateRequestDTO> newCertificates) {
-        List<Certificate> updatedCertificates = newCertificates.stream()
-                .map(dto -> CaregiverConverter.toCertificate(caregiver, dto))
-                .toList();
-
-        for (Certificate newCert : updatedCertificates) {
-
-            if (!caregiver.getCertificates().contains(newCert)) {
-                caregiver.getCertificates().add(newCert);
-            }
-        }
-
-        caregiver.getCertificates().removeIf(cert -> !updatedCertificates.contains(cert));
-    }
-
-    private void updateExperiences(Caregiver caregiver, List<ExperienceRequestDTO> newExperiences) {
-        List<Experience> updatedExperiences = newExperiences.stream()
-                .map(dto -> CaregiverConverter.toExperience(caregiver, dto))
-                .toList();
-
-        for (Experience newExp : updatedExperiences) {
-            if (!caregiver.getExperiences().contains(newExp)) {
-                caregiver.getExperiences().add(newExp);
-            }
-        }
-
-        caregiver.getExperiences().removeIf(exp -> !updatedExperiences.contains(exp));
+    public Boolean updateStatus(CustomUserDetails user) {
+        Caregiver caregiver = getValidCaregiver(user.getId());
+        caregiver.changeEmploymentStatus(!caregiver.getEmploymentStatus());
+        return caregiverRepository.save(caregiver).getEmploymentStatus();
     }
 }
