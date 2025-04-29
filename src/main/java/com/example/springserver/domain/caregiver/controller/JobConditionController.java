@@ -1,9 +1,9 @@
 package com.example.springserver.domain.caregiver.controller;
 
 
-import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto.JobConditionReqDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailJobConditionResponseDTO;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
+import com.example.springserver.domain.caregiver.dto.request.JobConditionRequestDto;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.DetailResponse;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.Response;
 import com.example.springserver.domain.caregiver.service.JobConditionService;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,27 +25,27 @@ public class JobConditionController {
 
     @Operation(summary = "요양보호사 구직조건등록 및 수정", description = "Post")
     @PostMapping
-    public JobConditionResponseDTO createJobCondition(@AuthenticationPrincipal CustomUserDetails user,
-                                                                              @RequestBody @Valid JobConditionReqDto request){
+    public Response createJobCondition(@AuthenticationPrincipal CustomUserDetails user,
+                                       @RequestBody @Valid JobConditionRequestDto.Request request){
         return jobConditionService.createJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직조건수정", description = "Put")
     @PutMapping
-    public JobConditionResponseDTO updateJobCondition(@AuthenticationPrincipal CustomUserDetails user,
-                                                                           @RequestBody @Valid JobConditionReqDto request){
+    public Response updateJobCondition(@AuthenticationPrincipal CustomUserDetails user,
+                                       @RequestBody @Valid JobConditionRequestDto.Request request){
         return jobConditionService.updateJobCondition(user,request);
     }
 
     @Operation(summary = "요양보호사 구직정보조회", description = "Get")
     @GetMapping
-    public JobConditionResponseDTO getJobCondition(@AuthenticationPrincipal CustomUserDetails user){
+    public Response getJobCondition(@AuthenticationPrincipal CustomUserDetails user){
         return jobConditionService.getJobCondition(user);
     }
 
     @Operation(summary = "요양보호사 상세정보조회", description = "Get")
     @GetMapping("/detail")
-    public DetailJobConditionResponseDTO getDetailJobCondition(@AuthenticationPrincipal CustomUserDetails user){
+    public DetailResponse getDetailJobCondition(@AuthenticationPrincipal CustomUserDetails user){
         return jobConditionService.getDetailedJobCondition(user);
     }
 }

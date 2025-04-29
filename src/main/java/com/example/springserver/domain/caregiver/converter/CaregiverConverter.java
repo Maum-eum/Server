@@ -20,42 +20,42 @@ public class CaregiverConverter {
         return dateTime.format(formatter);
     }
 
-    public static SignUpCaregiverResult toSignUpCaregiverResult(Caregiver caregiver){
-        return SignUpCaregiverResult.builder()
+    public static SignUpCaregiverResponse toSignUpCaregiverResult(Caregiver caregiver){
+        return SignUpCaregiverResponse.builder()
                 .caregiverId(caregiver.getId())
                 .createAt(formatDateTime(caregiver.getCreatedAt()))
                 .build();
     }
 
-    public static CareGiverInfoResponseDTO infoResponseDto(Caregiver caregiver){
-        return CareGiverInfoResponseDTO.builder()
+    public static CareGiverInfoResponse infoResponseDto(Caregiver caregiver){
+        return CareGiverInfoResponse.builder()
                 .username(caregiver.getName())
                 .contact(caregiver.getContact())
                 .car(caregiver.getCar())
                 .education(caregiver.getEducation())
-                .intro(caregiver.getIntro())
+                .into(caregiver.getIntro())
                 .address(caregiver.getAddress())
                 .employmentStatus(caregiver.getEmploymentStatus())
-                .certificateResponseDTOList(caregiver.getCertificates().stream()
+                .certificateResponseList(caregiver.getCertificates().stream()
                         .map(CaregiverConverter::toResponseCertificate)
                         .toList())
-                .experienceResponseDTOList(caregiver.getExperiences().stream()
+                .experienceResponseList(caregiver.getExperiences().stream()
                         .map(CaregiverConverter::toResponseExperience)
                         .toList())
                 .img(caregiver.getImg())
                 .build();
     }
 
-    public static ExperienceResponseDTO toResponseExperience(Experience experience) {
-        return ExperienceResponseDTO.builder()
+    public static ExperienceResponse toResponseExperience(Experience experience) {
+        return ExperienceResponse.builder()
                 .duration(experience.getDuration())
                 .title(experience.getTitle())
                 .description(experience.getDescription())
                 .build();
     }
 
-    public static CertificateResponseDTO toResponseCertificate(Certificate certificate) {
-        return CertificateResponseDTO.builder()
+    public static CertificateResponse toResponseCertificate(Certificate certificate) {
+        return CertificateResponse.builder()
                 .certNum(certificate.getCertNum())
                 .certRate(certificate.getCertRate())
                 .certType(certificate.getCertType())
@@ -97,14 +97,14 @@ public class CaregiverConverter {
                 .build();
     }
 
-    public static RequestsListRes toRequestListRes(List<WorkRequest> list) {
-        return RequestsListRes.builder()
+    public static RequestsListResponse toRequestListRes(List<WorkResponse> list) {
+        return RequestsListResponse.builder()
                 .list(list)
                 .build();
     }
 
-    public static MatchCaregiverResponseDto toMatchCaregiverDto(Caregiver caregiver) {
-        return MatchCaregiverResponseDto.builder()
+    public static MatchCaregiverResponse toMatchCaregiverDto(Caregiver caregiver) {
+        return MatchCaregiverResponse.builder()
                 .careGiverId(caregiver.getId())
                 .contact(caregiver.getContact())
                 .username(caregiver.getName())

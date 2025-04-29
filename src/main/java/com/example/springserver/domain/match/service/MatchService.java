@@ -215,7 +215,7 @@ public class MatchService {
                 .adminContact(admin.getConnect())
                 .careGiverInfo(CaregiverConverter.infoResponseDto(caregiver))
                 .elderInfoDto(ElderConverter.toResponseDto(elder))
-                .jobCondRes(JobConditionConverter.tojobConditionResponseDTO(jobCondition))
+                .jobCondRes(JobConditionConverter.toJobConditionResponseDTO(jobCondition))
                 .recruitCondRes(RecruitConverter.toConditionResponseDto(recruitCondition))
                 .build();
     }

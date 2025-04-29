@@ -1,9 +1,8 @@
 package com.example.springserver.domain.match.dto.response;
 
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.MatchCaregiverResponseDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.JobConditionResponseDTO;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.MatchCaregiverResponse;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.Response;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
@@ -193,11 +192,11 @@ public class MatchResponseDto {
 
         private String adminContact;
 
-        private CaregiverResponseDto.CareGiverInfoResponseDTO careGiverInfo;
+        private CaregiverResponseDto.CareGiverInfoResponse careGiverInfo;
 
         private ElderResponseDto.ResponseDto elderInfoDto;
 
-        private JobConditionResponseDto.JobConditionResponseDTO jobCondRes;
+        private Response jobCondRes;
 
         private RecruitResponseDto.ResponseDto recruitCondRes;
 
@@ -426,11 +425,11 @@ public class MatchResponseDto {
 
         private ResponseDto requirementCondition;
 
-        private JobConditionResponseDTO jobCondition;
+        private Response jobCondition;
 
         private MatchElderResponseDto elderInfoDto;
 
-        private MatchCaregiverResponseDto careGiverInfoDto;
+        private MatchCaregiverResponse careGiverInfoDto;
 
         private LocalDateTime deletedAt;
 

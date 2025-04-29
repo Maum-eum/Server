@@ -4,8 +4,6 @@ import com.example.springserver.domain.caregiver.converter.CaregiverConverter;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.service.CareGiverService;
-import com.example.springserver.domain.match.dto.request.MatchRequestDto;
-import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
 import com.example.springserver.global.security.util.CustomUserDetails;
 import com.example.springserver.service.JoinService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import static com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.*;
 import static com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
 
 @RestController
@@ -33,7 +30,7 @@ public class CaregiverController {
 
     @Operation(summary = "회원가입", description = "Post")
     @PostMapping(value = "/signup", consumes = "multipart/form-data")
-    public SignUpCaregiverResult signUpCaregiver(
+    public SignUpCaregiverResponse signUpCaregiver(
             @RequestPart("data") CaregiverRequestDto.SignUpCaregiverReqDto request,
             @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         Caregiver newCaregiver = joinService.signUpCaregiver(request, profileImg);
@@ -42,16 +39,16 @@ public class CaregiverController {
 
     @Operation(summary = "요양보호사 정보조회", description = "Get")
     @GetMapping("/profile")
-    public CareGiverInfoResponseDTO getCaregiver(@AuthenticationPrincipal CustomUserDetails request){
+    public CareGiverInfoResponse getCaregiver(@AuthenticationPrincipal CustomUserDetails request){
         Caregiver searched = careGiverService.getUserInfo(request);
         return CaregiverConverter.infoResponseDto(searched);
     }
 
     @Operation(summary = "요양보호사 정보수정", description = "Put")
     @PutMapping(value = "/profile", consumes = "multipart/form-data")
-    public CareGiverInfoResponseDTO updateCaregiver(@AuthenticationPrincipal CustomUserDetails user,
-                                                    @RequestPart("data") @Valid CaregiverRequestDto.UpdateCaregiverReqDto request,
-                                                    @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
+    public CareGiverInfoResponse updateCaregiver(@AuthenticationPrincipal CustomUserDetails user,
+                                                 @RequestPart("data") @Valid CaregiverRequestDto.UpdateCaregiverReqDto request,
+                                                 @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         Caregiver searched = careGiverService.updateUserInfo(user,request, profileImg);
         return CaregiverConverter.infoResponseDto(searched);
     }
