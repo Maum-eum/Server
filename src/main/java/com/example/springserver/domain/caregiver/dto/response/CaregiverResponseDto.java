@@ -1,10 +1,13 @@
 package com.example.springserver.domain.caregiver.dto.response;
 
+import com.example.springserver.domain.caregiver.dto.CaregiverBasicInfo;
 import com.example.springserver.domain.caregiver.entity.enums.CertType;
 import com.example.springserver.domain.caregiver.entity.enums.Level;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.center.entity.enums.ElderRate;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +17,7 @@ public class CaregiverResponseDto {
 
     @Builder
     @Getter
-    public static class SignUpCaregiverResponse {
+    public static class CaregiverSignupResponse {
         private Long caregiverId;
         private String createAt;
     }
@@ -22,13 +25,9 @@ public class CaregiverResponseDto {
     @Builder
     @Getter
     public static class CareGiverInfoResponse {
-        private String username;
-        private String contact;
-        private Boolean car;
-        private Boolean education;
+        @Valid @JsonUnwrapped
+        private CaregiverBasicInfo basicInfo;
         private String img;
-        private String into;
-        private String address;
         private Boolean employmentStatus;
         private List<CertificateResponse> certificateResponseList;
         private List<ExperienceResponse> experienceResponseList;

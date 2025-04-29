@@ -1,16 +1,17 @@
 package com.example.springserver.domain.caregiver.converter;
 
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequestDTO;
-import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
-import com.example.springserver.domain.caregiver.entity.*;
+import com.example.springserver.domain.caregiver.dto.CaregiverBasicInfo;
 import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto;
-
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequest;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequest;
+import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.*;
+import com.example.springserver.domain.caregiver.entity.Caregiver;
+import com.example.springserver.domain.caregiver.entity.Certificate;
+import com.example.springserver.domain.caregiver.entity.Experience;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class CaregiverConverter {
 
@@ -20,8 +21,8 @@ public class CaregiverConverter {
         return dateTime.format(formatter);
     }
 
-    public static SignUpCaregiverResponse toSignUpCaregiverResult(Caregiver caregiver){
-        return SignUpCaregiverResponse.builder()
+    public static CaregiverSignupResponse toSignUpCaregiverResult(Caregiver caregiver){
+        return CaregiverSignupResponse.builder()
                 .caregiverId(caregiver.getId())
                 .createAt(formatDateTime(caregiver.getCreatedAt()))
                 .build();
@@ -29,12 +30,17 @@ public class CaregiverConverter {
 
     public static CareGiverInfoResponse infoResponseDto(Caregiver caregiver){
         return CareGiverInfoResponse.builder()
-                .username(caregiver.getName())
-                .contact(caregiver.getContact())
-                .car(caregiver.getCar())
-                .education(caregiver.getEducation())
-                .into(caregiver.getIntro())
-                .address(caregiver.getAddress())
+                .basicInfo(
+                        CaregiverBasicInfo.builder()
+                                .username(caregiver.getUsername())
+                                .name(caregiver.getName())
+                                .contact(caregiver.getContact())
+                                .car(caregiver.getCar())
+                                .education(caregiver.getEducation())
+                                .intro(caregiver.getIntro())
+                                .address(caregiver.getAddress())
+                                .build()
+                )
                 .employmentStatus(caregiver.getEmploymentStatus())
                 .certificateResponseList(caregiver.getCertificates().stream()
                         .map(CaregiverConverter::toResponseCertificate)
@@ -63,23 +69,23 @@ public class CaregiverConverter {
     }
 
     //    Caregiver 객체를 만드는 작업 (클라이언트가 준 DTO to Entity)
-    public static Caregiver toCaregiver(CaregiverRequestDto.SignUpCaregiverReqDto request, BCryptPasswordEncoder bCryptPasswordEncoder, String imgUrl){
+    public static Caregiver toCaregiver(CaregiverRequestDto.CaregiverSignupRequest request, BCryptPasswordEncoder bCryptPasswordEncoder, String imgUrl){
 
         return Caregiver.builder()
-                .username(request.getUsername())
+                .username(request.getBasicInfo().getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
-                .name(request.getName())
-                .contact(request.getContact())
-                .car(request.getCar())
-                .education(request.getEducation())
+                .name(request.getBasicInfo().getName())
+                .contact(request.getBasicInfo().getContact())
+                .car(request.getBasicInfo().getCar())
+                .education(request.getBasicInfo().getEducation())
+                .intro(request.getBasicInfo().getIntro())
+                .address(request.getBasicInfo().getAddress())
                 .img(imgUrl)
-                .intro(request.getIntro())
-                .address(request.getAddress())
                 .employmentStatus(request.getEmploymentStatus())
                 .build();
     }
 
-    public static Experience toExperience(Caregiver caregiver, ExperienceRequestDTO request){
+    public static Experience toExperience(Caregiver caregiver, ExperienceRequest request){
         return Experience.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -88,18 +94,12 @@ public class CaregiverConverter {
                 .build();
     }
 
-    public static Certificate toCertificate(Caregiver caregiver, CertificateRequestDTO request){
+    public static Certificate toCertificate(Caregiver caregiver, CertificateRequest request){
         return Certificate.builder()
                 .certNum(request.getCertNum())
                 .certRate(request.getCertRate())
                 .certType(request.getCertType())
                 .caregiver(caregiver)
-                .build();
-    }
-
-    public static RequestsListResponse toRequestListRes(List<WorkResponse> list) {
-        return RequestsListResponse.builder()
-                .list(list)
                 .build();
     }
 

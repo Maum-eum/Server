@@ -1,7 +1,7 @@
 package com.example.springserver.service;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequestDTO;
-import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.SignUpCaregiverReqDto;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CertificateRequest;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.ExperienceRequest;
+import com.example.springserver.domain.caregiver.dto.request.CaregiverRequestDto.CaregiverSignupRequest;
 import com.example.springserver.domain.caregiver.repository.CertificateRepository;
 import com.example.springserver.domain.caregiver.repository.ExperienceRepository;
 import com.example.springserver.domain.center.converter.AdminConverter;
@@ -37,27 +37,27 @@ public class JoinService {
     private final S3Service s3Service;
 
     @Transactional
-    public Caregiver signUpCaregiver(SignUpCaregiverReqDto request, MultipartFile profileImg) {
+    public Caregiver signUpCaregiver(CaregiverSignupRequest request, MultipartFile profileImg) {
 
-        List<CertificateRequestDTO> certificateRequestDTOList = request.getCertificateRequestDTOList();
-        List<ExperienceRequestDTO> experienceRequestDTOList = request.getExperienceRequestDTOList();
+        List<CertificateRequest> certificateRequestList = request.getCertificateRequestList();
+        List<ExperienceRequest> experienceRequestList = request.getExperienceRequestList();
 
         // 요청 객체 검증
-        validAdmin(request.getUsername());
-        validCareGiver(request.getUsername());
+        validAdmin(request.getBasicInfo().getUsername());
+        validCareGiver(request.getBasicInfo().getUsername());
 
         // 이미지 적용
         String imgUrl = saveImgUrl(profileImg);
         Caregiver saved = caregiverRepository.save(CaregiverConverter.toCaregiver(request, bCryptPasswordEncoder, imgUrl));
 
         //자격증저장
-        if (certificateRequestDTOList!=null)
-            for(CertificateRequestDTO dto : certificateRequestDTOList)
+        if (certificateRequestList !=null)
+            for(CertificateRequest dto : certificateRequestList)
                 certificateRepository.save(CaregiverConverter.toCertificate(saved,dto));
 
         //경력저장
-        if (experienceRequestDTOList!=null)
-            for (ExperienceRequestDTO dto : experienceRequestDTOList)
+        if (experienceRequestList !=null)
+            for (ExperienceRequest dto : experienceRequestList)
                 experienceRepository.save(CaregiverConverter.toExperience(saved,dto));
 
         return saved;

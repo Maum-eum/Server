@@ -30,8 +30,8 @@ public class CaregiverController {
 
     @Operation(summary = "회원가입", description = "Post")
     @PostMapping(value = "/signup", consumes = "multipart/form-data")
-    public SignUpCaregiverResponse signUpCaregiver(
-            @RequestPart("data") CaregiverRequestDto.SignUpCaregiverReqDto request,
+    public CaregiverSignupResponse signUpCaregiver(
+            @RequestPart("data") CaregiverRequestDto.CaregiverSignupRequest request,
             @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         Caregiver newCaregiver = joinService.signUpCaregiver(request, profileImg);
         return CaregiverConverter.toSignUpCaregiverResult(newCaregiver);
@@ -47,7 +47,7 @@ public class CaregiverController {
     @Operation(summary = "요양보호사 정보수정", description = "Put")
     @PutMapping(value = "/profile", consumes = "multipart/form-data")
     public CareGiverInfoResponse updateCaregiver(@AuthenticationPrincipal CustomUserDetails user,
-                                                 @RequestPart("data") @Valid CaregiverRequestDto.UpdateCaregiverReqDto request,
+                                                 @RequestPart("data") @Valid CaregiverRequestDto.CaregiverUpdateRequest request,
                                                  @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         Caregiver searched = careGiverService.updateUserInfo(user,request, profileImg);
         return CaregiverConverter.infoResponseDto(searched);
@@ -56,6 +56,6 @@ public class CaregiverController {
     @Operation(summary = "요양보호사 구인상태변경", description = "Put")
     @PutMapping("/status")
     public Boolean changeStatus(@AuthenticationPrincipal CustomUserDetails user){
-        return careGiverService.changeStatus(user);
+        return careGiverService.updateStatus(user);
     }
 }

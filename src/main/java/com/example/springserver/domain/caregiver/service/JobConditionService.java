@@ -10,6 +10,7 @@ import com.example.springserver.domain.caregiver.dto.response.JobConditionRespon
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.WorkLocation;
+import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
 import com.example.springserver.domain.caregiver.service.cache.JobConditionCacheService;
@@ -35,9 +36,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class JobConditionService {
-
-    private final CommonService commonService;
     private final LocationService locationService;
+    private final CaregiverRepository caregiverRepository;
     private final JobConditionRepository jobConditionRepository;
     private final WorkLocationRepository workLocationRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -50,7 +50,7 @@ public class JobConditionService {
      */
     @Transactional
     public Response createJobCondition(CustomUserDetails user, Request request) {
-        Caregiver caregiver = commonService.getById(user);
+        Caregiver caregiver = getValidCaregiver(user.getId());
         // 캐시 삭제
         jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
 
@@ -65,14 +65,11 @@ public class JobConditionService {
 
     @Transactional
     public Response updateJobCondition(CustomUserDetails userDetails, Request request) {
-        Caregiver caregiver = commonService.getById(userDetails);
-        Long caregiverId = caregiver.getId();
+        Caregiver caregiver = getValidCaregiver(userDetails.getId());
 
-        jobConditionCacheService.deleteByCaregiverKey(caregiverId);
+        jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
 
-        JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-
+        JobCondition jobCondition = getValidJobCondition(caregiver);
         jobCondition.updateInfo(request);
         updateWorkLocations(jobCondition, request);
         jobCondition = jobConditionRepository.save(jobCondition);
@@ -121,8 +118,8 @@ public class JobConditionService {
     }
 
     public DetailResponse getDetailedJobCondition(CustomUserDetails user) {
-        Caregiver byId = commonService.getById(user);
-        JobCondition jobCondition = findJobCondition(byId);
+        Caregiver byId = getValidCaregiver(user.getId());
+        JobCondition jobCondition = getValidJobCondition(byId);
 
         return JobConditionConverter.toDetailJobConditionResponseDto(byId,jobCondition);
     }
@@ -140,8 +137,8 @@ public class JobConditionService {
             // Cache Miss : DB 직접 조회
             log.info("[MySQL] jobCondition 조회 ======== ");
 
-            Caregiver caregiver = commonService.getById(user);
-            JobCondition jobCondition = findJobCondition(caregiver);
+            Caregiver caregiver = getValidCaregiver(user.getId());
+            JobCondition jobCondition = getValidJobCondition(caregiver);
 
             // DB 조회 후 Caching
             jobConditionCacheService.save(JobConditionCacheConverter.toRedisDto(jobCondition));
@@ -149,7 +146,12 @@ public class JobConditionService {
         }
     }
 
-    public JobCondition findJobCondition(Caregiver user) {
+    public Caregiver getValidCaregiver(Long caregiverId) {
+        return caregiverRepository.findById(caregiverId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.CAREGIVER_IS_NOT_EXIST));
+    }
+
+    public JobCondition getValidJobCondition(Caregiver user) {
         return jobConditionRepository.findByCaregiver(user)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
     }

@@ -10,7 +10,6 @@ public class JobConditionRequestDto {
 
     @Getter
     public static class Request {
-
         @JsonUnwrapped
         private JobConditionOptionInfo jobConditionOptionInfo;
         private List<LocationRequest> locationRequestList;

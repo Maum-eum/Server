@@ -40,7 +40,7 @@ public class JobConditionCacheConverter {
                 .startTime(jobCondition.getStartTime())
                 .endTime(jobCondition.getEndTime())
                 .workLocations(jobCondition.getWorkLocations().stream()
-                        .map(JobConditionCacheConverter::toWorkLocationCache)
+                        .map(JobConditionCacheConverter::toWorkLocationRedisDto)
                         .collect(Collectors.toList()))
                 .caregiverId(jobCondition.getCaregiver().getId())
                 .build();
@@ -76,12 +76,12 @@ public class JobConditionCacheConverter {
                                 .startTime(cache.getStartTime())
                                 .endTime(cache.getEndTime()).build()
                 )
-                .locationResponseList(toLocationResponseDtoList(cache.getWorkLocations()))
+                .locationResponseList(toWorkLocationResponseList(cache.getWorkLocations()))
                 .caregiverId(cache.getCaregiverId())
                 .build();
     }
 
-    private static List<JobConditionResponseDto.LocationResponse> toLocationResponseDtoList(List<WorkLocationCache> workLocationIds) {
+    private static List<JobConditionResponseDto.LocationResponse> toWorkLocationResponseList(List<WorkLocationCache> workLocationIds) {
         return workLocationIds.stream()
                 .map(w -> JobConditionResponseDto.LocationResponse.builder()
                         .workLocationId(w.getWorkLocationId())
@@ -91,7 +91,7 @@ public class JobConditionCacheConverter {
                 .collect(Collectors.toList());
     }
 
-    private static WorkLocationCache toWorkLocationCache(WorkLocation workLocation) {
+    private static WorkLocationCache toWorkLocationRedisDto(WorkLocation workLocation) {
         return WorkLocationCache.builder()
                 .workLocationId(workLocation.getId())
                 .locationId(workLocation.getLocation().getLocationId())
