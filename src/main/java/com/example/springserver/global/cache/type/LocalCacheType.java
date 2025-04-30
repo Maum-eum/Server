@@ -1,4 +1,4 @@
-package com.example.springserver.global.cache;
+package com.example.springserver.global.cache.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
