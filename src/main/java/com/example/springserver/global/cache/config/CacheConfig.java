@@ -1,5 +1,6 @@
 package com.example.springserver.global.cache.config;
 
+import com.example.springserver.domain.caregiver.cache.JobConditionCache;
 import com.example.springserver.global.cache.type.LocalCacheType;
 import com.example.springserver.global.cache.type.RedisCacheType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -34,6 +36,14 @@ import static org.springframework.data.redis.serializer.RedisSerializationContex
 @Configuration
 @EnableCaching
 public class CacheConfig {
+    @Bean
+    public Cache<Long, JobConditionCache> jobConditionLocalCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .maximumSize(1000)
+                .build();
+    }
+
     private ObjectMapper objectMapper() {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType(Object.class)

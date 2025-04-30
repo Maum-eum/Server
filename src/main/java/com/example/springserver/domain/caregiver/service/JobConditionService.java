@@ -124,26 +124,33 @@ public class JobConditionService {
         return JobConditionConverter.toDetailJobConditionResponseDto(byId,jobCondition);
     }
 
-    // read-through 캐싱 전략이 적용된 조회 코드
+    // Read Through 캐싱 (Redis + Local Cache)
     @Transactional(readOnly = true)
     public Response getJobCondition(CustomUserDetails user) {
+        JobConditionCache cachedJc = null;
+
         try {
-            JobConditionCache cachedJc = jobConditionCacheService.getByCaregiverKey(user.getId());
+            // 로컬 or Redis 캐시 조회
+            cachedJc = jobConditionCacheService.getByCaregiverKey(user.getId());
 
-            // Cache Hit : Redis 조회
-            log.info("[Redis] jobCondition 조회 ======== ");
-            return JobConditionCacheConverter.fromRedisDto(cachedJc);
+            if (cachedJc != null) {
+                log.info("[CACHE HIT] jobCondition 조회 ======== ");
+                return JobConditionCacheConverter.fromRedisDto(cachedJc);
+            }
         } catch (CacheException ce) {
-            // Cache Miss : DB 직접 조회
-            log.info("[MySQL] jobCondition 조회 ======== ");
-
-            Caregiver caregiver = getValidCaregiver(user.getId());
-            JobCondition jobCondition = getValidJobCondition(caregiver);
-
-            // DB 조회 후 Caching
-            jobConditionCacheService.save(JobConditionCacheConverter.toRedisDto(jobCondition));
-            return JobConditionConverter.toJobConditionResponseDTO(jobCondition);
+            log.warn("[CACHE MISS] jobCondition 캐시 조회 불가 ======== ");
         }
+
+        // DB 조회
+        log.info("[MySQL] jobCondition 조회 ======== ");
+        Caregiver caregiver = getValidCaregiver(user.getId());
+        JobCondition jobCondition = getValidJobCondition(caregiver);
+
+        // DB -> 캐시 저장
+        JobConditionCache toCache = JobConditionCacheConverter.toRedisDto(jobCondition);
+        jobConditionCacheService.save(toCache);
+
+        return JobConditionConverter.toJobConditionResponseDTO(jobCondition);
     }
 
     public Caregiver getValidCaregiver(Long caregiverId) {
