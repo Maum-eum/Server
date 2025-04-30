@@ -1,5 +1,7 @@
 package com.example.springserver.global.cache.config;
 
+import com.example.springserver.global.cache.type.LocalCacheType;
+import com.example.springserver.global.cache.type.RedisCacheType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
@@ -21,15 +23,17 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
 @Configuration
 @EnableCaching
-public class RedisCacheConfig {
+public class CacheConfig {
     private ObjectMapper objectMapper() {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType(Object.class)
@@ -44,33 +48,54 @@ public class RedisCacheConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        // Caffeine Cache
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setCaffeine(
-                Caffeine.newBuilder()
-                        .expireAfterWrite(2, TimeUnit.MINUTES) // TTL
-                        .maximumSize(1000)
-        );
+        // 1. Caffeine CacheManager
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager() {
+            @Override
+            protected com.github.benmanes.caffeine.cache.Cache<Object, Object> createNativeCaffeineCache(String name) {
+                Optional<LocalCacheType> matched = Arrays.stream(LocalCacheType.values())
+                        .filter(type -> type.getCacheName().equals(name))
+                        .findFirst();
 
-        // Redis
+                if (matched.isPresent()) {
+                    LocalCacheType type = matched.get();
+                    return Caffeine.newBuilder()
+                            .expireAfterWrite(type.getExpiredAfterWrite(), TimeUnit.MINUTES)
+                            .maximumSize(type.getMaximumSize())
+                            .build();
+                }
+
+                // 기본 설정
+                return Caffeine.newBuilder()
+                        .expireAfterWrite(2, TimeUnit.MINUTES)
+                        .maximumSize(1000)
+                        .build();
+            }
+        };
+
+        // 2. RedisCacheManager
         RedisCacheManager redisCacheManager = RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultCacheConfiguration())
                 .withInitialCacheConfigurations(getCustomCacheConfigurations())
                 .build();
 
-        // Composite Cache Manager
+        // 3. CompositeCacheManager
         CompositeCacheManager compositeCacheManager = new CompositeCacheManager(caffeineCacheManager, redisCacheManager);
-        compositeCacheManager.setFallbackToNoOpCache(false); // 캐시 못찾으면 예외 아님
-
+        compositeCacheManager.setFallbackToNoOpCache(false);
         return compositeCacheManager;
     }
 
     private Map<String, RedisCacheConfiguration> getCustomCacheConfigurations() {
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        cacheConfigurations.put("recruitCache", RedisCacheConfiguration
-                .defaultCacheConfig()
-                .serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
-                .entryTtl(Duration.ofMinutes(2))); // recruit data ttl (2mins)
+
+        for (RedisCacheType type : RedisCacheType.values()) {
+            cacheConfigurations.put(
+                    type.getCacheName(),
+                    RedisCacheConfiguration.defaultCacheConfig()
+                            .serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
+                            .entryTtl(type.getTtl())
+            );
+        }
+
         return cacheConfigurations;
     }
 
@@ -103,4 +128,3 @@ public class RedisCacheConfig {
         return redisTemplate;
     }
 }
-
