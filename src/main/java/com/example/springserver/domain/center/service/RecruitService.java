@@ -38,6 +38,10 @@ public class RecruitService {
     private final RecruitLaborLawValidator recruitLaborLawValidator;
     private final RecruitConditionCacheService recruitConditionCacheService;
 
+    public List<Long> findAllRecCond(){
+        return recruitConditionRepository.findAllRecuitIds();
+    }
+
     public List<Response> getRecruitConditionList(Long centerId, Long elderId) {
         validateElderBelongsToCenter(elderId, centerId);
 
