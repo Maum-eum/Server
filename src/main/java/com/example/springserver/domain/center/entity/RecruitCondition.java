@@ -1,7 +1,7 @@
 package com.example.springserver.domain.center.entity;
 
 import com.example.springserver.domain.center.converter.enums.CareTypeEnumListConverter;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.Request;
 import com.example.springserver.domain.center.entity.enums.CareType;
 import com.example.springserver.domain.location.entity.Location;
 import com.example.springserver.global.common.entity.BaseEntity;
@@ -150,28 +150,28 @@ public class RecruitCondition extends BaseEntity {
         this.recruitLocation = location;
     }
 
-    public void update(RequestDto requestDto, Location location) {
-        this.careTypes = requestDto.getCareTypes();
+    public void update(Request request, Location location) {
+        this.careTypes = request.getCareTypes();
         this.recruitLocation = location;
-        this.flexibleSchedule = requestDto.isFlexibleSchedule();
-        this.desiredHourlyWage = requestDto.getDesiredHourlyWage();
-        this.selfFeeding = requestDto.isSelfFeeding();
-        this.mealPreparation = requestDto.isMealPreparation();
-        this.cookingAssistance = requestDto.isCookingAssistance();
-        this.enteralNutritionSupport = requestDto.isEnteralNutritionSupport();
-        this.selfToileting = requestDto.isSelfToileting();
-        this.occasionalToiletingAssist = requestDto.isOccasionalToiletingAssist();
-        this.diaperCare = requestDto.isDiaperCare();
-        this.catheterOrStomaCare = requestDto.isCatheterOrStomaCare();
-        this.independentMobility = requestDto.isIndependentMobility();
-        this.mobilityAssist = requestDto.isMobilityAssist();
-        this.wheelchairAssist = requestDto.isWheelchairAssist();
-        this.immobile = requestDto.isImmobile();
-        this.cleaningLaundryAssist = requestDto.isCleaningLaundryAssist();
-        this.bathingAssist = requestDto.isBathingAssist();
-        this.hospitalAccompaniment = requestDto.isHospitalAccompaniment();
-        this.exerciseSupport = requestDto.isExerciseSupport();
-        this.emotionalSupport = requestDto.isEmotionalSupport();
-        this.cognitiveStimulation = requestDto.isCognitiveStimulation();
+        this.flexibleSchedule = request.getRecruitConditionOptionInfo().isFlexibleSchedule();
+        this.desiredHourlyWage = request.getRecruitConditionOptionInfo().getDesiredHourlyWage();
+        this.selfFeeding = request.getRecruitConditionOptionInfo().isSelfFeeding();
+        this.mealPreparation = request.getRecruitConditionOptionInfo().isMealPreparation();
+        this.cookingAssistance = request.getRecruitConditionOptionInfo().isCookingAssistance();
+        this.enteralNutritionSupport = request.getRecruitConditionOptionInfo().isEnteralNutritionSupport();
+        this.selfToileting = request.getRecruitConditionOptionInfo().isSelfToileting();
+        this.occasionalToiletingAssist = request.getRecruitConditionOptionInfo().isOccasionalToiletingAssist();
+        this.diaperCare = request.getRecruitConditionOptionInfo().isDiaperCare();
+        this.catheterOrStomaCare = request.getRecruitConditionOptionInfo().isCatheterOrStomaCare();
+        this.independentMobility = request.getRecruitConditionOptionInfo().isIndependentMobility();
+        this.mobilityAssist = request.getRecruitConditionOptionInfo().isMobilityAssist();
+        this.wheelchairAssist = request.getRecruitConditionOptionInfo().isWheelchairAssist();
+        this.immobile = request.getRecruitConditionOptionInfo().isImmobile();
+        this.cleaningLaundryAssist = request.getRecruitConditionOptionInfo().isCleaningLaundryAssist();
+        this.bathingAssist = request.getRecruitConditionOptionInfo().isBathingAssist();
+        this.hospitalAccompaniment = request.getRecruitConditionOptionInfo().isHospitalAccompaniment();
+        this.exerciseSupport = request.getRecruitConditionOptionInfo().isExerciseSupport();
+        this.emotionalSupport = request.getRecruitConditionOptionInfo().isEmotionalSupport();
+        this.cognitiveStimulation = request.getRecruitConditionOptionInfo().isCognitiveStimulation();
     }
 }

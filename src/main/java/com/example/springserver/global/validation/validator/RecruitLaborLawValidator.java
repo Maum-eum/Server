@@ -16,20 +16,20 @@ public class RecruitLaborLawValidator {
     private static final int MINIMUM_WAGE = 10030;
     private static final int DAILY_MAXIMUM_LABOR_TIME = 8;
 
-    public void validateRecruitRequest(RecruitRequestDto.RequestDto requestDto) {
-        if (requestDto.getRecruitTimes() == null || requestDto.getRecruitTimes().isEmpty()) {
+    public void validateRecruitRequest(RecruitRequestDto.Request request) {
+        if (request.getRecruitTimes() == null || request.getRecruitTimes().isEmpty()) {
             throw new RecruitException(ErrorCode.RECRUIT_TIME_INVALID);
         }
 
-        for (RecruitRequestDto.RequestTimeDto timeDto : requestDto.getRecruitTimes()) {
+        for (RecruitRequestDto.TimeRequest timeDto : request.getRecruitTimes()) {
             long dailyHour = calculateWorkingHours(timeDto);
 
-            validateMinimumWage(requestDto.getDesiredHourlyWage());
+            validateMinimumWage(request.getRecruitConditionOptionInfo().getDesiredHourlyWage());
             validateWorkingHours(dailyHour);
         }
     }
 
-    private long calculateWorkingHours(RecruitRequestDto.RequestTimeDto dto) {
+    private long calculateWorkingHours(RecruitRequestDto.TimeRequest dto) {
         return Duration.between(
                 convertToLocalTime(dto.getStartTime()),
                 convertToLocalTime(dto.getEndTime())

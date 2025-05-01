@@ -3,9 +3,8 @@ package com.example.springserver.domain.center.service;
 import com.example.springserver.domain.center.cache.RecruitConditionCache;
 import com.example.springserver.domain.center.cache.RecruitConditionCacheConverter;
 import com.example.springserver.domain.center.converter.RecruitConverter;
-import com.example.springserver.domain.center.dto.request.RecruitRequestDto.RequestDto;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto.Request;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto.Response;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.repository.ElderRepository;
@@ -39,7 +38,7 @@ public class RecruitService {
     private final RecruitLaborLawValidator recruitLaborLawValidator;
     private final RecruitConditionCacheService recruitConditionCacheService;
 
-    public List<ResponseDto> getRecruitConditionList(Long centerId, Long elderId) {
+    public List<Response> getRecruitConditionList(Long centerId, Long elderId) {
         validateElderBelongsToCenter(elderId, centerId);
 
         try { // Cache Hit : Redis 조회
@@ -56,7 +55,7 @@ public class RecruitService {
     }
 
     // Read Through 캐싱 (Redis + Local Cache)
-    public RecruitResponseDto.ResponseDto getRecruitCondition(Long centerId, Long elderId, Long recruitId) {
+    public Response getRecruitCondition(Long centerId, Long elderId, Long recruitId) {
         validateElderBelongsToCenter(elderId, centerId);
         RecruitConditionCache cache = null;
 
@@ -80,14 +79,14 @@ public class RecruitService {
     }
 
     @Transactional
-    public ResponseDto createRecruitCondition(Long centerId, Long elderId, RequestDto requestDto) {
+    public Response createRecruitCondition(Long centerId, Long elderId, Request request) {
         validateElderBelongsToCenter(elderId, centerId);
-        validateRequest(requestDto);
+        validateRequest(request);
 
         Elder elder = getValidElder(elderId);
-        Location location = getValidLocation(requestDto.getRecruitLocationId());
+        Location location = getValidLocation(request.getRecruitLocationId());
 
-        RecruitCondition newRecruitCondition = RecruitConverter.toRecruitCondition(requestDto, elder, location);
+        RecruitCondition newRecruitCondition = RecruitConverter.toRecruitCondition(request, elder, location);
         recruitConditionRepository.save(newRecruitCondition);
         recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(newRecruitCondition));
 
@@ -95,14 +94,14 @@ public class RecruitService {
     }
 
     @Transactional
-    public void updateRecruitCondition(Long centerId, Long elderId, Long recruitConditionId, RequestDto requestDto) {
+    public void updateRecruitCondition(Long centerId, Long elderId, Long recruitConditionId, Request request) {
         validateElderBelongsToCenter(elderId, centerId);
-        validateRequest(requestDto);
+        validateRequest(request);
 
         RecruitCondition recruitCondition = getValidRecruitCondition(recruitConditionId);
-        Location location = getValidLocation(requestDto.getRecruitLocationId());
+        Location location = getValidLocation(request.getRecruitLocationId());
 
-        recruitCondition.update(requestDto, location);
+        recruitCondition.update(request, location);
         recruitConditionRepository.save(recruitCondition);
         recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(recruitCondition));
 
@@ -141,8 +140,8 @@ public class RecruitService {
         }
     }
 
-    private void validateRequest(RequestDto requestDto) {
-        recruitLaborLawValidator.validateRecruitRequest(requestDto);
+    private void validateRequest(Request request) {
+        recruitLaborLawValidator.validateRecruitRequest(request);
     }
 
     private RecruitConditionCache getRecruitConditionFromRedis(Long recruitConditionId) throws CacheException{

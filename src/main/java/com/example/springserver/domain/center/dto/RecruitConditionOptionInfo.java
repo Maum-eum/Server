@@ -1,40 +1,17 @@
-package com.example.springserver.domain.center.cache;
+package com.example.springserver.domain.center.dto;
 
-import com.example.springserver.domain.center.entity.enums.CareType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.redis.core.RedisHash;
-
-import java.io.Serializable;
-import java.util.List;
-
-import static com.example.springserver.domain.center.dto.response.RecruitResponseDto.TimeResponse;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-@RedisHash(value = "recruitCondition", timeToLive = 60 * 60) // 1시간 TTL
-public class RecruitConditionCache implements Serializable {
-
-    @Id
-    private Long id;
-    private Long elderId;
-    private Long locationId;
-    private String address;
-
-    private List<CareType> careTypes;
-    private List<TimeResponse> recruitTimes;
-
-    private boolean flexibleSchedule;
+public class RecruitConditionOptionInfo {
     private boolean mealAssistance;
     private boolean toiletAssistance;
     private boolean moveAssistance;
     private boolean dailyLivingAssistance;
-    private Integer desiredHourlyWage; // 희망 급여
+    private boolean flexibleSchedule; // 시간 협의 여부
+    private int desiredHourlyWage; // 희망 급여
     private boolean selfFeeding; // 스스로 식사 가능
     private boolean mealPreparation; // 식사 차려드리기
     private boolean cookingAssistance; // 요리 필요
@@ -53,6 +30,4 @@ public class RecruitConditionCache implements Serializable {
     private boolean exerciseSupport; // 산책, 간단한 운동
     private boolean emotionalSupport; // 정서적 지원
     private boolean cognitiveStimulation; // 인지 자극 활동
-
-    private String detailRequiredService;
 }
