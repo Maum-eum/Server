@@ -2,15 +2,14 @@ package com.example.springserver.domain.match.dto.response;
 
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto;
 import com.example.springserver.domain.caregiver.dto.response.CaregiverResponseDto.MatchCaregiverResponse;
-import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto.Response;
+import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
 import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.ScheduleAvailability;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto;
 import com.example.springserver.domain.center.dto.response.ElderResponseDto.MatchElderResponseDto;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
-import com.example.springserver.domain.center.dto.response.RecruitResponseDto.ResponseDto;
+import com.example.springserver.domain.center.dto.response.RecruitResponseDto.Response;
 import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
 import com.example.springserver.domain.center.entity.RecruitTime;
@@ -196,9 +195,9 @@ public class MatchResponseDto {
 
         private ElderResponseDto.ResponseDto elderInfoDto;
 
-        private Response jobCondRes;
+        private JobConditionResponseDto.Response jobCondRes;
 
-        private RecruitResponseDto.ResponseDto recruitCondRes;
+        private Response recruitCondRes;
 
     }
 
@@ -423,9 +422,9 @@ public class MatchResponseDto {
 
         private MatchStatus status;
 
-        private ResponseDto requirementCondition;
+        private Response requirementCondition;
 
-        private Response jobCondition;
+        private JobConditionResponseDto.Response jobCondition;
 
         private MatchElderResponseDto elderInfoDto;
 

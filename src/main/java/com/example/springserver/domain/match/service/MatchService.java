@@ -7,22 +7,17 @@ import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.enums.Sexual;
 import com.example.springserver.domain.caregiver.repository.CaregiverRepository;
 import com.example.springserver.domain.caregiver.repository.JobConditionRepository;
-import com.example.springserver.domain.caregiver.service.CommonService;
 import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.entity.*;
-import com.example.springserver.domain.center.entity.enums.Week;
-import com.example.springserver.domain.center.repository.*;
-import com.example.springserver.domain.match.dto.response.MatchResponseDto;
-import com.example.springserver.domain.match.entity.enums.MatchStatus;
-import com.example.springserver.domain.center.entity.Center;
-import com.example.springserver.domain.center.entity.Elder;
-import com.example.springserver.domain.center.entity.RecruitCondition;
-import com.example.springserver.domain.center.entity.RecruitTime;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
+import com.example.springserver.domain.center.repository.AdminRepository;
+import com.example.springserver.domain.center.repository.MatchRepository;
 import com.example.springserver.domain.center.repository.RecruitConditionRepository;
 import com.example.springserver.domain.match.dto.request.MatchRequestDto.RecruitReq;
+import com.example.springserver.domain.match.dto.response.MatchResponseDto;
 import com.example.springserver.domain.match.entity.Match;
+import com.example.springserver.domain.match.entity.enums.MatchStatus;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -33,7 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.springserver.domain.match.dto.response.MatchResponseDto.*;
@@ -42,8 +40,6 @@ import static com.example.springserver.domain.match.dto.response.MatchResponseDt
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MatchService {
-
-    private final CommonService commonService;
     private final JobConditionRepository jobConditionRepository;
     private final CaregiverRepository caregiverRepository;
     private final RecruitConditionRepository recruitConditionRepository;
@@ -51,7 +47,7 @@ public class MatchService {
     private final AdminRepository adminRepository;
 
     public List<MatchedStatus> getCalenderList(CustomUserDetails user) {
-        Caregiver caregiver = commonService.getById(user);
+        Caregiver caregiver = getValidCaregiver(user.getId());
         JobCondition jobCondition = jobConditionRepository.findByCaregiver(caregiver)
                 .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
 
@@ -116,7 +112,7 @@ public class MatchService {
         Match originalMatch = matchRepository.findById(request.getMatchId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.MATCH_NOT_FOUND));
 
-        Caregiver caregiver = commonService.getById(user);
+        Caregiver caregiver = getValidCaregiver(user.getId());
 
         if (request.getStatus() == RecruitStatus.ACCEPTED || request.getStatus() == RecruitStatus.TUNING) {
             originalMatch.setStatus(MatchStatus.TUNING);
@@ -130,7 +126,7 @@ public class MatchService {
     }
 
     public List<MatchResponseDto.WorkRequest> getRequests(CustomUserDetails user) {
-        Caregiver cg = commonService.getById(user);
+        Caregiver cg = getValidCaregiver(user.getId());
         JobCondition jc = jobConditionRepository.findByCaregiver(cg)
                 .orElseThrow(()-> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
 
@@ -163,34 +159,10 @@ public class MatchService {
                 .collect(Collectors.toList());
     }
 
-
-
-    private int getTimeMask(long startTime, long endTime) {
-        int mask = 0;
-        for (int i = (int)startTime; i < (int)endTime; i++) {
-            mask |= (1 << i);
-        }
-        return mask;
-    }
-
-    private int getDayOfWeekBit(Week dayOfWeek) {
-        return switch (dayOfWeek) {
-            case SUN -> 1;
-            case MON -> 2;
-            case TUE -> 4;
-            case WED -> 8;
-            case THU -> 16;
-            case FRI -> 32;
-            case SAT -> 64;
-        };
-    }
-
     @Transactional
-    public MatchCreateDto createMatch(CustomUserDetails user, Long jcid, Long rcid) {
-        JobCondition jc = jobConditionRepository.findById(jcid)
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-        RecruitCondition rc = recruitConditionRepository.findById(rcid)
-                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+    public MatchCreateDto createMatch(CustomUserDetails user, Long jobConditionId, Long recruitConditionId) {
+        JobCondition jc = getValidJobCondition(jobConditionId);
+        RecruitCondition rc = getValidRecruitCondition(recruitConditionId);
         Match match = Match.builder()
                 .jobCondition(jc)
                 .recruitCondition(rc)
@@ -200,13 +172,11 @@ public class MatchService {
         return MatchCreateDto.builder().msg("요청이 완료되었습니다.").build();
     }
 
-    public CareGiverInfo getRecommendResult(CustomUserDetails user, Long jc, Long rc) {
-        JobCondition jobCondition = jobConditionRepository.findById(jc)
-                .orElseThrow(() -> new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-        RecruitCondition recruitCondition = recruitConditionRepository.findById(rc)
-                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
-        Caregiver caregiver = caregiverRepository.findById(jobCondition.getId())
-                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+    public CareGiverInfo getRecommendResult(CustomUserDetails user, Long jobConditionId, Long recruitConditionId) {
+        // get Valid Data
+        JobCondition jobCondition = getValidJobCondition(jobConditionId);
+        RecruitCondition recruitCondition = getValidRecruitCondition(recruitConditionId);
+        Caregiver caregiver = getValidCaregiver(user.getId());
         Elder elder = recruitCondition.getElder();
         Admin admin = adminRepository.findByCenterId(elder.getCenter().getCenterId())
                 .orElseThrow(()->new GlobalException(ErrorCode.ADMIN_NOT_FOUND));
@@ -221,12 +191,10 @@ public class MatchService {
     }
 
     @Transactional
-    public String answerToMatchRes(boolean status,Long jc, Long rc) {
-        Match byJcAndRC = matchRepository.findByJcAndRC(jc, rc);
-        JobCondition jobCondition = jobConditionRepository.findById(jc)
-                .orElseThrow(() ->new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
-        RecruitCondition recruitCondition = recruitConditionRepository.findById(rc)
-                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+    public String answerToMatchRes(boolean status, Long jobConditionId, Long recruitConditionId) {
+        Match byJcAndRC = matchRepository.findByJcAndRC(jobConditionId, recruitConditionId);
+        JobCondition jobCondition = getValidJobCondition(jobConditionId);
+        RecruitCondition recruitCondition = getValidRecruitCondition(recruitConditionId);
         if(!status) {
             byJcAndRC.setStatus(MatchStatus.DECLINED);
             byJcAndRC.setDeletedAt(LocalDateTime.now());
@@ -240,77 +208,21 @@ public class MatchService {
     }
 
     public List<Match> getCenterMatchingList(Long centerId) {
-
         return matchRepository.findByCenterId(centerId);
     }
 
-    //    public List<MatchedCaregiver> getRecommendList(Long rcId) {
-//
-//        List<JobCondition> recommendedList  = jobConditionRepository.findAllRecommendedListByElder(rcId);
-//        RecruitCondition recruitCondition = recruitCondRepository.findById(rcId)
-//                .orElseThrow(()-> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
-//
-//        // 매칭 점수 계산
-//        List<MatchedCaregiver> result = new ArrayList<>();
-//        for (JobCondition jobCondition : recommendedList) {
-//            int timeScore = calculateTimeScore(jobCondition,recruitCondition);
-//            int conditionScore = calculateConditionScore(jobCondition,recruitCondition);
-//
-//            Caregiver caregiver = jobCondition.getCaregiver();
-//            MatchStatus st = matchRepository.findByJobConditionAndRecruitCondition(recruitCondition.getRecruitConditionId(),
-//                    jobCondition.getId());
-//
-//
-//            // 최종 점수 계산 (persent)
-//            int persent = (timeScore + conditionScore) / 2;
-//
-//            // 결과 리스트 추가
-//            result.add(MatchedCaregiver.builder()
-//                            .jobConditionId(jobCondition.getId())
-//                            .caregiverName(caregiver.getName())
-//                            .imgUrl(caregiver.getImg())
-//                            .matchStatus(st == null ? MatchStatus.NONE : st )
-//                            .score(persent)
-//                    .build());
-//        }
-//
-//        // 점수가 높은 순으로 정렬
-//        result.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
-//
-//        return result;
-//    }
-//    private int calculateTimeScore(JobCondition jc, RecruitCondition rc) {
-//        List<RecruitTime> recruitTimes = rc.getRecruitTimes();
-//        int totalScore = 0;
-//        int matchedDays = 0;
-//
-//        // JobCondition의 근무 시간을 비트마스크로 변환
-//        int jobTimeMask = getTimeMask(jc.getStartTime(), jc.getEndTime());
-//        int jobDayMask = jc.getDayOfWeek();
-//
-//        for (RecruitTime rt : recruitTimes) {
-//            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
-//
-//
-//            if ((jobDayMask & recruitDayBit) == 0) {
-//                continue;
-//            }
-//
-//            matchedDays++;
-//
-//            int recruitTimeMask = getTimeMask(rt.getStartTime(), rt.getEndTime());
-//
-//            // 겹치는 시간 계산 (비트 연산)
-//            int overlappedTimeMask = jobTimeMask & recruitTimeMask;
-//            int overlapDuration = Integer.bitCount(overlappedTimeMask);
-//            int jobDuration = Integer.bitCount(recruitTimeMask);
-//
-//            // 비율 기반 점수 계산
-//            int score = (int) ((overlapDuration / (double) jobDuration) * 100);
-//
-//            totalScore += score;
-//        }
-//
-//        return (matchedDays > 0) ? (totalScore / matchedDays) : 0;
-//    }
+    private RecruitCondition getValidRecruitCondition(Long recruitConditionId) {
+        return recruitConditionRepository.findById(recruitConditionId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
+    }
+
+    private JobCondition getValidJobCondition(Long jobConditionId) {
+        return jobConditionRepository.findById(jobConditionId)
+                .orElseThrow(() ->new GlobalException(ErrorCode.JOB_CONDITION_NOT_FOUND));
+    }
+
+    private Caregiver getValidCaregiver(Long caregiverId) {
+        return caregiverRepository.findById(caregiverId)
+                .orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
+    }
 }

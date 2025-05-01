@@ -1,36 +1,54 @@
 package com.example.springserver.global.validation.validator;
 
+import com.example.springserver.domain.center.dto.request.RecruitRequestDto;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.RecruitException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.LocalTime;
+
 @Component
 @RequiredArgsConstructor
-public class RecruitLaborLawValidator { // 2025년 근로기준법 기준
+public class RecruitLaborLawValidator {
 
     private static final int MINIMUM_WAGE = 10030;
     private static final int DAILY_MAXIMUM_LABOR_TIME = 8;
-    private static final int MONTHLY_MAXIMUM_LABOR_TIME = 40;
 
-    // 최저임금 검증: 최저 임금 10,030원
+    public void validateRecruitRequest(RecruitRequestDto.Request request) {
+        if (request.getRecruitTimes() == null || request.getRecruitTimes().isEmpty()) {
+            throw new RecruitException(ErrorCode.RECRUIT_TIME_INVALID);
+        }
+
+        for (RecruitRequestDto.TimeRequest timeDto : request.getRecruitTimes()) {
+            long dailyHour = calculateWorkingHours(timeDto);
+
+            validateMinimumWage(request.getRecruitConditionOptionInfo().getDesiredHourlyWage());
+            validateWorkingHours(dailyHour);
+        }
+    }
+
+    private long calculateWorkingHours(RecruitRequestDto.TimeRequest dto) {
+        return Duration.between(
+                convertToLocalTime(dto.getStartTime()),
+                convertToLocalTime(dto.getEndTime())
+        ).toHours();
+    }
+
+    private LocalTime convertToLocalTime(Long time) {
+        return LocalTime.MIN.plusMinutes(time * 30);
+    }
+
     public void validateMinimumWage(int wagePerHour) {
         if (wagePerHour < MINIMUM_WAGE) {
             throw new RecruitException(ErrorCode.RECRUIT_LABOR_WAGE_INVALID);
         }
     }
 
-    // 근로 시간 검증: 1일 최대 8시간 근무
     public void validateWorkingHours(long hoursPerDay) {
         if (hoursPerDay > DAILY_MAXIMUM_LABOR_TIME) {
             throw new RecruitException(ErrorCode.RECRUIT_DAILY_LABOR_TIME_INVALID);
-        }
-    }
-
-    // 초과 근무 검증: 최대 주 40시간 근무 가능
-    public void validateOvertimeRules(int hoursPerWeek) {
-        if (hoursPerWeek > MONTHLY_MAXIMUM_LABOR_TIME) {
-            throw new RecruitException(ErrorCode.RECRUIT_MONTHLY_LABOR_TIME_INVALID);
         }
     }
 }

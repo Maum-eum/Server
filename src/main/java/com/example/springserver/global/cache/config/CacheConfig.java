@@ -1,6 +1,7 @@
 package com.example.springserver.global.cache.config;
 
 import com.example.springserver.domain.caregiver.cache.JobConditionCache;
+import com.example.springserver.domain.center.cache.RecruitConditionCache;
 import com.example.springserver.global.cache.type.LocalCacheType;
 import com.example.springserver.global.cache.type.RedisCacheType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,14 @@ import static org.springframework.data.redis.serializer.RedisSerializationContex
 public class CacheConfig {
     @Bean
     public Cache<Long, JobConditionCache> jobConditionLocalCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .maximumSize(1000)
+                .build();
+    }
+
+    @Bean
+    public Cache<Long, RecruitConditionCache> recruitConditionLocalCache() {
         return Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(1000)
