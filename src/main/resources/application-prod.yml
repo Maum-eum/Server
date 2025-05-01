@@ -1,21 +1,26 @@
 spring:
   application:
     name: SpringServer
-
   datasource:
-
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ENC(ABqPb8zpG5FCvSB2CiqLc0svq0Qmh7Wkgk1wYlJJEqMi3sULrdp1Hd2XrLsL6tK2Gnt2SW9nv49Rj86I1ftb13LmdPhd19BM4plbeTrnznna7Q/eIr7gwhJ4n5JuyfzW)
     username: ENC(LAdrT9uRSsMhF4WuzP6tzA==)
     password: ENC(KSYbLcCjwq/F1TbfbmCynM5ew6gkNvnV)
-
   jpa:
     hibernate:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
     defer-datasource-initialization: true # data.sql 실행을 테이블 생성이후로 지연
+
+  data:
+    redis:
+      host: ENC(P0o33DkDGuH5n06wXoDJ46tlecsQfHkj)
+      port: ENC(tlu9LCvFeGfeDNhRTWN3WQ==)
+  cache:
+    type: caffeine
+
+
 
 #  sql:
 #    init:
@@ -47,7 +52,7 @@ firebase:
   auth_uri: ENC(XGT3iYOVqBNkvIQcNalSD8h6hIa116fym5IkWE/DMXlE/34DlJpy6uSd/s87i0Y4//NwBJYTNdk=)
   token_uri: ENC(0ozLVrhtKIRmk1rMq1vbOro8POwuYngnc/OX1EtznGAwUl2uMUtuzg3/1szetKGt)
   auth_provider_x509_cert_url: ENC(tXhDWjbD4m7ALX1ZTb5+VlvlaQXUbq0jdAu7OWOpr9EhEuXM6vNV/O6v5qhNY/1leWal3O4SFxY=)
-  universe_domain: ENC(esswM69UFJcUe7LYn339mPn6tFKUvvU1
+  universe_domain: ENC(esswM69UFJcUe7LYn339mPn6tFKUvvU1)
 
   servlet:
     multipart:
@@ -60,7 +65,7 @@ springdoc:
 
 jasypt:
   encryptor:
-    key: ${JASYPT_SECRET_KEY}
+    key: wjstnalsWKdWkd
 
 logging:
   level:
