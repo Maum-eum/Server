@@ -37,14 +37,6 @@ public class Admin extends BaseEntity {
     @NotNull
     private String connect;
 
-    public Admin(String username, String password, String name, Center center, String connect) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.center = center;
-        this.connect = connect;
-    }
-
     public void update(String name, String connect) {
         if (name != null) {
             this.name = name;

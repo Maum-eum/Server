@@ -28,16 +28,6 @@ public class WorkLocation {
     @JoinColumn(name = "job_condition_id", nullable = false)
     private JobCondition jobCondition;
 
-    public WorkLocation(Location location, JobCondition jobCondition) {
-        this.location = location;
-        this.jobCondition = jobCondition;
-    }
-
-    public WorkLocation(JobCondition jobCondition, Location location) {
-        this.jobCondition = jobCondition;
-        this.location = location;
-    }
-
     public void setJobCondition(JobCondition jobCondition) {
         this.jobCondition = jobCondition;
     }

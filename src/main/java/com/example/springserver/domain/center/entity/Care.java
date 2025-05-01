@@ -84,43 +84,6 @@ public class Care extends BaseEntity {
 
     private String detailRequiredService;
 
-    public Care(Elder elder, List<CareType> careTypes, Location careLocation, boolean mealAssistance,
-                            boolean toiletAssistance, boolean moveAssistance, boolean dailyLivingAssistance,
-                            Integer desiredHourlyWage, boolean selfFeeding, boolean mealPreparation,
-                            boolean cookingAssistance, boolean enteralNutritionSupport, boolean selfToileting,
-                            boolean occasionalToiletingAssist, boolean diaperCare, boolean catheterOrStomaCare,
-                            boolean independentMobility, boolean mobilityAssist, boolean wheelchairAssist, boolean immobile,
-                            boolean cleaningLaundryAssist, boolean bathingAssist, boolean hospitalAccompaniment,
-                            boolean exerciseSupport, boolean emotionalSupport, boolean cognitiveStimulation, String detailRequiredService) {
-        this.elder = elder;
-        this.careLocation = careLocation;
-        this.careTypes = careTypes;
-        this.mealAssistance = mealAssistance;
-        this.toiletAssistance = toiletAssistance;
-        this.moveAssistance = moveAssistance;
-        this.dailyLivingAssistance = dailyLivingAssistance;
-        this.desiredHourlyWage = desiredHourlyWage;
-        this.selfFeeding = selfFeeding;
-        this.mealPreparation = mealPreparation;
-        this.cookingAssistance = cookingAssistance;
-        this.enteralNutritionSupport = enteralNutritionSupport;
-        this.selfToileting = selfToileting;
-        this.occasionalToiletingAssist = occasionalToiletingAssist;
-        this.diaperCare = diaperCare;
-        this.catheterOrStomaCare = catheterOrStomaCare;
-        this.independentMobility = independentMobility;
-        this.mobilityAssist = mobilityAssist;
-        this.wheelchairAssist = wheelchairAssist;
-        this.immobile = immobile;
-        this.cleaningLaundryAssist = cleaningLaundryAssist;
-        this.bathingAssist = bathingAssist;
-        this.hospitalAccompaniment = hospitalAccompaniment;
-        this.exerciseSupport = exerciseSupport;
-        this.emotionalSupport = emotionalSupport;
-        this.cognitiveStimulation = cognitiveStimulation;
-        this.detailRequiredService = detailRequiredService; // 추가 요청 사항
-    }
-
     public void update(CareRequestDto.RequestDto requestDto, Location location) {
         this.careTypes = requestDto.getCareTypes();
         this.careLocation = location;

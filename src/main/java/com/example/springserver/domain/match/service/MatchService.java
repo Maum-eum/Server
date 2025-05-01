@@ -11,7 +11,6 @@ import com.example.springserver.domain.center.converter.ElderConverter;
 import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.entity.*;
 import com.example.springserver.domain.center.entity.enums.RecruitStatus;
-import com.example.springserver.domain.center.entity.enums.Week;
 import com.example.springserver.domain.center.repository.AdminRepository;
 import com.example.springserver.domain.center.repository.MatchRepository;
 import com.example.springserver.domain.center.repository.RecruitConditionRepository;
@@ -160,26 +159,6 @@ public class MatchService {
                 .collect(Collectors.toList());
     }
 
-    private int getTimeMask(long startTime, long endTime) {
-        int mask = 0;
-        for (int i = (int)startTime; i < (int)endTime; i++) {
-            mask |= (1 << i);
-        }
-        return mask;
-    }
-
-    private int getDayOfWeekBit(Week dayOfWeek) {
-        return switch (dayOfWeek) {
-            case SUN -> 1;
-            case MON -> 2;
-            case TUE -> 4;
-            case WED -> 8;
-            case THU -> 16;
-            case FRI -> 32;
-            case SAT -> 64;
-        };
-    }
-
     @Transactional
     public MatchCreateDto createMatch(CustomUserDetails user, Long jobConditionId, Long recruitConditionId) {
         JobCondition jc = getValidJobCondition(jobConditionId);
@@ -246,74 +225,4 @@ public class MatchService {
         return caregiverRepository.findById(caregiverId)
                 .orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
-
-    //    public List<MatchedCaregiver> getRecommendList(Long rcId) {
-//
-//        List<JobCondition> recommendedList  = jobConditionRepository.findAllRecommendedListByElder(rcId);
-//        RecruitCondition recruitCondition = recruitCondRepository.findById(rcId)
-//                .orElseThrow(()-> new GlobalException(ErrorCode.RECRUIT_NOT_FOUND));
-//
-//        // 매칭 점수 계산
-//        List<MatchedCaregiver> result = new ArrayList<>();
-//        for (JobCondition jobCondition : recommendedList) {
-//            int timeScore = calculateTimeScore(jobCondition,recruitCondition);
-//            int conditionScore = calculateConditionScore(jobCondition,recruitCondition);
-//
-//            Caregiver caregiver = jobCondition.getCaregiver();
-//            MatchStatus st = matchRepository.findByJobConditionAndRecruitCondition(recruitCondition.getRecruitConditionId(),
-//                    jobCondition.getId());
-//
-//
-//            // 최종 점수 계산 (persent)
-//            int persent = (timeScore + conditionScore) / 2;
-//
-//            // 결과 리스트 추가
-//            result.add(MatchedCaregiver.builder()
-//                            .jobConditionId(jobCondition.getId())
-//                            .caregiverName(caregiver.getName())
-//                            .imgUrl(caregiver.getImg())
-//                            .matchStatus(st == null ? MatchStatus.NONE : st )
-//                            .score(persent)
-//                    .build());
-//        }
-//
-//        // 점수가 높은 순으로 정렬
-//        result.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
-//
-//        return result;
-//    }
-//    private int calculateTimeScore(JobCondition jc, RecruitCondition rc) {
-//        List<RecruitTime> recruitTimes = rc.getRecruitTimes();
-//        int totalScore = 0;
-//        int matchedDays = 0;
-//
-//        // JobCondition의 근무 시간을 비트마스크로 변환
-//        int jobTimeMask = getTimeMask(jc.getStartTime(), jc.getEndTime());
-//        int jobDayMask = jc.getDayOfWeek();
-//
-//        for (RecruitTime rt : recruitTimes) {
-//            int recruitDayBit = getDayOfWeekBit(rt.getDayOfWeek());
-//
-//
-//            if ((jobDayMask & recruitDayBit) == 0) {
-//                continue;
-//            }
-//
-//            matchedDays++;
-//
-//            int recruitTimeMask = getTimeMask(rt.getStartTime(), rt.getEndTime());
-//
-//            // 겹치는 시간 계산 (비트 연산)
-//            int overlappedTimeMask = jobTimeMask & recruitTimeMask;
-//            int overlapDuration = Integer.bitCount(overlappedTimeMask);
-//            int jobDuration = Integer.bitCount(recruitTimeMask);
-//
-//            // 비율 기반 점수 계산
-//            int score = (int) ((overlapDuration / (double) jobDuration) * 100);
-//
-//            totalScore += score;
-//        }
-//
-//        return (matchedDays > 0) ? (totalScore / matchedDays) : 0;
-//    }
 }

@@ -30,11 +30,4 @@ public class Experience extends BaseEntity {
 
     @Column(name = "description", nullable = false)
     private String description;
-
-    public Experience(Caregiver caregiver, Integer duration, String title, String description) {
-        this.caregiver = caregiver;
-        this.duration = duration;
-        this.title = title;
-        this.description = description;
-    }
 }

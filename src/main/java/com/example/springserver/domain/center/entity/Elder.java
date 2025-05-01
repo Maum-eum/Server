@@ -65,33 +65,11 @@ public class Elder extends BaseEntity {
 
     private boolean hasAggressiveBehavior; // 공격적인 행동 여부
 
-
     @OneToMany(mappedBy = "elder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecruitCondition> recruitConditions = new ArrayList<>();
 
     @OneToOne(mappedBy = "elder", cascade = CascadeType.ALL, orphanRemoval = true)
     private Care careInfo;
-
-    public Elder(Center center, String name, Integer gender, LocalDate birth, ElderRate rate,
-                 List<Inmate> inmateTypes, String imgUrl, Integer weight,
-                 boolean isTemporarySave, boolean isNormal, boolean hasShortTermMemoryLoss, boolean wandersOutside,
-                 boolean actsLikeChild, boolean hasDelusions, boolean hasAggressiveBehavior) {
-        this.center = center;
-        this.name = name;
-        this.gender = gender;
-        this.birth = birth;
-        this.rate = rate;
-        this.inmateTypes = inmateTypes;
-        this.imgUrl = imgUrl;
-        this.weight = weight;
-        this.isTemporarySave = isTemporarySave;
-        this.isNormal = isNormal;
-        this.hasShortTermMemoryLoss = hasShortTermMemoryLoss;
-        this.wandersOutside = wandersOutside;
-        this.actsLikeChild = actsLikeChild;
-        this.hasDelusions = hasDelusions;
-        this.hasAggressiveBehavior = hasAggressiveBehavior;
-    }
 
     /* 양방향 연관관계 편의 메서드 */
     public void changeCenter(Center center) {
