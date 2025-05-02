@@ -46,3 +46,7 @@ application-key.yml
 !**/src/main/resources/application-key.yml
 .env
 firebase-service-key.json
+
+
+### mac ###
+.DS_Store
