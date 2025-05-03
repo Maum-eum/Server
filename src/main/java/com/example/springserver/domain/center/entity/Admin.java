@@ -53,4 +53,13 @@ public class Admin extends BaseEntity {
             center.getAdmins().add(this);
         }
     }
+
+    // mock data 생성용
+    public Admin(String username, String password, String name, Center center, String connect) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.center = center;
+        this.connect = connect;
+    }
 }

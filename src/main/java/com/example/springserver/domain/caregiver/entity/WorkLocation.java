@@ -31,4 +31,10 @@ public class WorkLocation {
     public void setJobCondition(JobCondition jobCondition) {
         this.jobCondition = jobCondition;
     }
+
+    // mock data 생성용
+    public WorkLocation(Location location, JobCondition jobCondition) {
+        this.location = location;
+        this.jobCondition = jobCondition;
+    }
 }

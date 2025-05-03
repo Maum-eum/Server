@@ -177,4 +177,39 @@ public class JobCondition extends BaseEntity {
             wokLocation.setJobCondition(this); // 양방향 관계 설정
         }
     }
+
+    // mock data 생성용
+    public JobCondition(ScheduleAvailability flexibleSchedule, Integer desiredHourlyWage, ScheduleAvailability selfFeeding,
+                        ScheduleAvailability mealPreparation, ScheduleAvailability cookingAssistance, ScheduleAvailability enteralNutritionSupport,
+                        ScheduleAvailability selfToileting, ScheduleAvailability occasionalToiletingAssist, ScheduleAvailability diaperCare,
+                        ScheduleAvailability catheterOrStomaCare, ScheduleAvailability independentMobility, ScheduleAvailability mobilityAssist,
+                        ScheduleAvailability wheelchairAssist, ScheduleAvailability immobile, ScheduleAvailability cleaningLaundryAssist,
+                        ScheduleAvailability bathingAssist, ScheduleAvailability hospitalAccompaniment, ScheduleAvailability exerciseSupport,
+                        ScheduleAvailability emotionalSupport, ScheduleAvailability cognitiveStimulation,
+                        Integer dayOfWeek, Long startTime, Long endTime, Caregiver caregiver) {
+        this.flexibleSchedule = flexibleSchedule;
+        this.desiredHourlyWage = desiredHourlyWage;
+        this.selfFeeding = selfFeeding;
+        this.mealPreparation = mealPreparation;
+        this.cookingAssistance = cookingAssistance;
+        this.enteralNutritionSupport = enteralNutritionSupport;
+        this.selfToileting = selfToileting;
+        this.occasionalToiletingAssist = occasionalToiletingAssist;
+        this.diaperCare = diaperCare;
+        this.catheterOrStomaCare = catheterOrStomaCare;
+        this.independentMobility = independentMobility;
+        this.mobilityAssist = mobilityAssist;
+        this.wheelchairAssist = wheelchairAssist;
+        this.immobile = immobile;
+        this.cleaningLaundryAssist = cleaningLaundryAssist;
+        this.bathingAssist = bathingAssist;
+        this.hospitalAccompaniment = hospitalAccompaniment;
+        this.exerciseSupport = exerciseSupport;
+        this.emotionalSupport = emotionalSupport;
+        this.cognitiveStimulation = cognitiveStimulation;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.caregiver = caregiver;
+    }
 }

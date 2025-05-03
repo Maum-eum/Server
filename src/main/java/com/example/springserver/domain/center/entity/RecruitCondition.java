@@ -123,4 +123,56 @@ public class RecruitCondition extends BaseEntity {
         this.emotionalSupport = request.getRecruitConditionOptionInfo().isEmotionalSupport();
         this.cognitiveStimulation = request.getRecruitConditionOptionInfo().isCognitiveStimulation();
     }
+
+    // mock data 생성용
+    public RecruitCondition(Elder elder, Location recruitLocation, List<CareType> careTypes,
+                            boolean flexibleSchedule, String address, boolean mealAssistance,
+                            boolean toiletAssistance, boolean moveAssistance, boolean dailyLivingAssistance,
+                            Integer desiredHourlyWage, boolean selfFeeding, boolean mealPreparation,
+                            boolean cookingAssistance, boolean enteralNutritionSupport, boolean selfToileting,
+                            boolean occasionalToiletingAssist, boolean diaperCare, boolean catheterOrStomaCare,
+                            boolean independentMobility, boolean mobilityAssist, boolean wheelchairAssist, boolean immobile,
+                            boolean cleaningLaundryAssist, boolean bathingAssist, boolean hospitalAccompaniment,
+                            boolean exerciseSupport, boolean emotionalSupport, boolean cognitiveStimulation,
+                            String detailRequiredService) {
+        this.elder = elder;
+        this.recruitLocation = recruitLocation;
+        this.careTypes = careTypes;
+        this.flexibleSchedule = flexibleSchedule;
+        this.address = address;
+        this.mealAssistance = mealAssistance;
+        this.toiletAssistance = toiletAssistance;
+        this.moveAssistance = moveAssistance;
+        this.dailyLivingAssistance = dailyLivingAssistance;
+        this.desiredHourlyWage = desiredHourlyWage;
+        this.selfFeeding = selfFeeding;
+        this.mealPreparation = mealPreparation;
+        this.cookingAssistance = cookingAssistance;
+        this.enteralNutritionSupport = enteralNutritionSupport;
+        this.selfToileting = selfToileting;
+        this.occasionalToiletingAssist = occasionalToiletingAssist;
+        this.diaperCare = diaperCare;
+        this.catheterOrStomaCare =  catheterOrStomaCare;
+        this.independentMobility = independentMobility;
+        this.mobilityAssist = mobilityAssist;
+        this.wheelchairAssist  = wheelchairAssist;
+        this.immobile = immobile;
+        this.cleaningLaundryAssist = cleaningLaundryAssist;
+        this.bathingAssist = bathingAssist;
+        this.hospitalAccompaniment = hospitalAccompaniment;
+        this.exerciseSupport = exerciseSupport;
+        this.emotionalSupport = emotionalSupport;
+        this.cognitiveStimulation = cognitiveStimulation;
+        this.detailRequiredService = detailRequiredService;
+    }
+
+    public void addRecruitTime(RecruitTime recruitTime) {
+        if (this.recruitTimes == null) {
+            this.recruitTimes = new ArrayList<>();
+        }
+        if (!this.recruitTimes.contains(recruitTime)) {
+            this.recruitTimes.add(recruitTime);
+            recruitTime.setRecruitCondition(this);
+        }
+    }
 }
