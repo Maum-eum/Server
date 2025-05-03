@@ -90,4 +90,23 @@ public class Caregiver extends BaseEntity {
     public void changeEmploymentStatus(Boolean status) {
         this.employmentStatus = status;
     }
+
+    // mock data 생성용
+    public Caregiver(String username, String password, String name, String contact,
+                     Boolean car, Boolean education, String img, String intro,
+                     String address, Boolean employmentStatus, List<Experience> experiences,
+                     List<Certificate> certificates) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.contact = contact;
+        this.car = car;
+        this.education = education;
+        this.img = img;
+        this.intro = intro;
+        this.address = address;
+        this.employmentStatus = employmentStatus;
+        this.experiences = experiences;
+        this.certificates = certificates;
+    }
 }

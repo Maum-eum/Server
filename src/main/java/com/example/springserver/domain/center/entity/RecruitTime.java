@@ -36,4 +36,12 @@ public class RecruitTime {
     public void setRecruitCondition(RecruitCondition recruitCondition) {
         this.recruitCondition = recruitCondition;
     }
+
+    // mock data 생성용
+    public RecruitTime(RecruitCondition recruitCondition, Week dayOfWeek, Long startTime, Long endTime) {
+        this.recruitCondition = recruitCondition;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }
