@@ -16,38 +16,23 @@ public class JobConditionCacheRepository {
     private final RedisCacheHelper cacheHelper;
 
     private static final String JOB_CONDITION_KEY_PREFIX = "job_condition:";
-    private static final String CAREGIVER_KEY_PREFIX = "care_giver:";
     private static final Duration TTL = Duration.ofHours(6);
 
     private String getJobConditionKey(Long id) {
         return JOB_CONDITION_KEY_PREFIX + id;
     }
 
-    private String getCaregiverKey(Long caregiverId) {
-        return CAREGIVER_KEY_PREFIX + caregiverId;
-    }
-
     public void save(JobConditionCache cache) {
         String jobKey = getJobConditionKey(cache.getId());
-        String caregiverKey = getCaregiverKey(cache.getCaregiverId());
-
         cacheHelper.saveValue(jobKey, cache, TTL);
-        cacheHelper.saveValue(caregiverKey, cache.getId().toString(), TTL); // caregiverId → jobConditionId 매핑
     }
 
     public Optional<JobConditionCache> findByJobConditionId(Long id) {
         return cacheHelper.get(getJobConditionKey(id), JobConditionCache.class);
     }
 
-    public Optional<JobConditionCache> findByCaregiverId(Long caregiverId) {
-        log.info("caregiver_condition key : {}", getCaregiverKey(caregiverId));
-        return cacheHelper.get(getCaregiverKey(caregiverId), String.class)
-                .map(Long::valueOf)
-                .flatMap(this::findByJobConditionId);
-    }
-
-    public void deleteByCaregiverId(Long caregiverId) {
-        String caregiverKey = getCaregiverKey(caregiverId);
+    public void deleteByCaregiverId(Long id) {
+        String caregiverKey = getJobConditionKey(id);
 
         cacheHelper.get(caregiverKey, Long.class)
                 .ifPresent(jobConditionId -> cacheHelper.delete(getJobConditionKey(jobConditionId)));

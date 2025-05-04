@@ -50,5 +50,4 @@ public class JobConditionCache implements Serializable {
     private Long endTime;
 
     private List<WorkLocationCache> workLocations;
-    private Long caregiverId;
 }

@@ -43,7 +43,6 @@ public class JobConditionCacheConverter {
                 .workLocations(jobCondition.getWorkLocations().stream()
                         .map(JobConditionCacheConverter::toWorkLocationRedisDto)
                         .collect(Collectors.toList()))
-                .caregiverId(jobCondition.getCaregiver().getId())
                 .build();
     }
 
@@ -108,7 +107,6 @@ public class JobConditionCacheConverter {
                                 .endTime(cache.getEndTime()).build()
                 )
                 .locationResponseList(toWorkLocationResponseList(cache.getWorkLocations()))
-                .caregiverId(cache.getCaregiverId())
                 .build();
     }
 
