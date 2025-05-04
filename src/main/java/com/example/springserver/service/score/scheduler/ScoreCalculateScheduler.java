@@ -1,6 +1,6 @@
 package com.example.springserver.service.score.scheduler;
 
-import com.example.springserver.service.score.service.ScoreCalculationService;
+import com.example.springserver.service.score.service.ScoreEventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ScoreCalculateScheduler {
 
-    private final ScoreCalculationService scoreCalculationService;
+    private final ScoreEventService scoreEventService;
 
     /**
      * 매일 매월 새벽 4시 실행되는 스케줄러 입니다.
@@ -19,9 +19,6 @@ public class ScoreCalculateScheduler {
     @Scheduled(cron = "0 0 4 * * ?")
     public void calculateDailyScores() {
         log.info("[스케줄러 실행] 매일 새벽 4시, 전체 점수 업데이트 시작...");
-
-        scoreCalculationService.summarize();
-
-        log.info("[스케줄러 실행] 전체 점수 업데이트 완료!");
+        scoreEventService.summarize();
     }
 }

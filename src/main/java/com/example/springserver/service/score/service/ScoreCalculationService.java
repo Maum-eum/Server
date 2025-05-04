@@ -20,7 +20,6 @@ import com.example.springserver.global.apiPayload.format.GlobalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,20 +33,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScoreCalculationService {
 
-    private final JobConditionRepository jobConditionRepository;
-    private final RecruitConditionRepository recruitConditionRepository;
-    private final MatchRepository matchRepository;
     private final ScoreRepository scoreRepository;
     private final MatchScoreCacheService matchScoreCacheService;
     private final MatchScoreCacheConverter matchScoreCacheConverter;
+    private final JobConditionRepository jobConditionRepository;
+    private final RecruitConditionRepository recruitConditionRepository;
+    private final MatchRepository matchRepository;
 
-    // 주기적 삭제
-    /**
-     * 주기적으로 스케줄러에서 호출되는 메서드입니다.
-     * deledted_at 이 NULL 이 아니라면 삭제하는 메서드입니다.
-     */
     @Transactional
-    public void summarize() {
+    public void deleteMarkedScores() {
         try {
             scoreRepository.deleteAllMarkedAsDeleted();
         } catch (Exception e) {
@@ -57,42 +51,35 @@ public class ScoreCalculationService {
     }
 
     /**
-     *  RC 변경시 점수 재계산 때립니다.
-     *  기존 MatchScore가 존재하면 복구 및 업데이트,
-     *  존재하지 않으면 새로 생성합니다.
+     *  recruitCondition 변경시 점수 재계산
+     *  기존 MatchScore가 존재하면 업데이트, 존재하지 않으면 새로 생성
      */
-    //rc 변경시 update (Redis, DB 수정 O)
     public void recalculateScoresForRecruit(Long recruitConditionId) {
         log.info("recalculateScoresForRecruit===========");
-        RecruitCondition rc = fetchRecruitCondition(recruitConditionId);
+
+        RecruitCondition rc = fetchRecruitCondition(recruitConditionId); // 구인조건 가져옴
+
+        // 1. 시간 비교 : recruitTime 비교를 위한 마스킹
         Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc);
         int rcDayMask = calculateRcDayMask(rcDayTimeMap);
 
-        List<JobCondition> candidates = fetchJobConditionCandidatesByLocation(rc);
-        Map<String, MatchScore> existingScoreMap = fetchExistingMatchScoresMapForRecruit(rc.getRecruitConditionId());
-        Map<Long, Match> matchMap = fetchMatchStatusMapForRecruit(rc.getRecruitConditionId());
+        // 2. 위치 비교
+        List<JobCondition> candidates = fetchJobConditionCandidatesByLocation(rc); // 구직조건 후보 (구인 위치 기준)
+        Map<String, MatchScore> existingScoreMap = fetchExistingMatchScoresMapForRecruit(rc.getRecruitConditionId()); // rc별 존재하는 매칭 점수
+        Map<Long, Match> matchMap = fetchMatchStatusMapForRecruit(rc.getRecruitConditionId()); // match id : match status
 
         List<MatchScore> results = calculateMatchScoresForRecruit(candidates, rc, rcDayTimeMap, rcDayMask, existingScoreMap, matchMap);
         List<MatchScore> toSoftDelete = filterSoftDeleteTargetsForRecruit(existingScoreMap, results);
 
         results.addAll(toSoftDelete);
-
-        // DB data -> cache로 변환 & 저장
-        List<MatchScoreCache> newCaches = results.stream()
-                .map(matchScoreCacheConverter::toCache)
-                .toList();
-
-        scoreRepository.saveAll(results);
-        matchScoreCacheService.saveAll(newCaches);
+        persistScores(results); // DB data -> cache 저장
     }
 
-    // JC 변경시 Update (Redis, DB 수정 O)
     /**
-     * JC 변경 시 점수 재계산을 수행합니다.
-     * 존재하는 MatchScore는 수정/복구하고, 존재하지 않으면 새로 생성하여 저장합니다.
+     * jobCondition 변경 시 점수 재계산
+     * 존재하는 MatchScore는 업데이트, 존재하지 않으면 새로 생성
      */
     public void recalculateScoresForJob(Long jobConditionId) {
-        log.info("recalculateScoresForJob===========");
         try {
             JobCondition jc = fetchJobCondition(jobConditionId);
             List<RecruitCondition> rcList = fetchRelatedRecruitConditions(jc);
@@ -104,10 +91,7 @@ public class ScoreCalculationService {
                 Map<Week, Long> rcDayTimeMap = buildRcDayTimeMap(rc.getRecruitTimes());
 
                 if (!isAvailableOnSameDay(jc, rcDayTimeMap)) continue;
-
-                int conditionScore = calculateConditionScore(jc, rc);
-                int timeScore = calculateTimeScore(rcDayTimeMap, jc);
-                int finalScore = (conditionScore + timeScore) / 2;
+                int score = (calculateConditionScore(jc, rc) + calculateTimeScore(rcDayTimeMap, jc)) / 2;
 
                 MatchStatus match = matchRepository.findByJobCondition_IdAndRecruitCondition_Id(
                         rc.getRecruitConditionId(), jc.getId());
@@ -115,14 +99,13 @@ public class ScoreCalculationService {
                 String key = generateKey(jc.getId(), rc.getRecruitConditionId());
 
                 if (existingScoreMap.containsKey(key)) {
-                    MatchScore updated = updateExistingScore(existingScoreMap.get(key), match, finalScore);
+                    MatchScore updated = updateExistingScore(existingScoreMap.get(key), match, score);
                     results.add(updated);
                 } else {
-                    MatchScore created = createNewScore(jc, rc, finalScore, match);
+                    MatchScore created = createOrUpdateMatchScore(jc, rc, score, match, null);
                     results.add(created);
                 }
             }
-
             Set<String> processedKeys = results.stream()
                     .map(ms -> generateKey(ms.getJobCondition().getId(), ms.getRecruitCondition().getRecruitConditionId()))
                     .collect(Collectors.toSet());
@@ -138,14 +121,7 @@ public class ScoreCalculationService {
                     .toList();
 
             results.addAll(toSoftDelete);
-
-            // DB data -> cache로 변환 & 저장
-            List<MatchScoreCache> newCaches = results.stream()
-                    .map(matchScoreCacheConverter::toCache)
-                    .toList();
-
-            scoreRepository.saveAll(results);
-            matchScoreCacheService.saveAll(newCaches);
+            persistScores(results); // DB data -> cache 저장
         } catch (Exception e) {
             log.error("recalculateScoresForJob 실패: jobConditionId = {}", jobConditionId, e);
             throw new GlobalException(ErrorCode.JCSCORE_RECALCULATING_FAIL);
@@ -189,7 +165,7 @@ public class ScoreCalculationService {
      * 존재하지 않으면 예외를 발생시킵니다.
      */
     private List<JobCondition> fetchJobConditionCandidatesByLocation(RecruitCondition rc) {
-        return jobConditionRepository.findAllByRecommendedListByElder(
+        return jobConditionRepository.findAllByRecommendedListByLocation(
                 rc.getRecruitLocation().getLocationId()
         ).orElseThrow(() -> new GlobalException(ErrorCode.RECOMMEND_LIST_NOT_FOUND));
     }
@@ -223,46 +199,23 @@ public class ScoreCalculationService {
      * 유효한 점수를 계산하여 MatchScore 리스트로 반환합니다.
      * 이미 존재하는 MatchScore는 복구/갱신, 없으면 새로 생성합니다.
      */
-    private List<MatchScore> calculateMatchScoresForRecruit(
-            List<JobCondition> candidates,
-            RecruitCondition rc,
-            Map<Week, Long> rcDayTimeMap,
-            int rcDayMask,
-            Map<String, MatchScore> existingScoreMap,
-            Map<Long, Match> matchMap
-    ) {
+    private List<MatchScore> calculateMatchScoresForRecruit(List<JobCondition> candidates, RecruitCondition rc, Map<Week, Long> rcDayTimeMap,
+                                                            int rcDayMask, Map<String, MatchScore> existingScoreMap, Map<Long, Match> matchMap) {
         List<MatchScore> results = new ArrayList<>();
 
         for (JobCondition jc : candidates) {
             if ((jc.getDayOfWeek() & rcDayMask) == 0) continue;
 
-            int conditionScore = calculateConditionScore(jc, rc);
-            int timeScore = calculateTimeScore(rcDayTimeMap, jc);
-            int finalScore = (conditionScore + timeScore) / 2;
-
+            int finalScore = (calculateConditionScore(jc, rc)  + calculateTimeScore(rcDayTimeMap, jc)) / 2;
             String key = jc.getId() + "_" + rc.getRecruitConditionId();
 
-            if (existingScoreMap.containsKey(key)) {
-                MatchScore existing = existingScoreMap.get(key);
-                existing.setScore(finalScore);
-                existing.setStatus(Optional.ofNullable(matchMap.get(jc.getId()))
-                        .map(Match::getStatus)
-                        .orElse(MatchStatus.NONE));
-                existing.setDeletedAt(null);
-                results.add(existing);
-            } else {
-                MatchScore newScore = MatchScore.builder()
-                        .caregiverName(jc.getCaregiver().getName())
-                        .caregiverImg(jc.getCaregiver().getImg())
-                        .recruitCondition(rc)
-                        .jobCondition(jc)
-                        .score(finalScore)
-                        .status(Optional.ofNullable(matchMap.get(jc.getId()))
-                                .map(Match::getStatus)
-                                .orElse(MatchStatus.NONE))
-                        .build();
-                results.add(newScore);
-            }
+            MatchScore existing = existingScoreMap.get(key);
+            MatchStatus matchStatus = Optional.ofNullable(matchMap.get(jc.getId()))
+                    .map(Match::getStatus)
+                    .orElse(MatchStatus.NONE);
+
+            MatchScore score = createOrUpdateMatchScore(jc, rc, finalScore, matchStatus, existing);
+            results.add(score);
         }
         return results;
     }
@@ -343,17 +296,22 @@ public class ScoreCalculationService {
         return (jc.getDayOfWeek() & rcDayMask) != 0;
     }
 
-    /**
-     * MatchScore를 새로 생성합니다.
-     */
-    private MatchScore createNewScore(JobCondition jc, RecruitCondition rc, int score, MatchStatus match) {
-        return MatchScore.builder()
+    private MatchScore createOrUpdateMatchScore(JobCondition jc, RecruitCondition rc,
+                                                int score, MatchStatus matchStatus, MatchScore existing) {
+        if (existing != null) { // 존재하는 경우 업데이트
+            existing.setScore(score);
+            existing.setStatus(matchStatus != null ? matchStatus : MatchStatus.NONE);
+            existing.setDeletedAt(null);
+            return existing;
+        }
+
+        return MatchScore.builder() // 새로 생성
                 .caregiverName(jc.getCaregiver().getName())
                 .caregiverImg(jc.getCaregiver().getImg())
                 .recruitCondition(rc)
                 .jobCondition(jc)
                 .score(score)
-                .status(match != null ? match : MatchStatus.NONE)
+                .status(matchStatus != null ? matchStatus : MatchStatus.NONE)
                 .build();
     }
 
@@ -372,24 +330,6 @@ public class ScoreCalculationService {
      */
     private String generateKey(Long jobConditionId, Long recruitConditionId) {
         return jobConditionId + "_" + recruitConditionId;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void recalculateScoresForRecruitWithNewTransaction(Long recruitConditionId) {
-        try {
-            recalculateScoresForRecruit(recruitConditionId);
-        } catch (Exception e) {
-            throw new GlobalException(ErrorCode.RCSCORE_RECALCULATING_FAIL);
-        }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void recalculateScoresForJobWithNewTransaction(Long jobConditionId) {
-        try {
-            recalculateScoresForJob(jobConditionId);
-        } catch (Exception e) {
-            throw new GlobalException(ErrorCode.JCSCORE_RECALCULATING_FAIL);
-        }
     }
 
     private int calculateConditionScore(JobCondition jc, RecruitCondition rc) {
@@ -470,7 +410,7 @@ public class ScoreCalculationService {
             Week rcDay = entry.getKey();
             long rcTimeMask = entry.getValue();
 
-            if (isDayMatched(jc, rcDay)) {
+            if ((jc.getDayOfWeek() & rcDay.getBitMask()) != 0) { // 요일 일치 -> 시간도 비교
                 matchedDays++;
                 int score = calculateDayScore(jcTimeMask, rcTimeMask);
                 totalScore += score;
@@ -478,13 +418,6 @@ public class ScoreCalculationService {
         }
 
         return calculateAverageScore(matchedDays, totalScore);
-    }
-
-    /**
-     * 요일이 일치하면 True 아니면 False 반환합니다.
-     */
-    private boolean isDayMatched(JobCondition jc, Week rcDay) {
-        return (jc.getDayOfWeek() & rcDay.getBitMask()) != 0;
     }
 
     /**
@@ -511,11 +444,19 @@ public class ScoreCalculationService {
      * 0000111111111100000
      * 처럼 시간대 체크된건 1로 표시되어서 반환됩니다.
      */
-    private Long getTimeMask(Long startTime, Long endTime) {
-        long mask = 0;
-        for (Long i = startTime; i < endTime; i++) {
+    private long getTimeMask(long startTime, long endTime) {
+        long mask = 0L;
+        for (long i = startTime; i < endTime; i++) {
             mask |= (1L << i);
         }
         return mask;
+    }
+
+    private void persistScores(List<MatchScore> results) {
+        List<MatchScoreCache> newCaches = results.stream()
+                .map(matchScoreCacheConverter::toCache)
+                .toList();
+        scoreRepository.saveAll(results);
+        matchScoreCacheService.saveAll(newCaches);
     }
 }

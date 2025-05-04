@@ -21,7 +21,7 @@ public interface JobConditionRepository extends JpaRepository<JobCondition,Long>
         FROM job_condition jc
         JOIN work_location wl ON wl.job_condition_id = jc.job_condition_id
         WHERE wl.location_id = :rcLocationId""", nativeQuery = true)
-    Optional<List<JobCondition>> findAllByRecommendedListByElder(@Param("rcLocationId") Long rcLocationId);
+    Optional<List<JobCondition>> findAllByRecommendedListByLocation(@Param("rcLocationId") Long rcLocationId);
 
     // Mock 데이터 생성용
     @Query(value = "SELECT * FROM job_condition order by RAND() limit 1",nativeQuery = true)

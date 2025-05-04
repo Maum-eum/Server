@@ -2,6 +2,7 @@ package com.example.springserver.domain.caregiver.cache;
 
 import com.example.springserver.domain.caregiver.dto.JobConditionOptionInfo;
 import com.example.springserver.domain.caregiver.dto.response.JobConditionResponseDto;
+import com.example.springserver.domain.caregiver.entity.Caregiver;
 import com.example.springserver.domain.caregiver.entity.JobCondition;
 import com.example.springserver.domain.caregiver.entity.WorkLocation;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,36 @@ public class JobConditionCacheConverter {
                         .map(JobConditionCacheConverter::toWorkLocationRedisDto)
                         .collect(Collectors.toList()))
                 .caregiverId(jobCondition.getCaregiver().getId())
+                .build();
+    }
+
+    public static JobCondition toEntity(JobConditionCache cache, Caregiver caregiver, List<WorkLocation> workLocations) {
+        return JobCondition.builder()
+                .flexibleSchedule(cache.getFlexibleSchedule())
+                .desiredHourlyWage(cache.getDesiredHourlyWage())
+                .selfFeeding(cache.getSelfFeeding())
+                .mealPreparation(cache.getMealPreparation())
+                .cookingAssistance(cache.getCookingAssistance())
+                .enteralNutritionSupport(cache.getEnteralNutritionSupport())
+                .selfToileting(cache.getSelfToileting())
+                .occasionalToiletingAssist(cache.getOccasionalToiletingAssist())
+                .diaperCare(cache.getDiaperCare())
+                .catheterOrStomaCare(cache.getCatheterOrStomaCare())
+                .independentMobility(cache.getIndependentMobility())
+                .mobilityAssist(cache.getMobilityAssist())
+                .wheelchairAssist(cache.getWheelchairAssist())
+                .immobile(cache.getImmobile())
+                .cleaningLaundryAssist(cache.getCleaningLaundryAssist())
+                .bathingAssist(cache.getBathingAssist())
+                .hospitalAccompaniment(cache.getHospitalAccompaniment())
+                .exerciseSupport(cache.getExerciseSupport())
+                .emotionalSupport(cache.getEmotionalSupport())
+                .cognitiveStimulation(cache.getCognitiveStimulation())
+                .dayOfWeek(cache.getDayOfWeek())
+                .startTime(cache.getStartTime())
+                .endTime(cache.getEndTime())
+                .caregiver(caregiver)
+                .workLocations(workLocations)
                 .build();
     }
 

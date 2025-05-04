@@ -3,7 +3,10 @@ package com.example.springserver.domain.center.cache;
 import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.dto.RecruitConditionOptionInfo;
 import com.example.springserver.domain.center.dto.response.RecruitResponseDto;
+import com.example.springserver.domain.center.entity.Elder;
 import com.example.springserver.domain.center.entity.RecruitCondition;
+import com.example.springserver.domain.center.entity.RecruitTime;
+import com.example.springserver.domain.location.entity.Location;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -48,6 +51,41 @@ public class RecruitConditionCacheConverter {
         return conditionList.stream()
                 .map(RecruitConditionCacheConverter::toCache)
                 .collect(Collectors.toList());
+    }
+
+    public static RecruitCondition toEntity(RecruitConditionCache cache, Elder elder, Location location, List<RecruitTime> recruitTimes) {
+        return RecruitCondition.builder()
+                .elder(elder)
+                .recruitLocation(location)
+                .address(cache.getAddress())
+                .careTypes(cache.getCareTypes())
+                .recruitTimes(recruitTimes)
+                .flexibleSchedule(cache.isFlexibleSchedule())
+                .mealAssistance(cache.isMealAssistance())
+                .toiletAssistance(cache.isToiletAssistance())
+                .moveAssistance(cache.isMoveAssistance())
+                .dailyLivingAssistance(cache.isDailyLivingAssistance())
+                .desiredHourlyWage(cache.getDesiredHourlyWage())
+                .selfFeeding(cache.isSelfFeeding())
+                .mealPreparation(cache.isMealPreparation())
+                .cookingAssistance(cache.isCookingAssistance())
+                .enteralNutritionSupport(cache.isEnteralNutritionSupport())
+                .selfToileting(cache.isSelfToileting())
+                .occasionalToiletingAssist(cache.isOccasionalToiletingAssist())
+                .diaperCare(cache.isDiaperCare())
+                .catheterOrStomaCare(cache.isCatheterOrStomaCare())
+                .independentMobility(cache.isIndependentMobility())
+                .mobilityAssist(cache.isMobilityAssist())
+                .wheelchairAssist(cache.isWheelchairAssist())
+                .immobile(cache.isImmobile())
+                .cleaningLaundryAssist(cache.isCleaningLaundryAssist())
+                .bathingAssist(cache.isBathingAssist())
+                .hospitalAccompaniment(cache.isHospitalAccompaniment())
+                .exerciseSupport(cache.isExerciseSupport())
+                .emotionalSupport(cache.isEmotionalSupport())
+                .cognitiveStimulation(cache.isCognitiveStimulation())
+                .detailRequiredService(cache.getDetailRequiredService())
+                .build();
     }
 
     public static RecruitResponseDto.Response fromCache(RecruitConditionCache cache) {
