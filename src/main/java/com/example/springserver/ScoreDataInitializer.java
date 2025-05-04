@@ -25,7 +25,7 @@ public class ScoreDataInitializer implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<Long> list = recruitService.findAllRecCond();
+        List<Long> list = recruitService.findAllRecruitCondition();
         for(Long rcId : list)
             scoreCalculationService.recalculateScoresForRecruit(rcId);
     }

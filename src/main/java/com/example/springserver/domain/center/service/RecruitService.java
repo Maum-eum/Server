@@ -1,6 +1,5 @@
 package com.example.springserver.domain.center.service;
 
-import com.example.springserver.domain.center.cache.RecruitConditionCache;
 import com.example.springserver.domain.center.cache.RecruitConditionCacheConverter;
 import com.example.springserver.domain.center.converter.RecruitConverter;
 import com.example.springserver.domain.center.dto.request.RecruitRequestDto.Request;
@@ -11,7 +10,6 @@ import com.example.springserver.domain.center.repository.ElderRepository;
 import com.example.springserver.domain.center.repository.RecruitConditionRepository;
 import com.example.springserver.domain.center.service.cache.RecruitConditionCacheService;
 import com.example.springserver.domain.location.entity.Location;
-import com.example.springserver.global.apiPayload.format.CacheException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.validation.validator.RecruitLaborLawValidator;
@@ -38,47 +36,25 @@ public class RecruitService {
     private final RecruitLaborLawValidator recruitLaborLawValidator;
     private final RecruitConditionCacheService recruitConditionCacheService;
 
-    public List<Long> findAllRecCond(){
+    public List<Long> findAllRecruitCondition(){
         return recruitConditionRepository.findAllRecuitIds();
     }
 
     public List<Response> getRecruitConditionList(Long centerId, Long elderId) {
         validateElderBelongsToCenter(elderId, centerId);
 
-        try { // Cache Hit : Redis 조회
-            log.info("[CACHE HIT] recruitCondition 조회 ======== ");
-            List<RecruitConditionCache> cachedList = recruitConditionCacheService.getByElderIdFromRedis(elderId);
-            return RecruitConditionCacheConverter.fromCacheList(cachedList);
-        } catch(CacheException ce) { // Cache Miss : DB 직접 조회
-            log.warn("[CACHE MISS] jobCondition 캐시 조회 불가 ======== ");
+        List<RecruitCondition> conditions = recruitConditionRepository.findWithRecruitTimesByElderId(elderId);
+        recruitConditionCacheService.saveAll(RecruitConditionCacheConverter.toCacheList(conditions)); // DB 저장
 
-            List<RecruitCondition> conditions = recruitConditionRepository.findWithRecruitTimesByElderId(elderId);
-            recruitConditionCacheService.saveAll(RecruitConditionCacheConverter.toCacheList(conditions));
-            return RecruitConverter.toListResponseDto(conditions);
-        }
+        return RecruitConverter.toListResponseDto(conditions);
     }
 
-    // Read Through 캐싱 (Redis + Local Cache)
     public Response getRecruitCondition(Long centerId, Long elderId, Long recruitId) {
         validateElderBelongsToCenter(elderId, centerId);
-        RecruitConditionCache cache = null;
 
-        try {
-            cache = getRecruitConditionFromRedis(recruitId);
-            log.info("[CACHE HIT] recruitCondition 조회 ======== ");
-        } catch (CacheException ce) {
-            log.warn("[CACHE MISS] recruitCondition 캐시 조회 실패 ======== ");
-        }
-
-        if (cache != null) { // null 처리
-            return RecruitConditionCacheConverter.fromCache(cache);
-        }
-
-        log.info("[MySQL] recruitCondition 단건 조회 ========");
+        log.info("[MySQL] recruitCondition 조회 ========");
         RecruitCondition recruitCondition = getValidRecruitCondition(recruitId);
 
-        // DB 조회 후 캐싱
-        recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(recruitCondition));
         return RecruitConverter.toConditionResponseDto(recruitCondition);
     }
 
@@ -91,8 +67,7 @@ public class RecruitService {
         Location location = getValidLocation(request.getRecruitLocationId());
 
         RecruitCondition newRecruitCondition = RecruitConverter.toRecruitCondition(request, elder, location);
-        recruitConditionRepository.save(newRecruitCondition);
-        recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(newRecruitCondition));
+        recruitConditionRepository.save(newRecruitCondition); // DB 저장
 
         return RecruitConverter.toConditionResponseDto(newRecruitCondition);
     }
@@ -106,9 +81,7 @@ public class RecruitService {
         Location location = getValidLocation(request.getRecruitLocationId());
 
         recruitCondition.update(request, location);
-        recruitConditionRepository.save(recruitCondition);
-        recruitConditionCacheService.save(RecruitConditionCacheConverter.toCache(recruitCondition));
-
+        recruitConditionRepository.save(recruitCondition); // DB 저장
         applicationEventPublisher.publishEvent(new RecruitConditionChangedEvent(this, recruitConditionId));
     }
 
@@ -117,9 +90,7 @@ public class RecruitService {
         validateElderBelongsToCenter(elderId, centerId);
 
         RecruitCondition recruitCondition = getValidRecruitCondition(recruitConditionId);
-
         recruitConditionRepository.delete(recruitCondition); // DB 삭제
-        recruitConditionCacheService.deleteByRecruitConditionId(recruitConditionId); // 캐시 삭제
     }
 
     private RecruitCondition getValidRecruitCondition(Long recruitConditionId) {
@@ -146,9 +117,5 @@ public class RecruitService {
 
     private void validateRequest(Request request) {
         recruitLaborLawValidator.validateRecruitRequest(request);
-    }
-
-    private RecruitConditionCache getRecruitConditionFromRedis(Long recruitConditionId) throws CacheException{
-        return recruitConditionCacheService.getByRecruitConditionId(recruitConditionId);
     }
 }
