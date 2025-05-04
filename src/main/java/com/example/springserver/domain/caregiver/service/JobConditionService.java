@@ -15,7 +15,6 @@ import com.example.springserver.domain.caregiver.repository.JobConditionReposito
 import com.example.springserver.domain.caregiver.repository.WorkLocationRepository;
 import com.example.springserver.domain.caregiver.service.cache.JobConditionCacheService;
 import com.example.springserver.domain.location.entity.Location;
-import com.example.springserver.global.apiPayload.format.CacheException;
 import com.example.springserver.global.apiPayload.format.ErrorCode;
 import com.example.springserver.global.apiPayload.format.GlobalException;
 import com.example.springserver.global.security.util.CustomUserDetails;
@@ -51,13 +50,9 @@ public class JobConditionService {
     @Transactional
     public Response createJobCondition(CustomUserDetails user, Request request) {
         Caregiver caregiver = getValidCaregiver(user.getId());
-        // 캐시 삭제
-        jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
-
-        // 생성
         JobCondition jobCondition = JobConditionConverter.from(caregiver, request);
-        jobCondition = jobConditionRepository.save(jobCondition);
 
+        jobCondition = jobConditionRepository.save(jobCondition); // DB 저장
         saveLocations(request, jobCondition);
 
         return postProcess(jobCondition);
@@ -66,13 +61,16 @@ public class JobConditionService {
     @Transactional
     public Response updateJobCondition(CustomUserDetails userDetails, Request request) {
         Caregiver caregiver = getValidCaregiver(userDetails.getId());
-
-        jobConditionCacheService.deleteByCaregiverKey(caregiver.getId());
-
         JobCondition jobCondition = getValidJobCondition(caregiver);
+
         jobCondition.updateInfo(request);
         updateWorkLocations(jobCondition, request);
-        jobCondition = jobConditionRepository.save(jobCondition);
+        jobCondition = jobConditionRepository.save(jobCondition); // DB 저장
+
+        // update -> 캐싱 (: 매칭 점수 재계산에 활용)
+        JobConditionCache cacheData = JobConditionCacheConverter.toRedisDto(jobCondition);
+        jobConditionCacheService.deleteByCaregiverKey(caregiver.getId()); // 삭제 후
+        jobConditionCacheService.save(cacheData); // 캐싱
 
         return postProcess(jobCondition);
     }
@@ -124,31 +122,13 @@ public class JobConditionService {
         return JobConditionConverter.toDetailJobConditionResponseDto(byId,jobCondition);
     }
 
-    // Read Through 캐싱 (Redis + Local Cache)
     @Transactional(readOnly = true)
     public Response getJobCondition(CustomUserDetails user) {
-        JobConditionCache cachedJc = null;
-
-        try {
-            // 로컬 or Redis 캐시 조회
-            cachedJc = jobConditionCacheService.getByCaregiverKey(user.getId());
-
-            if (cachedJc != null) {
-                log.info("[CACHE HIT] jobCondition 조회 ======== ");
-                return JobConditionCacheConverter.fromRedisDto(cachedJc);
-            }
-        } catch (CacheException ce) {
-            log.warn("[CACHE MISS] jobCondition 캐시 조회 불가 ======== ");
-        }
 
         // DB 조회
         log.info("[MySQL] jobCondition 조회 ======== ");
         Caregiver caregiver = getValidCaregiver(user.getId());
         JobCondition jobCondition = getValidJobCondition(caregiver);
-
-        // DB -> 캐시 저장
-        JobConditionCache toCache = JobConditionCacheConverter.toRedisDto(jobCondition);
-        jobConditionCacheService.save(toCache);
 
         return JobConditionConverter.toJobConditionResponseDTO(jobCondition);
     }
@@ -170,11 +150,6 @@ public class JobConditionService {
         if (jobCondition.getId() != null) {
             eventPublisher.publishEvent(new JobConditionChangedEvent(this, jobCondition.getId()));
         }
-
-        // 캐시 저장
-        JobConditionCache cacheData = JobConditionCacheConverter.toRedisDto(jobCondition);
-        jobConditionCacheService.save(cacheData);
-
         return jcDto;
     }
 }
